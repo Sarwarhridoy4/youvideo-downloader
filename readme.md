@@ -105,8 +105,13 @@ python main.py
 
 ---
 
-## Screenshot
+## Screenshot(Dark) Default
 
-![YouVideo Downloader Screenshot](./assets/screenshot/Screenshot.png)
+![YouVideo Downloader Screenshot](./assets/screenshot/Screenshot_dark.png)
+
+## Screenshot(Light)
+
+![YouVideo Downloader Screenshot](./assets/screenshot/Screenshot_light.png)
+
 
 Made with ❤️ by Sarwar Hossain

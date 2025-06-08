@@ -1,4 +1,3 @@
-
 # YouVideo Downloader
 
 ## Features
@@ -21,7 +20,7 @@
 - Python 3.8 or higher
 - `yt-dlp` (YouTube downloader backend)
 - PyQt6
-- ffmpeg 
+- ffmpeg
 
 ### Steps
 
@@ -106,4 +105,8 @@ python main.py
 
 ---
 
-Made with ❤️ by YourName
+## Screenshot
+
+![YouVideo Downloader Screenshot](./assets/screenshot/Screenshot.png)
+
+Made with ❤️ by Sarwar Hossain

@@ -45,7 +45,40 @@ venv\Scripts\activate   # Windows
 pip install -r requirements.txt
 ```
 
-4. Run the application:
+4. Install **ffmpeg**:
+
+#### Windows
+
+- Download the latest static build from [ffmpeg.org/download.html](https://ffmpeg.org/download.html).
+- Extract the zip file.
+- Add the `bin` folder (inside the extracted folder) to your system `PATH`.
+
+#### Windows (Alternative: Using winget)
+
+- If you have [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/) installed, you can install ffmpeg with:
+
+```bash
+winget install --id=Gyan.FFmpeg -e
+```
+
+#### Linux
+
+- Install via package manager (example for Ubuntu/Debian):
+
+```bash
+sudo apt update
+sudo apt install ffmpeg
+```
+
+#### macOS
+
+- Install using [Homebrew](https://brew.sh/):
+
+```bash
+brew install ffmpeg
+```
+
+5. Run the application:
 
 ```bash
 python main.py
@@ -97,7 +130,40 @@ venv\Scripts\activate   # Windows
 pip install -r requirements.txt
 ```
 
-4. অ্যাপ্লিকেশন চালান:
+4. **ffmpeg** ইনস্টল করুন:
+
+#### Windows
+
+- [ffmpeg.org/download.html](https://ffmpeg.org/download.html) থেকে সর্বশেষ স্ট্যাটিক বিল্ড ডাউনলোড করুন।
+- জিপ ফাইলটি এক্সট্রাক্ট করুন।
+- এক্সট্রাক্ট করা ফোল্ডারের ভিতরের `bin` ফোল্ডারটি আপনার সিস্টেম `PATH`-এ যোগ করুন।
+
+#### Windows (বিকল্প: winget ব্যবহার করে)
+
+- যদি আপনার [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/) ইনস্টল করা থাকে, তাহলে নিচের কমান্ড দিয়ে ffmpeg ইনস্টল করতে পারেন:
+
+```bash
+winget install --id=Gyan.FFmpeg -e
+```
+
+#### Linux
+
+- প্যাকেজ ম্যানেজার দিয়ে ইনস্টল করুন (উদাহরণ: Ubuntu/Debian):
+
+```bash
+sudo apt update
+sudo apt install ffmpeg
+```
+
+#### macOS
+
+- [Homebrew](https://brew.sh/) ব্যবহার করে ইনস্টল করুন:
+
+```bash
+brew install ffmpeg
+```
+
+5. অ্যাপ্লিকেশন চালান:
 
 ```bash
 python main.py

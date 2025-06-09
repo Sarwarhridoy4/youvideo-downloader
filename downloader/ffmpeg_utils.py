@@ -59,19 +59,61 @@ def ensure_ffmpeg(log_signal=None):
         log("❌ FFmpeg not found on this system.")
         current_platform = platform.system().lower()
         if current_platform == "windows":
-            log("To install FFmpeg on Windows:\n"
-                "Option 1: Download from https://ffmpeg.org/download.html, extract, and add the bin folder to your PATH environment variable.\n"
-                "Option 2: If you have winget, run:\n"
-                "    winget install Gyan.FFmpeg")
+            # Check if winget is available
+            try:
+                result = subprocess.run(
+                    ["winget", "--version"],
+                    capture_output=True,
+                    text=True
+                )
+                if result.returncode == 0:
+                    log("Attempting to install FFmpeg using winget...")
+                    try:
+                        subprocess.run(
+                            ["winget", "install", "--id", "Gyan.FFmpeg", "-e", "--accept-package-agreements", "--accept-source-agreements"],
+                            check=True
+                        )
+                        log("FFmpeg installed successfully via winget. Please restart the application if needed.")
+                        return True
+                    except Exception as e:
+                        log(f"Failed to install FFmpeg via winget: {e}")
+                        return False
+                else:
+                    log("winget is not available on your system.\n"
+                        "Please install winget from https://github.com/microsoft/winget-cli/releases or install FFmpeg manually:\n"
+                        "Download from https://ffmpeg.org/download.html, extract, and add the bin folder to your PATH environment variable.")
+                    return False
+            except FileNotFoundError:
+                log("winget is not found on your system.\n"
+                    "Please install winget from https://github.com/microsoft/winget-cli/releases or install FFmpeg manually:\n"
+                    "Download from https://ffmpeg.org/download.html, extract, and add the bin folder to your PATH environment variable.")
+                return False
         elif current_platform == "linux":
-            log("To install FFmpeg on Linux, run:\n"
-                "sudo apt update && sudo apt install -y ffmpeg")
+            log("Attempting to install FFmpeg using apt...")
+            try:
+                subprocess.run(["sudo", "apt", "update"], check=True)
+                subprocess.run(["sudo", "apt", "install", "-y", "ffmpeg"], check=True)
+                log("FFmpeg installed successfully via apt.")
+                return True
+            except Exception as e:
+                log(f"Failed to install FFmpeg via apt: {e}\n"
+                    "You may need to install it manually with:\n"
+                    "sudo apt update && sudo apt install -y ffmpeg")
+                return False
         elif current_platform == "darwin":
-            log("To install FFmpeg on macOS, run:\n"
-                "brew install ffmpeg")
+            log("Attempting to install FFmpeg using Homebrew...")
+            try:
+                subprocess.run(["brew", "install", "ffmpeg"], check=True)
+                log("FFmpeg installed successfully via Homebrew.")
+                return True
+            except Exception as e:
+                log(f"Failed to install FFmpeg via Homebrew: {e}\n"
+                    "You may need to install it manually with:\n"
+                    "brew install ffmpeg")
+                return False
         else:
             log("Please refer to https://ffmpeg.org/download.html for installation instructions for your platform.")
-        return False
+            return False
 
     try:
         result = subprocess.run(

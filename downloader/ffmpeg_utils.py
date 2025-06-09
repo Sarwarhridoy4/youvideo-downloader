@@ -54,6 +54,13 @@ class InstallProgressDialog(QProgressDialog):
         self.setCancelButton(None)
         self.setMinimumDuration(0)
         self.setValue(0)
+        # Load style from assets/qss/progress.qss
+        qss_path = os.path.join(os.path.dirname(__file__), "..", "assets", "qss", "progress.qss")
+        try:
+            with open(qss_path, "r", encoding="utf-8") as f:
+                self.setStyleSheet(f.read())
+        except Exception as e:
+            print(f"Could not load progress.qss: {e}")
 
 
 def ensure_ffmpeg(log_signal=None, parent=None):

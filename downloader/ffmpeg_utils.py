@@ -50,16 +50,30 @@ def ensure_ffmpeg(log_signal=None):
     def log(msg):
         if log_signal:
             try:
-                log_signal(msg)  # Call it like a regular function
+                log_signal(msg)
             except Exception:
-                pass  # Optional: log this fallback to console
+                pass
 
     ffmpeg_path = shutil.which("ffmpeg")
     if not ffmpeg_path:
         log("❌ FFmpeg not found on this system.")
+        if not prompt_user_install_ffmpeg():
+            current_platform = platform.system().lower()
+            if current_platform == "windows":
+                log("Please install FFmpeg manually:\n"
+                    "Download from https://ffmpeg.org/download.html, extract, and add the bin folder to your PATH environment variable.")
+            elif current_platform == "linux":
+                log("Please install FFmpeg manually with:\n"
+                    "sudo apt update && sudo apt install -y ffmpeg")
+            elif current_platform == "darwin":
+                log("Please install FFmpeg manually with:\n"
+                    "brew install ffmpeg")
+            else:
+                log("Please refer to https://ffmpeg.org/download.html for installation instructions for your platform.")
+            return False
+
         current_platform = platform.system().lower()
         if current_platform == "windows":
-            # Check if winget is available
             try:
                 result = subprocess.run(
                     ["winget", "--version"],

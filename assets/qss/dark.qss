@@ -1,3 +1,28 @@
+/*
+    Dark Theme Qt Style Sheet (QSS) Documentation
+
+    This QSS file defines a dark theme for a Qt application, applying consistent styling to various widgets:
+
+    - QMainWindow:
+        * Sets a dark background (#0f0f0f), white text, and uses 'Segoe UI' or a sans-serif font.
+
+    - QPushButton:
+        * Default: Dark background (#272727), white text, rounded corners, and medium font weight.
+        * Hover: Slightly lighter background (#3e3e3e).
+        * Pressed: Red background (#ff0000) with white text.
+
+    - QLineEdit, QComboBox, QTextEdit:
+        * Dark input backgrounds (#1e1e1e), white text, subtle borders, rounded corners, and padding.
+
+    - QLabel:
+        * White text with normal font weight.
+
+    - QProgressBar:
+        * Dark background (#1e1e1e), white text, subtle border, rounded corners, and centered text.
+        * Chunk: Red progress indicator (#ff0000), with spacing between chunks.
+
+    This stylesheet ensures a modern, visually consistent dark appearance across the application's UI elements.
+*/
 QMainWindow {
     background-color: #0f0f0f;
     color: #ffffff;

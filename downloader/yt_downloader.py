@@ -19,6 +19,24 @@ def get_formats(url):
         return formats
 
 def download_and_merge(url, format_code, output_path, progress_hook, log_signal):
+    """
+    Downloads a video from the given URL using the specified format code, merges the video and audio streams into an MP4 file, and saves it to the specified output path.
+
+    Args:
+        url (str): The URL of the video to download.
+        format_code (str): The format code specifying the desired video quality/format.
+        output_path (str): The directory where the downloaded file will be saved.
+        progress_hook (callable): A callback function to handle progress updates during download.
+        log_signal (QObject): An object with an 'emit' method for logging messages (typically a Qt signal).
+
+    Raises:
+        Any exceptions raised by YoutubeDL during the download or merging process.
+
+    Notes:
+        - The function uses youtube-dl (or a compatible fork) for downloading and merging.
+        - The output file will be in MP4 format, with video and audio streams merged.
+        - Progress and status messages are emitted via the provided log_signal.
+    """
 
     output_file_template = os.path.join(output_path, '%(title)s.%(ext)s')
 

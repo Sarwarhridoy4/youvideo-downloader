@@ -65,6 +65,48 @@ class SpinnerDialog(QDialog):
 
 
 class MainWindow(QMainWindow):
+    """
+    Main application window for the YouVideo Downloader GUI.
+
+    This class provides the main interface for downloading YouTube videos, allowing users to:
+    - Enter a YouTube URL.
+    - Load available video/audio formats for the given URL.
+    - Select an output folder for downloads.
+    - Switch between dark and light themes.
+    - View download progress and logs.
+    - Handle errors and display informational messages.
+
+    Key Features:
+    - Checks for FFmpeg availability on startup and disables download functionality if missing.
+    - Uses a spinner dialog while loading formats.
+    - Supports threaded downloads with real-time progress updates.
+    - Displays logs and download completion information.
+
+    Attributes:
+        url_input (QLineEdit): Input field for the YouTube URL.
+        format_dropdown (QComboBox): Dropdown to select video/audio format.
+        output_label (QLabel): Displays the selected output folder.
+        progress (QProgressBar): Shows download progress.
+        log_window (QTextEdit): Displays logs and messages.
+        load_formats_btn (QPushButton): Button to load available formats.
+        download_btn (QPushButton): Button to start the download.
+        output_path (str): Path to the selected output folder.
+        current_theme (str): Current theme ("dark" or "light").
+        spinner_dialog (SpinnerDialog or None): Dialog shown during format loading.
+
+    Methods:
+        setup_ui(): Initializes and arranges UI widgets.
+        browse_folder(): Opens a dialog to select the output folder.
+        switch_theme(): Switches between dark and light themes.
+        apply_theme(theme_path): Applies a QSS stylesheet from the given path.
+        load_formats(): Loads available formats for the entered URL.
+        _fetch_formats(url): Fetches and populates the format dropdown.
+        show_error(title, message): Displays an error message box.
+        show_info(title, message): Displays an informational message box.
+        download_finished(): Handles actions after download completion.
+        update_progress(percent): Updates the progress bar and logs.
+        download(): Starts the download process in a separate thread.
+    """
     def __init__(self):
         super().__init__()
         self.setWindowTitle("YouVideo Downloader")

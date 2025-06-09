@@ -1,3 +1,12 @@
+/*
+    This QSS (Qt Style Sheet) file defines the light theme styles for a Qt application.
+
+    - QMainWindow: Sets a white background, dark text color, and uses 'Segoe UI' or a sans-serif font.
+    - QPushButton: Light background, dark text, rounded corners, and a subtle border. On hover, the background becomes slightly darker. On press, the button turns red with white text.
+    - QLineEdit, QComboBox, QTextEdit: Light background, dark text, rounded corners, and padding for input fields.
+    - QLabel: Sets label text color and font weight.
+    - QProgressBar: Light background, rounded corners, and white text. The progress chunk is styled with a red color and spacing.
+*/
 QMainWindow {
     background-color: #ffffff;
     color: #202020;

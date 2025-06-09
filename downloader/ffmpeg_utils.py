@@ -44,6 +44,17 @@ def prompt_user_install_ffmpeg():
 
 
 def ensure_ffmpeg(log_signal=None):
+    """
+    Ensures that FFmpeg is installed and available on the system.
+
+    This function checks if FFmpeg is present in the system's PATH. If not found, it attempts to guide the user through the installation process, providing platform-specific instructions or attempting automated installation using available package managers (winget for Windows, apt for Linux, Homebrew for macOS). If installation is successful or FFmpeg is already present, it verifies the installation by running `ffmpeg -version`.
+
+    Args:
+        log_signal (callable, optional): A function to receive log messages (e.g., for UI display). If not provided, logging is suppressed.
+
+    Returns:
+        bool: True if FFmpeg is installed and accessible, False otherwise.
+    """
     import shutil
     import subprocess
 

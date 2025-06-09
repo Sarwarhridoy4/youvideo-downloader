@@ -1,15 +1,19 @@
 # ui/main_window.py
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QLineEdit, QFileDialog, QComboBox, QProgressBar, QTextEdit
+    QPushButton, QLabel, QLineEdit, QFileDialog, QComboBox,
+    QProgressBar, QTextEdit, QMessageBox, QDialog, QDialogButtonBox
 )
-from PyQt6.QtCore import Qt, QThread, pyqtSignal
+from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
+from PyQt6.QtGui import QMovie, QIcon
 from downloader.yt_downloader import get_formats, download_and_merge
 import os
-
+from downloader.ffmpeg_utils import ensure_ffmpeg
+# Ensure the icon path is correct
+icon_path = os.path.join(os.path.dirname(__file__), "..", "assets", "icons", "appicon.png")
 
 class DownloadThread(QThread):
-    progress = pyqtSignal(int)  # emits int percentage
+    progress = pyqtSignal(int)
     finished = pyqtSignal()
     error = pyqtSignal(str)
     log = pyqtSignal(str)
@@ -19,6 +23,7 @@ class DownloadThread(QThread):
         self.url = url
         self.format_code = format_code
         self.output_path = output_path
+        
 
     def run(self):
         try:
@@ -36,13 +41,41 @@ class DownloadThread(QThread):
             self.error.emit(str(e))
 
 
+class SpinnerDialog(QDialog):
+    def __init__(self, message="Loading..."):
+        super().__init__()
+        self.setWindowTitle("Please wait")
+        self.setModal(True)
+        self.setFixedSize(200, 150)
+
+        layout = QVBoxLayout(self)
+
+        self.label = QLabel(message, self)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.addWidget(self.label)
+
+        self.spinner = QLabel(self)
+        movie = QMovie("../assets/icons/spinner.gif")
+        self.spinner.setMovie(movie)
+        movie.start()
+        layout.addWidget(self.spinner)
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("YouVideo Downloader")
+        self.setWindowIcon(QIcon(icon_path))  # Ensure the icon path is correct
+        # self.setWindowIconVisible(True)
         self.resize(700, 500)
         self.setup_ui()
         self.apply_theme("assets/qss/dark.qss")
+
+        # FFmpeg check
+        if not ensure_ffmpeg(self.log_window.append):
+            self.show_error("FFmpeg Missing", "FFmpeg is not installed or not in PATH.")
+            self.download_btn.setEnabled(False)
+            self.load_formats_btn.setEnabled(False)
 
     def setup_ui(self):
         central = QWidget()
@@ -65,7 +98,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(browse_btn)
 
         self.progress = QProgressBar()
-        self.progress.setFormat("0%")  # show percentage inside progress bar
+        self.progress.setFormat("0%")
         layout.addWidget(self.progress)
 
         self.log_window = QTextEdit()
@@ -74,13 +107,13 @@ class MainWindow(QMainWindow):
 
         hlayout = QHBoxLayout()
 
-        load_formats_btn = QPushButton("Load Formats")
-        load_formats_btn.clicked.connect(self.load_formats)
-        hlayout.addWidget(load_formats_btn)
+        self.load_formats_btn = QPushButton("Load Formats")
+        self.load_formats_btn.clicked.connect(self.load_formats)
+        hlayout.addWidget(self.load_formats_btn)
 
-        download_btn = QPushButton("Download")
-        download_btn.clicked.connect(self.download)
-        hlayout.addWidget(download_btn)
+        self.download_btn = QPushButton("Download")
+        self.download_btn.clicked.connect(self.download)
+        hlayout.addWidget(self.download_btn)
 
         theme_btn = QPushButton("Switch Theme")
         theme_btn.clicked.connect(self.switch_theme)
@@ -91,6 +124,7 @@ class MainWindow(QMainWindow):
 
         self.output_path = os.getcwd()
         self.current_theme = "dark"
+        self.spinner_dialog = None
 
     def browse_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "Select Output Folder")
@@ -112,12 +146,21 @@ class MainWindow(QMainWindow):
                 style = f.read()
                 self.setStyleSheet(style)
         except Exception as e:
-            print("Error loading theme:", e)
+            self.show_error("Error loading theme", str(e))
 
     def load_formats(self):
         url = self.url_input.text()
         if not url:
+            self.show_error("Missing URL", "Please enter a YouTube URL.")
             return
+        try:
+            self.spinner_dialog = SpinnerDialog("Loading formats...")
+            self.spinner_dialog.show()
+            QTimer.singleShot(100, lambda: self._fetch_formats(url))
+        except Exception as e:
+            self.show_error("Error", str(e))
+
+    def _fetch_formats(self, url):
         try:
             formats = get_formats(url)
             self.format_dropdown.clear()
@@ -127,10 +170,21 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.format_dropdown.clear()
             self.format_dropdown.addItem(f"Error: {e}")
+        finally:
+            if self.spinner_dialog:
+                self.spinner_dialog.accept()
+                self.spinner_dialog = None
+
+    def show_error(self, title, message):
+        QMessageBox.critical(self, title, message)
+
+    def show_info(self, title, message):
+        QMessageBox.information(self, title, message)
 
     def download_finished(self):
         self.progress.setValue(100)
         self.progress.setFormat("100%")
+        self.download_btn.setEnabled(True)
         url = self.url_input.text()
         if not url:
             return
@@ -143,8 +197,10 @@ class MainWindow(QMainWindow):
                 ext = "mp4"
                 final_path = os.path.join(self.output_path, f"{title}.{ext}")
                 self.log_window.append(f"Download complete!\nSaved to: {final_path}")
+                self.show_info("Download Complete", f"Saved to:\n{final_path}")
         except Exception as e:
             self.log_window.append(f"Download finished, but failed to resolve file path: {e}")
+            self.show_error("Download Error", str(e))
 
     def update_progress(self, percent: int):
         self.progress.setValue(percent)
@@ -164,12 +220,15 @@ class MainWindow(QMainWindow):
 
         self.progress.setValue(0)
         self.progress.setFormat("0%")
+        self.download_btn.setEnabled(False)
+
         self.log_window.append(f"Starting download with format: {format_code}")
 
         self.thread = DownloadThread(url, format_code, self.output_path)
-        self.thread.progress.connect(self.update_progress)  # use custom slot
+        self.thread.progress.connect(self.update_progress)
         self.thread.finished.connect(self.download_finished)
-        self.thread.error.connect(lambda e: self.log_window.append(f"Error: {e}"))
+        self.thread.error.connect(lambda e: self.show_error("Download Failed", e))
+        self.thread.error.connect(lambda e: self.download_btn.setEnabled(True))
         self.thread.log.connect(self.log_window.append)
         self.thread.start()
 

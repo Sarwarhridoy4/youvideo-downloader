@@ -182,4 +182,23 @@ python main.py
 ![YouVideo Downloader Screenshot](./assets/screenshot/Screenshot_light.png)
 
 
+## Contributing
+
+Contributions are welcome! To contribute:
+
+1. Fork the repository and create your branch from `main`.
+2. Make your changes with clear, descriptive commit messages.
+3. Test your changes to ensure stability.
+4. Submit a pull request describing your changes and the motivation behind them.
+
+For bug reports or feature requests, please open an issue with detailed information.
+
+Thank you for helping improve YouVideo Downloader!
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
 Made with ❤️ by Sarwar Hossain

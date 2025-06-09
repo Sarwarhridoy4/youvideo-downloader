@@ -4,6 +4,7 @@
 
 - Download YouTube videos by specifying the URL.
 - Support Facebook and maybe others platform Also.(Youtube and Facebook Tested)
+- Make it detect ffmpeg and install automatic if not installed already regardless of OS platform
 - Choose from multiple available video/audio formats.
 - Select output folder to save downloads.
 - Real-time progress bar showing download and conversion progress.
@@ -91,6 +92,7 @@ python main.py
 
 - ইউটিউব ভিডিও ডাউনলোড করার সুবিধা।
 - ফেসবুকসহ অন্যান্য প্ল্যাটফর্ম থেকেও ভিডিও ডাউনলোড করার সুবিধা (ইউটিউব ও ফেসবুক পরীক্ষিত)।
+- ffmpeg ইনস্টল আছে কিনা স্বয়ংক্রিয়ভাবে শনাক্ত করে এবং না থাকলে যেকোনো অপারেটিং সিস্টেমে স্বয়ংক্রিয়ভাবে ইনস্টল করার ব্যবস্থা।
 - বিভিন্ন ভিডিও/অডিও ফরম্যাট থেকে পছন্দ করার অপশন।
 - ডাউনলোড সংরক্ষণের জন্য ফোল্ডার নির্বাচন।
 - ডাউনলোড এবং কনভার্সনের অগ্রগতি দেখানো প্রগ্রেস বার।
@@ -180,7 +182,6 @@ python main.py
 ## Screenshot(Light)
 
 ![YouVideo Downloader Screenshot](./assets/screenshot/Screenshot_light.png)
-
 
 ## Contributing
 

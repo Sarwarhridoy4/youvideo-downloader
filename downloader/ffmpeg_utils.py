@@ -57,6 +57,20 @@ def ensure_ffmpeg(log_signal=None):
     ffmpeg_path = shutil.which("ffmpeg")
     if not ffmpeg_path:
         log("❌ FFmpeg not found on this system.")
+        current_platform = platform.system().lower()
+        if current_platform == "windows":
+            log("To install FFmpeg on Windows:\n"
+                "Option 1: Download from https://ffmpeg.org/download.html, extract, and add the bin folder to your PATH environment variable.\n"
+                "Option 2: If you have winget, run:\n"
+                "    winget install Gyan.FFmpeg")
+        elif current_platform == "linux":
+            log("To install FFmpeg on Linux, run:\n"
+                "sudo apt update && sudo apt install -y ffmpeg")
+        elif current_platform == "darwin":
+            log("To install FFmpeg on macOS, run:\n"
+                "brew install ffmpeg")
+        else:
+            log("Please refer to https://ffmpeg.org/download.html for installation instructions for your platform.")
         return False
 
     try:

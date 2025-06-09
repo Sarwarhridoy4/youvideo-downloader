@@ -9,8 +9,10 @@ from PyQt6.QtGui import QMovie, QIcon
 from downloader.yt_downloader import get_formats, download_and_merge
 import os
 from downloader.ffmpeg_utils import ensure_ffmpeg
+from PyQt6.QtWidgets import QApplication
 # Ensure the icon path is correct
 icon_path = os.path.join(os.path.dirname(__file__), "..", "assets", "icons", "appicon.png")
+gif_path = os.path.join(os.path.dirname(__file__), "..", "assets", "icons", "spinner.gif")
 
 class DownloadThread(QThread):
     progress = pyqtSignal(int)
@@ -56,7 +58,7 @@ class SpinnerDialog(QDialog):
         layout.addWidget(self.label)
 
         self.spinner = QLabel(self)
-        movie = QMovie("../assets/icons/spinner.gif")
+        movie = QMovie(gif_path)
         self.spinner.setMovie(movie)
         movie.start()
         layout.addWidget(self.spinner)
@@ -67,8 +69,9 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("YouVideo Downloader")
         self.setWindowIcon(QIcon(icon_path))  # Ensure the icon path is correct
+        QApplication.setWindowIcon(QIcon(icon_path))  # Taskbar icon
         self.setMinimumSize(700, 500)
-        
+
         self.resize(700, 500)
         self.setup_ui()
         self.apply_theme("assets/qss/dark.qss")

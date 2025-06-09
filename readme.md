@@ -3,6 +3,7 @@
 ## Features
 
 - Download YouTube videos by specifying the URL.
+- Support Facebook and maybe others platform Also.(Youtube and Facebook Tested)
 - Choose from multiple available video/audio formats.
 - Select output folder to save downloads.
 - Real-time progress bar showing download and conversion progress.
@@ -89,6 +90,7 @@ python main.py
 ## বৈশিষ্ট্যসমূহ
 
 - ইউটিউব ভিডিও ডাউনলোড করার সুবিধা।
+- ফেসবুকসহ অন্যান্য প্ল্যাটফর্ম থেকেও ভিডিও ডাউনলোড করার সুবিধা (ইউটিউব ও ফেসবুক পরীক্ষিত)।
 - বিভিন্ন ভিডিও/অডিও ফরম্যাট থেকে পছন্দ করার অপশন।
 - ডাউনলোড সংরক্ষণের জন্য ফোল্ডার নির্বাচন।
 - ডাউনলোড এবং কনভার্সনের অগ্রগতি দেখানো প্রগ্রেস বার।

@@ -45,6 +45,7 @@ class SpinnerDialog(QDialog):
     def __init__(self, message="Loading..."):
         super().__init__()
         self.setWindowTitle("Please wait")
+        self.setWindowIcon(QIcon(icon_path))  # Ensure the icon path is correct
         self.setModal(True)
         self.setFixedSize(200, 150)
 
@@ -66,7 +67,8 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("YouVideo Downloader")
         self.setWindowIcon(QIcon(icon_path))  # Ensure the icon path is correct
-        # self.setWindowIconVisible(True)
+        self.setMinimumSize(700, 500)
+        
         self.resize(700, 500)
         self.setup_ui()
         self.apply_theme("assets/qss/dark.qss")
@@ -154,7 +156,13 @@ class MainWindow(QMainWindow):
             self.show_error("Missing URL", "Please enter a YouTube URL.")
             return
         try:
+            # Use a GIF image as loader (e.g., gig.gif in assets/icons)
+            gig_gif_path = os.path.join(os.path.dirname(__file__), "..", "assets", "icons", "spinner.gif")
             self.spinner_dialog = SpinnerDialog("Loading formats...")
+            # Replace spinner GIF with gig GIF
+            movie = QMovie(gig_gif_path)
+            self.spinner_dialog.spinner.setMovie(movie)
+            movie.start()
             self.spinner_dialog.show()
             QTimer.singleShot(100, lambda: self._fetch_formats(url))
         except Exception as e:

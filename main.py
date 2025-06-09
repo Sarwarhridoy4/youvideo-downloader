@@ -15,11 +15,26 @@ Execution:
     instantiates the MainWindow, displays it, and starts the event loop.
 """
 from PyQt6.QtWidgets import QApplication
+from ui.welcome_screen import WelcomeScreen
 from ui.main_window import MainWindow
 import sys
 
-if __name__ == "__main__":
+def main():
+    """
+    Initializes and runs the main application.
+
+    Creates a QApplication instance, displays a welcome screen, and upon user continuation,
+    closes the welcome screen and shows the main application window. Exits the application
+    when the main event loop finishes.
+    """
     app = QApplication(sys.argv)
-    window = MainWindow()
-    window.show()
+    main_win = MainWindow()
+    def show_main():
+        welcome.close()
+        main_win.show()
+    welcome = WelcomeScreen(on_continue=show_main)
+    welcome.show()
     sys.exit(app.exec())
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,49 @@
+/*
+    welcome.qss - Qt Style Sheet for Welcome Screen
+
+    Styles defined:
+    - QWidget: Sets the base background color, text color, font, and rounded corners for all widgets.
+    - QLabel#title: Customizes the main title label with white color, large bold font, and letter spacing.
+    - QLabel#subtitle: Styles the subtitle label with lighter color, smaller font, and bottom margin.
+    - QPushButton: Styles all push buttons with dark background, white text, rounded corners, padding, and margin.
+    - QPushButton:hover: Changes button background on hover for visual feedback.
+    - QPushButton:pressed: Highlights button with red background and white text when pressed.
+
+    Purpose:
+    Provides a modern, dark-themed appearance for the welcome screen of the application, 
+    ensuring a consistent and visually appealing user interface.
+*/
+QWidget {
+    background-color: #0f0f0f;
+    color: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+    border-radius: 12px;
+}
+QLabel#title {
+    color: #fff;
+    font-size: 28px;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+QLabel#subtitle {
+    color: #bbb;
+    font-size: 15px;
+    margin-bottom: 18px;
+}
+QPushButton {
+    background-color: #272727;
+    color: #ffffff;
+    font-size: 17px;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 32px;
+    margin-top: 18px;
+    font-weight: 500;
+}
+QPushButton:hover {
+    background-color: #3e3e3e;
+}
+QPushButton:pressed {
+    background-color: #ff0000;
+    color: white;
+}

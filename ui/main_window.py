@@ -119,7 +119,7 @@ class MainWindow(QMainWindow):
         self.apply_theme("assets/qss/dark.qss")
 
         # FFmpeg check
-        if not ensure_ffmpeg(self.log_window.append):
+        if not ensure_ffmpeg(self.log_window.append, parent=self):
             self.show_error("FFmpeg Missing", "FFmpeg is not installed or not in PATH.")
             self.download_btn.setEnabled(False)
             self.load_formats_btn.setEnabled(False)

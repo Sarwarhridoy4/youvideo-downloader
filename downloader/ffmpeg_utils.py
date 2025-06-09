@@ -1,7 +1,10 @@
 import subprocess
 import platform
 import shutil
-from PyQt6.QtWidgets import QMessageBox
+from PyQt6.QtWidgets import QProgressDialog, QApplication, QMessageBox
+from PyQt6.QtCore import Qt
+import sys
+import os
 
 
 def is_ffmpeg_available():
@@ -43,7 +46,17 @@ def prompt_user_install_ffmpeg():
     return msg_box.exec() == QMessageBox.StandardButton.Yes
 
 
-def ensure_ffmpeg(log_signal=None):
+class InstallProgressDialog(QProgressDialog):
+    def __init__(self, title="Installing FFmpeg...", parent=None):
+        super().__init__("Installing FFmpeg, please wait...", None, 0, 0, parent)
+        self.setWindowTitle(title)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
+        self.setCancelButton(None)
+        self.setMinimumDuration(0)
+        self.setValue(0)
+
+
+def ensure_ffmpeg(log_signal=None, parent=None):
     """
     Ensures that FFmpeg is installed and available on the system.
 
@@ -79,13 +92,22 @@ def ensure_ffmpeg(log_signal=None):
             elif current_platform == "darwin":
                 log("Please install FFmpeg manually with:\n"
                     "brew install ffmpeg")
-            else:
-                log("Please refer to https://ffmpeg.org/download.html for installation instructions for your platform.")
             return False
 
         current_platform = platform.system().lower()
-        if current_platform == "windows":
-            try:
+        progress_dialog = QProgressDialog("Installing FFmpeg, please wait...", None, 0, 0, parent)
+        progress_dialog.setWindowTitle("FFmpeg Installation")
+        progress_dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
+        progress_dialog.setCancelButton(None)
+        progress_dialog.setMinimumDuration(0)
+        progress_dialog.setValue(0)
+        progress_dialog.show()
+        QApplication.processEvents()
+
+        install_success = False
+        error_msg = ""
+        try:
+            if current_platform == "windows":
                 result = subprocess.run(
                     ["winget", "--version"],
                     capture_output=True,
@@ -93,51 +115,62 @@ def ensure_ffmpeg(log_signal=None):
                 )
                 if result.returncode == 0:
                     log("Attempting to install FFmpeg using winget...")
+                    progress_dialog.setLabelText("Downloading and installing FFmpeg via winget...")
+                    QApplication.processEvents()
                     try:
                         subprocess.run(
                             ["winget", "install", "--id", "Gyan.FFmpeg", "-e", "--accept-package-agreements", "--accept-source-agreements"],
                             check=True
                         )
-                        log("FFmpeg installed successfully via winget. Please restart the application if needed.")
-                        return True
+                        install_success = True
                     except Exception as e:
-                        log(f"Failed to install FFmpeg via winget: {e}")
-                        return False
+                        error_msg = f"Failed to install FFmpeg via winget: {e}"
                 else:
-                    log("winget is not available on your system.\n"
-                        "Please install winget from https://github.com/microsoft/winget-cli/releases or install FFmpeg manually:\n"
-                        "Download from https://ffmpeg.org/download.html, extract, and add the bin folder to your PATH environment variable.")
-                    return False
-            except FileNotFoundError:
-                log("winget is not found on your system.\n"
-                    "Please install winget from https://github.com/microsoft/winget-cli/releases or install FFmpeg manually:\n"
-                    "Download from https://ffmpeg.org/download.html, extract, and add the bin folder to your PATH environment variable.")
-                return False
-        elif current_platform == "linux":
-            log("Attempting to install FFmpeg using apt...")
-            try:
-                subprocess.run(["sudo", "apt", "update"], check=True)
-                subprocess.run(["sudo", "apt", "install", "-y", "ffmpeg"], check=True)
-                log("FFmpeg installed successfully via apt.")
-                return True
-            except Exception as e:
-                log(f"Failed to install FFmpeg via apt: {e}\n"
-                    "You may need to install it manually with:\n"
-                    "sudo apt update && sudo apt install -y ffmpeg")
-                return False
-        elif current_platform == "darwin":
-            log("Attempting to install FFmpeg using Homebrew...")
-            try:
-                subprocess.run(["brew", "install", "ffmpeg"], check=True)
-                log("FFmpeg installed successfully via Homebrew.")
-                return True
-            except Exception as e:
-                log(f"Failed to install FFmpeg via Homebrew: {e}\n"
-                    "You may need to install it manually with:\n"
-                    "brew install ffmpeg")
-                return False
+                    error_msg = "winget is not available on your system."
+            elif current_platform == "linux":
+                log("Attempting to install FFmpeg using apt...")
+                progress_dialog.setLabelText("Downloading and installing FFmpeg via apt...")
+                QApplication.processEvents()
+                try:
+                    subprocess.run(["sudo", "apt", "update"], check=True)
+                    subprocess.run(["sudo", "apt", "install", "-y", "ffmpeg"], check=True)
+                    install_success = True
+                except Exception as e:
+                    error_msg = f"Failed to install FFmpeg via apt: {e}"
+            elif current_platform == "darwin":
+                log("Attempting to install FFmpeg using Homebrew...")
+                progress_dialog.setLabelText("Downloading and installing FFmpeg via Homebrew...")
+                QApplication.processEvents()
+                try:
+                    subprocess.run(["brew", "install", "ffmpeg"], check=True)
+                    install_success = True
+                except Exception as e:
+                    error_msg = f"Failed to install FFmpeg via Homebrew: {e}"
+            else:
+                error_msg = "Unsupported platform for automatic installation."
+        finally:
+            progress_dialog.close()
+
+        if install_success:
+            reply = QMessageBox.question(
+                parent,
+                "FFmpeg Installed",
+                "FFmpeg was installed successfully!\n\nWould you like to restart the application now?",
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
+            )
+            if reply == QMessageBox.StandardButton.Yes:
+                # Close the current app before starting a new one
+                QApplication.quit()
+                # Start a new process with the same Python executable and script
+                subprocess.Popen([sys.executable] + sys.argv)
+                sys.exit(0)
+            return False  # App will restart or user chose not to
         else:
-            log("Please refer to https://ffmpeg.org/download.html for installation instructions for your platform.")
+            QMessageBox.critical(
+                parent,
+                "FFmpeg Installation Failed",
+                f"Automatic installation failed.\n\n{error_msg}\n\nPlease install FFmpeg manually."
+            )
             return False
 
     try:

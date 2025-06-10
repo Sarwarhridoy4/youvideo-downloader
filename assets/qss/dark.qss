@@ -22,54 +22,73 @@
         * Chunk: Red progress indicator (#ff0000), with spacing between chunks.
 
     This stylesheet ensures a modern, visually consistent dark appearance across the application's UI elements.
+    Neumorphism-inspired look is achieved using gradients and border effects (no shadow properties, as QSS does not support them).
 */
 QMainWindow {
     background-color: #0f0f0f;
     color: #ffffff;
     font-family: 'Segoe UI', sans-serif;
+    border-radius: 14px;
+    border: 1px solid #18191c;
+}
+
+QWidget {
+    background-color: #0f0f0f;
+    color: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+    border-radius: 14px;
 }
 
 QPushButton {
-    background-color: #272727;
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #23242a, stop:1 #18191c);
     color: #ffffff;
-    padding: 8px;
-    border: none;
-    border-radius: 6px;
+    padding: 10px 24px;
+    border: 2px solid #23242a;
+    border-radius: 10px;
     font-weight: 500;
+    font-size: 16px;
+    outline: none;
 }
 
 QPushButton:hover {
-    background-color: #3e3e3e;
+    background-color: #23242a;
+    color: #ff5e62;
+    border: 2px solid #ff5e62;
 }
 
 QPushButton:pressed {
-    background-color: #ff0000;
-    color: white;
+    background-color: #18191c;
+    color: #ff0000;
+    border: 2px solid #ff0000;
 }
 
 QLineEdit, QComboBox, QTextEdit {
-    background-color: #1e1e1e;
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #191a1d, stop:1 #23242a);
     color: #ffffff;
-    border: 1px solid #303030;
-    border-radius: 4px;
-    padding: 6px;
+    border: 2px solid #23242a;
+    border-radius: 8px;
+    padding: 8px;
+    font-size: 15px;
 }
 
 QLabel {
     color: #ffffff;
     font-weight: 400;
+    font-size: 15px;
 }
 
 QProgressBar {
-    background-color: #1e1e1e;
-    border: 1px solid #303030;
-    border-radius: 4px;
+    background-color: #18191c;
+    border: 2px solid #23242a;
+    border-radius: 8px;
     text-align: center;
     color: white;
+    height: 20px;
+    font-size: 15px;
 }
 
 QProgressBar::chunk {
-    background-color: #ff0000;
-    width: 10px;
-    margin: 1px;
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff5e62, stop:1 #ff0000);
+    border-radius: 8px;
+    margin: 2px;
 }

@@ -54,13 +54,52 @@ class InstallProgressDialog(QProgressDialog):
         self.setCancelButton(None)
         self.setMinimumDuration(0)
         self.setValue(0)
-        # Load style from assets/qss/progress.qss
+        # Load neomorphism style from assets/qss/progress.qss
         qss_path = os.path.join(os.path.dirname(__file__), "..", "assets", "qss", "progress.qss")
         try:
             with open(qss_path, "r", encoding="utf-8") as f:
                 self.setStyleSheet(f.read())
         except Exception as e:
             print(f"Could not load progress.qss: {e}")
+
+def apply_neumorphism_popup_style(widget):
+    # Neumorphism style for QMessageBox and popups
+    qss = """
+    QMessageBox, QDialog {
+        background-color: #18191c;
+        color: #fff;
+        border-radius: 16px;
+        border: 2px solid #23242a;
+        font-size: 16px;
+        font-family: 'Segoe UI', sans-serif;
+        padding: 16px;
+    }
+    QMessageBox QLabel, QDialog QLabel {
+        color: #fff;
+        font-size: 16px;
+    }
+    QMessageBox QPushButton, QDialog QPushButton {
+        background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #23242a, stop:1 #18191c);
+        color: #fff;
+        border: 2px solid #23242a;
+        border-radius: 10px;
+        padding: 8px 28px;
+        font-size: 15px;
+        font-weight: 500;
+        margin: 8px 12px;
+    }
+    QMessageBox QPushButton:hover, QDialog QPushButton:hover {
+        background-color: #23242a;
+        color: #ff5e62;
+        border: 2px solid #ff5e62;
+    }
+    QMessageBox QPushButton:pressed, QDialog QPushButton:pressed {
+        background-color: #18191c;
+        color: #ff0000;
+        border: 2px solid #ff0000;
+    }
+    """
+    widget.setStyleSheet(qss)
 
 
 def ensure_ffmpeg(log_signal=None, parent=None):
@@ -102,12 +141,8 @@ def ensure_ffmpeg(log_signal=None, parent=None):
             return False
 
         current_platform = platform.system().lower()
-        progress_dialog = QProgressDialog("Installing FFmpeg, please wait...", None, 0, 0, parent)
-        progress_dialog.setWindowTitle("FFmpeg Installation")
-        progress_dialog.setWindowModality(Qt.WindowModality.ApplicationModal)
-        progress_dialog.setCancelButton(None)
-        progress_dialog.setMinimumDuration(0)
-        progress_dialog.setValue(0)
+        progress_dialog = InstallProgressDialog(parent=parent)
+        progress_dialog.setLabelText("Installing FFmpeg, please wait...")
         progress_dialog.show()
         QApplication.processEvents()
 
@@ -158,28 +193,30 @@ def ensure_ffmpeg(log_signal=None, parent=None):
         finally:
             progress_dialog.close()
 
+        # Neumorphism style for popups
+        msgbox_parent = parent if parent else QApplication.activeWindow()
         if install_success:
-            reply = QMessageBox.question(
-                parent,
-                "FFmpeg Installed",
-                "FFmpeg was installed successfully!\n\nWould you like to restart the application now?",
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
-            )
+            msg = QMessageBox(msgbox_parent)
+            msg.setIcon(QMessageBox.Icon.Information)
+            msg.setWindowTitle("FFmpeg Installed")
+            msg.setText("FFmpeg was installed successfully!\n\nWould you like to restart the application now?")
+            msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
+            apply_neumorphism_popup_style(msg)
+            reply = msg.exec()
             if reply == QMessageBox.StandardButton.Yes:
-                # Close the current app before starting a new one
                 QApplication.quit()
-                # Start a new process with the same Python executable and script
                 subprocess.Popen([sys.executable] + sys.argv)
                 sys.exit(0)
-            return False  # App will restart or user chose not to
-        else:
-            QMessageBox.critical(
-                parent,
-                "FFmpeg Installation Failed",
-                f"Automatic installation failed.\n\n{error_msg}\n\nPlease install FFmpeg manually."
-            )
             return False
-
+        else:
+            msg = QMessageBox(msgbox_parent)
+            msg.setIcon(QMessageBox.Icon.Critical)
+            msg.setWindowTitle("FFmpeg Installation Failed")
+            msg.setText(f"Automatic installation failed.\n\n{error_msg}\n\nPlease install FFmpeg manually.")
+            msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+            apply_neumorphism_popup_style(msg)
+            msg.exec()
+            return False
     try:
         result = subprocess.run(
             ["ffmpeg", "-version"],

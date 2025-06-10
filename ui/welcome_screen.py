@@ -26,7 +26,7 @@ class WelcomeScreen(QWidget):
         super().__init__()
         self.setWindowTitle("Welcome - YouVideo Downloader")
         self.setWindowIcon(QIcon(icon_path))
-        self.setFixedSize(540, 400)
+        self.setFixedSize(640, 400)
 
         # Load and apply QSS style from assets/qss/welcome.qss
         qss_path = os.path.join(os.path.dirname(__file__), "..", "assets", "qss", "welcome.qss")

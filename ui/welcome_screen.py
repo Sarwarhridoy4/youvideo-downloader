@@ -26,7 +26,7 @@ class WelcomeScreen(QWidget):
         super().__init__()
         self.setWindowTitle("Welcome - YouVideo Downloader")
         self.setWindowIcon(QIcon(icon_path))
-        self.setFixedSize(420, 320)
+        self.setFixedSize(540, 400)
 
         # Load and apply QSS style from assets/qss/welcome.qss
         qss_path = os.path.join(os.path.dirname(__file__), "..", "assets", "qss", "welcome.qss")
@@ -54,7 +54,7 @@ class WelcomeScreen(QWidget):
         layout.addWidget(title)
 
         # Subtitle
-        subtitle = QLabel("Download YouTube videos easily in your favorite format.\nFast, simple, and free.")
+        subtitle = QLabel("Download YouTube,Facebook and Others videos easily in your favorite format.\nFast, simple, and free.")
         subtitle.setObjectName("subtitle")
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(subtitle)

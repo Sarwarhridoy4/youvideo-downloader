@@ -118,7 +118,13 @@ class MainWindow(QMainWindow):
 
         self.resize(700, 500)
         self.setup_ui()
-        self.apply_theme("assets/qss/dark.qss")
+        qss_path = resource_path("assets/qss/dark.qss")
+        try:
+            with open(qss_path, "r", encoding="utf-8") as f:
+                self.setStyleSheet(f.read())
+        except Exception as e:
+            print(f"Could not load dark.qss: {e}")
+        # self.apply_theme("assets/qss/dark.qss")
 
         # FFmpeg check
         if not ensure_ffmpeg(self.log_window.append, parent=self):
@@ -183,10 +189,11 @@ class MainWindow(QMainWindow):
 
     def switch_theme(self):
         if self.current_theme == "dark":
-            self.apply_theme("assets/qss/light.qss")
+            self.apply_theme(resource_path("assets/qss/light.qss"))
             self.current_theme = "light"
         else:
-            self.apply_theme("assets/qss/dark.qss")
+            # self.apply_theme("assets/qss/light.qss")
+            self.apply_theme(resource_path("assets/qss/dark.qss"))
             self.current_theme = "dark"
 
     def apply_theme(self, theme_path):

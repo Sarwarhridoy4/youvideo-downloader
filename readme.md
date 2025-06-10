@@ -248,15 +248,6 @@ youvideo-downloader/
 2. Run the installer and follow the setup instructions.
 3. Launch the application and start downloading!
 
----
-
-## 📸 Screenshots
-
-| Light Mode | Dark Mode |
-|------------|-----------|
-| ![Light](docs/screenshots/light_mode.png) | ![Dark](docs/screenshots/dark_mode.png) |
-
----
 
 ## ⚙️ Requirements (Built-in)
 

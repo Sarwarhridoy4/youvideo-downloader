@@ -10,9 +10,11 @@ from downloader.yt_downloader import get_formats, download_and_merge
 import os
 from downloader.ffmpeg_utils import ensure_ffmpeg
 from PyQt6.QtWidgets import QApplication
+
+from utils.pathfinder import resource_path
 # Ensure the icon path is correct
-icon_path = os.path.join(os.path.dirname(__file__), "..", "assets", "icons", "appicon.png")
-gif_path = os.path.join(os.path.dirname(__file__), "..", "assets", "icons", "spinner.gif")
+icon_path = resource_path("../assets/icons/appicon.png")
+gif_path = resource_path("../assets/icons/spinner.gif")
 
 class DownloadThread(QThread):
     progress = pyqtSignal(int)
@@ -202,7 +204,7 @@ class MainWindow(QMainWindow):
             return
         try:
             # Use a GIF image as loader (e.g., gig.gif in assets/icons)
-            gig_gif_path = os.path.join(os.path.dirname(__file__), "..", "assets", "icons", "spinner.gif")
+            gig_gif_path = resource_path("assets/icons/spinner.gif")
             self.spinner_dialog = SpinnerDialog("Loading formats...")
             # Replace spinner GIF with gig GIF
             movie = QMovie(gig_gif_path)

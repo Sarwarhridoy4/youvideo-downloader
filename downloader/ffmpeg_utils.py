@@ -4,7 +4,8 @@ import shutil
 from PyQt6.QtWidgets import QProgressDialog, QApplication, QMessageBox
 from PyQt6.QtCore import Qt
 import sys
-import os
+
+from utils.pathfinder import resource_path
 
 
 def is_ffmpeg_available():
@@ -55,7 +56,7 @@ class InstallProgressDialog(QProgressDialog):
         self.setMinimumDuration(0)
         self.setValue(0)
         # Load neomorphism style from assets/qss/progress.qss
-        qss_path = os.path.join(os.path.dirname(__file__), "..", "assets", "qss", "progress.qss")
+        qss_path = resource_path("assets/qss/progress.qss")
         try:
             with open(qss_path, "r", encoding="utf-8") as f:
                 self.setStyleSheet(f.read())

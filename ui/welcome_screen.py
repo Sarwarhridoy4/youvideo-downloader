@@ -3,7 +3,9 @@ from PyQt6.QtGui import QPixmap, QIcon
 from PyQt6.QtCore import Qt
 import os
 
-icon_path = os.path.join(os.path.dirname(__file__), "..", "assets", "icons", "appicon.png")
+from utils.pathfinder import resource_path
+
+icon_path = resource_path("assets/icons/appicon.png")
 
 class WelcomeScreen(QWidget):
     """
@@ -29,7 +31,7 @@ class WelcomeScreen(QWidget):
         self.setFixedSize(640, 400)
 
         # Load and apply QSS style from assets/qss/welcome.qss
-        qss_path = os.path.join(os.path.dirname(__file__), "..", "assets", "qss", "welcome.qss")
+        qss_path = resource_path("assets/qss/welcome.qss")
         try:
             with open(qss_path, "r", encoding="utf-8") as f:
                 self.setStyleSheet(f.read())

@@ -235,6 +235,46 @@ youvideo-downloader/
 └── readme.md                    # This README file
 ```
 
+
+---
+
+## 🖥️ Download & Install
+
+**Windows users can download the latest version here:**
+
+[➡️ Download YouVideo_Downloader_setup.exe (v1.0)](https://github.com/Sarwarhridoy4/youvideo-downloader/releases/download/1.0/YouVideo_Downloader_setup.exe)
+
+1. Click the link above to download the installer.
+2. Run the installer and follow the setup instructions.
+3. Launch the application and start downloading!
+
+---
+
+## 📸 Screenshots
+
+| Light Mode | Dark Mode |
+|------------|-----------|
+| ![Light](docs/screenshots/light_mode.png) | ![Dark](docs/screenshots/dark_mode.png) |
+
+---
+
+## ⚙️ Requirements (Built-in)
+
+You don't need to install Python or FFmpeg separately. The installer includes:
+
+- Python runtime
+- Embedded FFmpeg binary
+- Pre-packaged `yt-dlp`
+
+---
+
+## 📤 Feedback & Issues
+
+If you encounter bugs or want to suggest features, please [open an issue](https://github.com/Sarwarhridoy4/youvideo-downloader/issues).
+
+---
+
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

@@ -179,13 +179,17 @@ python main.py
 
 ---
 
+## Screenshot Welcome
+
+![YouVideo Downloader Screenshot](./assets/screenshot/welcome.png)
+
 ## Screenshot(Dark) Default
 
-![YouVideo Downloader Screenshot](./assets/screenshot/Screenshot_dark.png)
+![YouVideo Downloader Screenshot](./assets/screenshot/dark.png)
 
 ## Screenshot(Light)
 
-![YouVideo Downloader Screenshot](./assets/screenshot/Screenshot_light.png)
+![YouVideo Downloader Screenshot](./assets/screenshot/light.png)
 
 ## Contributing
 

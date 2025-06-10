@@ -13,8 +13,8 @@ from PyQt6.QtWidgets import QApplication
 
 from utils.pathfinder import resource_path
 # Ensure the icon path is correct
-icon_path = resource_path("../assets/icons/appicon.png")
-gif_path = resource_path("../assets/icons/spinner.gif")
+icon_path = resource_path("assets/icons/appicon.png")
+gif_path = resource_path("assets/icons/spinner.gif")
 
 class DownloadThread(QThread):
     progress = pyqtSignal(int)

@@ -2,9 +2,8 @@
 
 ## Features
 
-- Download YouTube videos by specifying the URL.
-- Support Facebook and maybe others platform Also.(Youtube and Facebook Tested)
-- Make it detect _ffmpeg_ and install automatic if not installed already regardless of OS platform
+- Download YouTube, Facebook, and other videos by specifying the URL.
+- Detects if _ffmpeg_ is installed; if not, offers automatic installation for any OS.
 - Choose from multiple available video/audio formats.
 - Select output folder to save downloads.
 - Real-time progress bar showing download and conversion progress.
@@ -12,6 +11,8 @@
 - Switch between dark and light themes inspired by YouTube.
 - Handles downloading and merging audio/video formats automatically.
 - Built with PyQt6 for a sleek desktop experience.
+- Modern neumorphism-inspired UI with separate QSS files for each theme and dialog.
+- Welcome screen before main window for a friendly start.
 
 ---
 
@@ -90,16 +91,18 @@ python main.py
 
 ## বৈশিষ্ট্যসমূহ
 
-- ইউটিউব ভিডিও ডাউনলোড করার সুবিধা।
-- ফেসবুকসহ অন্যান্য প্ল্যাটফর্ম থেকেও ভিডিও ডাউনলোড করার সুবিধা (ইউটিউব ও ফেসবুক পরীক্ষিত)।
-- _ffmpeg_ ইনস্টল আছে কিনা স্বয়ংক্রিয়ভাবে শনাক্ত করে এবং না থাকলে যেকোনো অপারেটিং সিস্টেমে স্বয়ংক্রিয়ভাবে ইনস্টল করার ব্যবস্থা।
-- বিভিন্ন ভিডিও/অডিও ফরম্যাট থেকে পছন্দ করার অপশন।
-- ডাউনলোড সংরক্ষণের জন্য ফোল্ডার নির্বাচন।
-- ডাউনলোড এবং কনভার্সনের অগ্রগতি দেখানো প্রগ্রেস বার।
-- ডাউনলোড স্ট্যাটাস এবং মেসেজ দেখানোর লগ উইন্ডো।
-- ইউটিউব অনুপ্রাণিত ডার্ক ও লাইট থিম পরিবর্তন করার সুবিধা।
-- অডিও ও ভিডিও ফরম্যাট স্বয়ংক্রিয়ভাবে ডাউনলোড ও মার্জ করার ব্যবস্থা।
-- PyQt6 ব্যবহার করে একটি আধুনিক ডেস্কটপ অ্যাপ্লিকেশন।
+- ইউটিউব ভিডিও ডাউনলোড করার সুবিধা。
+- ফেসবুকসহ অন্যান্য প্ল্যাটফর্ম থেকেও ভিডিও ডাউনলোড করার সুবিধা (ইউটিউব ও ফেসবুক পরীক্ষিত)。
+- _ffmpeg_ ইনস্টল আছে কিনা স্বয়ংক্রিয়ভাবে শনাক্ত করে এবং না থাকলে যেকোনো অপারেটিং সিস্টেমে স্বয়ংক্রিয়ভাবে ইনস্টল করার ব্যবস্থা。
+- বিভিন্ন ভিডিও/অডিও ফরম্যাট থেকে পছন্দ করার অপশন。
+- ডাউনলোড সংরক্ষণের জন্য ফোল্ডার নির্বাচন。
+- ডাউনলোড এবং কনভার্সনের অগ্রগতি দেখানো প্রগ্রেস বার。
+- ডাউনলোড স্ট্যাটাস এবং মেসেজ দেখানোর লগ উইন্ডো。
+- ইউটিউব অনুপ্রাণিত ডার্ক ও লাইট থিম পরিবর্তন করার সুবিধা。
+- অডিও ও ভিডিও ফরম্যাট স্বয়ংক্রিয়ভাবে ডাউনলোড ও মার্জ করার ব্যবস্থা。
+- PyQt6 ব্যবহার করে একটি আধুনিক ডেস্কটপ অ্যাপ্লিকেশন。
+- আলাদা QSS ফাইলসহ আধুনিক নিউমরফিজম অনুপ্রাণিত UI প্রতিটি থিম এবং ডায়ালগের জন্য。
+- প্রধান উইন্ডোর আগে স্বাগতম স্ক্রীন, বন্ধুত্বপূর্ণ শুরু করার জন্য।
 
 ---
 
@@ -110,6 +113,7 @@ python main.py
 - Python 3.8 বা তার উপরে
 - `yt-dlp` (ইউটিউব ডাউনলোডার ব্যাকএন্ড)
 - PyQt6
+- ffmpeg
 
 ### ধাপসমূহ
 
@@ -138,8 +142,8 @@ pip install -r requirements.txt
 
 #### Windows
 
-- [ffmpeg.org/download.html](https://ffmpeg.org/download.html) থেকে সর্বশেষ স্ট্যাটিক বিল্ড ডাউনলোড করুন।
-- জিপ ফাইলটি এক্সট্রাক্ট করুন।
+- [ffmpeg.org/download.html](https://ffmpeg.org/download.html) থেকে সর্বশেষ স্ট্যাটিক বিল্ড ডাউনলোড করুন。
+- জিপ ফাইলটি এক্সট্রাক্ট করুন。
 - এক্সট্রাক্ট করা ফোল্ডারের ভিতরের `bin` ফোল্ডারটি আপনার সিস্টেম `PATH`-এ যোগ করুন।
 
 #### Windows (বিকল্প: winget ব্যবহার করে)

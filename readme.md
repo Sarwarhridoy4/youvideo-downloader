@@ -248,10 +248,21 @@ youvideo-downloader/
   </a>
 </p>
 
+**Linux users can download the latest version here:**
+
+<p align="center">
+  <a href="https://github.com/Sarwarhridoy4/youvideo-downloader/releases/download/1.0/YouVideoDownloader-x86_64.AppImage">
+    <img src="https://img.shields.io/badge/Download-YouVideo_Downloader-blue?style=for-the-badge&logo=linux&logoColor=orange" alt="Download YouVideo Downloader">
+  </a>
+</p>
+
+
+
 
 1. Click the link above to download the installer.
 2. Run the installer and follow the setup instructions.
 3. Launch the application and start downloading!
+4. Portable for linux AppImage 
 
 
 ## ⚙️ Requirements (Built-in)

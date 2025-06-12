@@ -15,6 +15,7 @@ from utils.pathfinder import resource_path
 # Ensure the icon path is correct
 icon_path = resource_path("assets/icons/appicon.png")
 gif_path = resource_path("assets/icons/spinner.gif")
+qss_path = resource_path("assets/qss/dark.qss")
 
 class DownloadThread(QThread):
     progress = pyqtSignal(int)
@@ -118,7 +119,7 @@ class MainWindow(QMainWindow):
 
         self.resize(700, 500)
         self.setup_ui()
-        qss_path = resource_path("assets/qss/dark.qss")
+        
         try:
             with open(qss_path, "r", encoding="utf-8") as f:
                 self.setStyleSheet(f.read())
@@ -131,6 +132,11 @@ class MainWindow(QMainWindow):
             self.show_error("FFmpeg Missing", "FFmpeg is not installed or not in PATH.")
             self.download_btn.setEnabled(False)
             self.load_formats_btn.setEnabled(False)
+            try:
+                    with open(qss_path, "r", encoding="utf-8") as f:
+                        self.setStyleSheet(f.read())
+            except Exception as e:
+                    print(f"Could not load dark.qss: {e}")
 
     def setup_ui(self):
         central = QWidget()

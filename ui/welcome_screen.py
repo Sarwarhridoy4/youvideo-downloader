@@ -65,3 +65,12 @@ class WelcomeScreen(QWidget):
         continue_btn = QPushButton("Continue")
         continue_btn.clicked.connect(on_continue)
         layout.addWidget(continue_btn)
+
+        credit_label = QLabel()
+        credit_label.setText(
+        'Made with ❤️ by <a href="https://sarwar-hossain-vert.vercel.app"style="color:#007acc; text-decoration:none;">Sarwar Hossain</a>'
+        )
+        credit_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        credit_label.setOpenExternalLinks(True)  # so link opens in browser
+        credit_label.setObjectName("credit_label")
+        layout.addWidget(credit_label)

@@ -49,3 +49,19 @@ QPushButton:pressed {
     color: #ff0000;
     border: 2px solid #ff0000;
 }
+#credit_label {
+    font-size: 18px;
+    color: #888888;
+    margin-top: 2rem;
+    margin-bottom:2rem;
+}
+#credit_label:hover {
+    color: #444444;
+}
+#credit_label a {
+    color: #007acc;
+    text-decoration: none;
+}
+#credit_label a:hover {
+    text-decoration: underline;
+}

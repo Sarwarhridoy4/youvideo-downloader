@@ -87,8 +87,8 @@ Name=YouVideoDownloader
 Exec=YouVideoDownloader
 Icon=YouVideoDownloader
 Categories=Utility;
-And YouVideoDownloader.png is placed in the same directory or in AppDir.
 ```
+>And YouVideoDownloader.png is placed in the same directory or in AppDir.
 Now return back to root of this project and run:
 
 ```bash

@@ -287,6 +287,6 @@ If you encounter bugs or want to suggest features, please [open an issue](https:
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 > For comlpile guide
-[HOW TO cOPMILE](compile_guide.md)
+[HOW TO COPMILE](compile_guide.md)
 
 Made with ❤️ by Sarwar Hossain

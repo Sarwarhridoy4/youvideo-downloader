@@ -265,6 +265,12 @@ youvideo-downloader/
 4. Portable for linux AppImage 
 
 
+## Issues
+
+- ffmpeg auto install not working as expected in linux and maybe in mac due to not getting the super user privillage
+- install manually in this case will works fine
+- command are given in readme already
+
 ## ⚙️ Requirements (Built-in)
 
 You don't need to install Python or FFmpeg separately. The installer includes:

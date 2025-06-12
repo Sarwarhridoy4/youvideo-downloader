@@ -78,7 +78,7 @@ Build the AppDir structure:
 mkdir -p AppDir/usr/bin
 cp -r dist/YouVideoDownloader AppDir/usr/bin/
 ```
-go to AppDir and create a file named YouVideoDownloader.desktop and paste it in created file
+go to AppDir and create a file named `YouVideoDownloader.desktop` and paste it in created file
 
 ```bash
 [Desktop Entry]

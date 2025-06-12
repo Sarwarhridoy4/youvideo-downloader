@@ -16,8 +16,11 @@ Execution:
 """
 from PyQt6.QtWidgets import QApplication
 from ui.welcome_screen import WelcomeScreen
+from PyQt6.QtGui import QIcon
 from ui.main_window import MainWindow
 import sys
+
+from utils.pathfinder import resource_path
 
 def main():
     """
@@ -27,7 +30,10 @@ def main():
     closes the welcome screen and shows the main application window. Exits the application
     when the main event loop finishes.
     """
+    # Set the application icon (this will show in the taskbar/dock)
     app = QApplication(sys.argv)
+    app_icon = QIcon(resource_path("assets/icons/appicon.png"))
+    app.setWindowIcon(app_icon)
     main_win = MainWindow()
     def show_main():
         welcome.close()

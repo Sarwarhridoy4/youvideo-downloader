@@ -77,12 +77,27 @@ Build the AppDir structure:
 ```bash
 mkdir -p AppDir/usr/bin
 cp -r dist/YouVideoDownloader AppDir/usr/bin/
-cp YouVideoDownloader.desktop AppDir/
+```
+go to AppDir and create a file named YouVideoDownloader.desktop and paste it in created file
+
+```bash
+[Desktop Entry]
+Type=Application
+Name=YouVideoDownloader
+Exec=YouVideoDownloader
+Icon=YouVideoDownloader
+Categories=Utility;
+And YouVideoDownloader.png is placed in the same directory or in AppDir.
+```
+Now return back to root of this project and run:
+
+```bash
 cp assets/icons/appicon.png AppDir/YouVideoDownloader.png
 ```
-Create AppImage:
-```bash
 
+Create AppImage:
+
+```bash
 ./appimagetool-x86_64.AppImage AppDir
 ```
 > This will generate a file like YouVideoDownloader-x86_64.AppImage.

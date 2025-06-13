@@ -239,7 +239,8 @@ youvideo-downloader/
 
 ## 📽️ Watch the Demo Video
 
-[![Watch the Demo](https://img.icons8.com/ios-filled/500/youtube-play.png)](https://drive.google.com/file/d/1MfvxdM8NGUY02P9VjrEMSlkNO7JptZsE/preview)
+[![Watch the Demo](https://raw.githubusercontent.com/edent/SuperTinyIcons/master/images/svg/youtube.svg)](https://drive.google.com/file/d/1MfvxdM8NGUY02P9VjrEMSlkNO7JptZsE/preview)
+
 
 
 

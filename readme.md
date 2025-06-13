@@ -262,9 +262,9 @@ youvideo-downloader/
 
 ## 🔍Issues
 
-- ffmpeg auto install not working as expected in linux and maybe in mac due to not getting the super user privillage(in compiled version only)
-- install manually in this case will works fine
-- command are given in readme already
+- ffmpeg auto install not working as expected in linux and maybe in mac due to not getting the super user privillage(in compiled version only) (Resolved)
+- install manually in this case will works fine (Resolved)
+- command are given in readme already (Resolved)
 
 ## ⚙️ Requirements (Built-in)
 

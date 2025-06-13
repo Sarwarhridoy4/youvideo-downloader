@@ -1,34 +1,32 @@
 # ui/main_window.py
-from PyQt6.QtWidgets import (
+from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
     QPushButton, QLabel, QLineEdit, QFileDialog, QComboBox,
-    QProgressBar, QTextEdit, QMessageBox, QDialog, QDialogButtonBox
+    QProgressBar, QTextEdit, QMessageBox, QDialog
 )
-from PyQt6.QtCore import Qt, QThread, pyqtSignal, QTimer
-from PyQt6.QtGui import QMovie, QIcon
+from PySide6.QtCore import Qt, QThread, Signal, QTimer
+from PySide6.QtGui import QMovie, QIcon
 from downloader.yt_downloader import get_formats, download_and_merge
 import os
 from downloader.ffmpeg_utils import ensure_ffmpeg
-from PyQt6.QtWidgets import QApplication
-
+from PySide6.QtWidgets import QApplication
 from utils.pathfinder import resource_path
-# Ensure the icon path is correct
+
 icon_path = resource_path("assets/icons/appicon.png")
 gif_path = resource_path("assets/icons/spinner.gif")
 qss_path = resource_path("assets/qss/dark.qss")
 
 class DownloadThread(QThread):
-    progress = pyqtSignal(int)
-    finished = pyqtSignal()
-    error = pyqtSignal(str)
-    log = pyqtSignal(str)
+    progress = Signal(int)
+    finished = Signal()
+    error = Signal(str)
+    log = Signal(str)
 
     def __init__(self, url, format_code, output_path):
         super().__init__()
         self.url = url
         self.format_code = format_code
         self.output_path = output_path
-        
 
     def run(self):
         try:
@@ -50,14 +48,14 @@ class SpinnerDialog(QDialog):
     def __init__(self, message="Loading..."):
         super().__init__()
         self.setWindowTitle("Please wait")
-        self.setWindowIcon(QIcon(icon_path))  # Ensure the icon path is correct
+        self.setWindowIcon(QIcon(icon_path))
         self.setModal(True)
         self.setFixedSize(200, 150)
 
         layout = QVBoxLayout(self)
 
         self.label = QLabel(message, self)
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.label.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.label)
 
         self.spinner = QLabel(self)
@@ -68,75 +66,26 @@ class SpinnerDialog(QDialog):
 
 
 class MainWindow(QMainWindow):
-    """
-    Main application window for the YouVideo Downloader GUI.
-
-    This class provides the main interface for downloading YouTube videos, allowing users to:
-    - Enter a YouTube URL.
-    - Load available video/audio formats for the given URL.
-    - Select an output folder for downloads.
-    - Switch between dark and light themes.
-    - View download progress and logs.
-    - Handle errors and display informational messages.
-
-    Key Features:
-    - Checks for FFmpeg availability on startup and disables download functionality if missing.
-    - Uses a spinner dialog while loading formats.
-    - Supports threaded downloads with real-time progress updates.
-    - Displays logs and download completion information.
-
-    Attributes:
-        url_input (QLineEdit): Input field for the YouTube URL.
-        format_dropdown (QComboBox): Dropdown to select video/audio format.
-        output_label (QLabel): Displays the selected output folder.
-        progress (QProgressBar): Shows download progress.
-        log_window (QTextEdit): Displays logs and messages.
-        load_formats_btn (QPushButton): Button to load available formats.
-        download_btn (QPushButton): Button to start the download.
-        output_path (str): Path to the selected output folder.
-        current_theme (str): Current theme ("dark" or "light").
-        spinner_dialog (SpinnerDialog or None): Dialog shown during format loading.
-
-    Methods:
-        setup_ui(): Initializes and arranges UI widgets.
-        browse_folder(): Opens a dialog to select the output folder.
-        switch_theme(): Switches between dark and light themes.
-        apply_theme(theme_path): Applies a QSS stylesheet from the given path.
-        load_formats(): Loads available formats for the entered URL.
-        _fetch_formats(url): Fetches and populates the format dropdown.
-        show_error(title, message): Displays an error message box.
-        show_info(title, message): Displays an informational message box.
-        download_finished(): Handles actions after download completion.
-        update_progress(percent): Updates the progress bar and logs.
-        download(): Starts the download process in a separate thread.
-    """
     def __init__(self):
         super().__init__()
         self.setWindowTitle("YouVideo Downloader")
-        self.setWindowIcon(QIcon(icon_path))  # Ensure the icon path is correct
-        QApplication.setWindowIcon(QIcon(icon_path))  # Taskbar icon
+        self.setWindowIcon(QIcon(icon_path))
+        QApplication.setWindowIcon(QIcon(icon_path))
         self.setMinimumSize(700, 500)
 
         self.resize(700, 500)
         self.setup_ui()
-        
+
         try:
             with open(qss_path, "r", encoding="utf-8") as f:
                 self.setStyleSheet(f.read())
         except Exception as e:
             print(f"Could not load dark.qss: {e}")
-        # self.apply_theme("assets/qss/dark.qss")
 
-        # FFmpeg check
         if not ensure_ffmpeg(self.log_window.append, parent=self):
             self.show_error("FFmpeg Missing", "FFmpeg is not installed or not in PATH.")
             self.download_btn.setEnabled(False)
             self.load_formats_btn.setEnabled(False)
-            try:
-                    with open(qss_path, "r", encoding="utf-8") as f:
-                        self.setStyleSheet(f.read())
-            except Exception as e:
-                    print(f"Could not load dark.qss: {e}")
 
     def setup_ui(self):
         central = QWidget()
@@ -198,7 +147,6 @@ class MainWindow(QMainWindow):
             self.apply_theme(resource_path("assets/qss/light.qss"))
             self.current_theme = "light"
         else:
-            # self.apply_theme("assets/qss/light.qss")
             self.apply_theme(resource_path("assets/qss/dark.qss"))
             self.current_theme = "dark"
 
@@ -216,11 +164,8 @@ class MainWindow(QMainWindow):
             self.show_error("Missing URL", "Please enter a YouTube URL.")
             return
         try:
-            # Use a GIF image as loader (e.g., gig.gif in assets/icons)
-            gig_gif_path = resource_path("assets/icons/spinner.gif")
             self.spinner_dialog = SpinnerDialog("Loading formats...")
-            # Replace spinner GIF with gig GIF
-            movie = QMovie(gig_gif_path)
+            movie = QMovie(gif_path)
             self.spinner_dialog.spinner.setMovie(movie)
             movie.start()
             self.spinner_dialog.show()

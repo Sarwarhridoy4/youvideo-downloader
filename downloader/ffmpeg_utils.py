@@ -6,9 +6,9 @@ import os
 import tempfile
 import urllib.request
 import zipfile
-from PyQt6.QtWidgets import QApplication, QMessageBox, QProgressDialog
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QFontMetrics
+from PySide6.QtWidgets import QApplication, QMessageBox, QProgressDialog
+from PySide6.QtCore import Qt
+from PySide6.QtGui import QFontMetrics
 from utils.pathfinder import resource_path
 
 
@@ -26,47 +26,150 @@ def detect_linux_package_manager():
     return None
 
 
-def install_ffmpeg_linux(log):
-    package_manager = detect_linux_package_manager()
+# --- Terminal detection and runner for Linux ---
+def detect_linux_terminal():
+    terminals = [
+        "gnome-terminal",
+        "konsole",
+        "xfce4-terminal",
+        "xterm",
+        "lxterminal",
+        "mate-terminal",
+        "tilix",
+        "alacritty",
+    ]
+    for term in terminals:
+        if shutil.which(term):
+            return term
+    return None
+
+
+def run_command_in_linux_terminal(terminal, command, log):
     try:
-        if package_manager == "apt":
-            subprocess.run(["sudo", "apt", "update"], check=True)
-            subprocess.run(["sudo", "apt", "install", "-y", "ffmpeg"], check=True)
-        elif package_manager == "dnf":
-            subprocess.run(["sudo", "dnf", "install", "-y", "ffmpeg"], check=True)
-        elif package_manager == "pacman":
-            subprocess.run(["sudo", "pacman", "-Sy", "--noconfirm", "ffmpeg"], check=True)
+        if terminal in ["gnome-terminal", "mate-terminal", "tilix"]:
+            # Removed exec bash to auto close terminal after done
+            subprocess.Popen([terminal, "--", "bash", "-c", command])
+        elif terminal == "konsole":
+            subprocess.Popen([terminal, "-e", "bash", "-c", command])
+        elif terminal in ["xfce4-terminal", "xterm", "lxterminal"]:
+            subprocess.Popen([terminal, "-e", f"bash -c '{command}'"])
+        elif terminal == "alacritty":
+            subprocess.Popen([terminal, "-e", "bash", "-c", command])
         else:
-            log("Unsupported package manager. Please install FFmpeg manually.")
+            log(f"⚠️ Unsupported Linux terminal: {terminal}")
             return False
-        log("✅ FFmpeg installed successfully.")
+        log(f"🖥️ Running install command in {terminal}...")
         return True
     except Exception as e:
-        log(f"❌ Linux FFmpeg install failed: {e}")
+        log(f"❌ Failed to run command in terminal {terminal}: {e}")
+        return False
+
+
+def install_ffmpeg_linux(log):
+    package_manager = detect_linux_package_manager()
+    if not package_manager:
+        log("Unsupported package manager. Please install FFmpeg manually.")
+        return False
+
+    install_cmd_map = {
+        "apt": "sudo apt update && sudo apt install -y ffmpeg",
+        "dnf": "sudo dnf install -y ffmpeg",
+        "pacman": "sudo pacman -Sy --noconfirm ffmpeg",
+    }
+    command = install_cmd_map.get(package_manager)
+    if not command:
+        log("Unsupported package manager command. Please install FFmpeg manually.")
+        return False
+
+    terminal = detect_linux_terminal()
+    if terminal:
+        # Launch install in terminal for interactive sudo password input
+        success = run_command_in_linux_terminal(terminal, command, log)
+        if success:
+            log("✅ FFmpeg install command launched in terminal. Please complete installation there.")
+            return True
+        else:
+            log("❌ Failed to launch terminal for installation.")
+            return False
+    else:
+        log("⚠️ No terminal emulator found. Attempting silent install (may fail)...")
+        try:
+            if package_manager == "apt":
+                subprocess.run(["sudo", "apt", "update"], check=True)
+                subprocess.run(["sudo", "apt", "install", "-y", "ffmpeg"], check=True)
+            elif package_manager == "dnf":
+                subprocess.run(["sudo", "dnf", "install", "-y", "ffmpeg"], check=True)
+            elif package_manager == "pacman":
+                subprocess.run(["sudo", "pacman", "-Sy", "--noconfirm", "ffmpeg"], check=True)
+            log("✅ FFmpeg installed successfully.")
+            return True
+        except Exception as e:
+            log(f"❌ Linux FFmpeg install failed: {e}")
+            return False
+
+
+# --- Terminal runner for macOS ---
+def run_command_in_macos_terminal(command, log):
+    try:
+        # AppleScript to open Terminal and run command, then auto-close the window
+        # We remove the read/wait command so terminal auto closes after command finishes
+        applescript = f'''
+        tell application "Terminal"
+            activate
+            do script "{command}"
+        end tell
+        '''
+        subprocess.Popen(["osascript", "-e", applescript])
+        log("🖥️ Running install command in macOS Terminal...")
+        return True
+    except Exception as e:
+        log(f"❌ Failed to run command in macOS Terminal: {e}")
         return False
 
 
 def install_ffmpeg_mac(log):
+    command = "brew install ffmpeg"
+    return run_command_in_macos_terminal(command, log)
+
+
+# --- Terminal runner for Windows ---
+def run_command_in_windows_terminal(command, log):
     try:
-        subprocess.run(["brew", "install", "ffmpeg"], check=True)
-        log("✅ FFmpeg installed successfully.")
+        # Use powershell to open new window and run the command, close window after done (no -NoExit)
+        powershell_path = shutil.which("powershell.exe") or "powershell"
+        subprocess.Popen([
+            powershell_path,
+            "-Command",
+            command
+        ])
+        log("🖥️ Running install command in Windows PowerShell...")
         return True
     except Exception as e:
-        log(f"❌ macOS FFmpeg install failed: {e}")
-        return False
+        log(f"❌ Failed to run command in PowerShell: {e}")
+        try:
+            # fallback to cmd.exe, window will auto-close after execution (no /k)
+            subprocess.Popen([
+                "cmd.exe",
+                "/c",
+                command
+            ])
+            log("🖥️ Running install command in Windows cmd...")
+            return True
+        except Exception as e2:
+            log(f"❌ Failed to run command in cmd.exe: {e2}")
+            return False
 
 
 def install_ffmpeg_windows(log):
     if shutil.which("winget"):
-        try:
-            subprocess.run([
-                "winget", "install", "--id", "Gyan.FFmpeg", "-e",
-                "--accept-package-agreements", "--accept-source-agreements"
-            ], check=True)
-            log("✅ FFmpeg installed via winget.")
+        command = ('winget install --id Gyan.FFmpeg -e '
+                   '--accept-package-agreements --accept-source-agreements')
+        success = run_command_in_windows_terminal(command, log)
+        if success:
+            log("✅ FFmpeg install command launched in Windows terminal via winget.")
             return True
-        except Exception as e:
-            log(f"❌ winget failed: {e}")
+        else:
+            log("❌ winget terminal launch failed, falling back to manual download...")
 
     try:
         log("Downloading FFmpeg zip from gyan.dev...")
@@ -90,6 +193,8 @@ def install_ffmpeg_windows(log):
         log(f"❌ Fallback FFmpeg download failed: {e}")
         return False
 
+
+# --- UI style and dialog helpers ---
 
 def apply_neumorphism_popup_style(widget):
     widget.setStyleSheet("""
@@ -168,65 +273,71 @@ class InstallProgressDialog(QProgressDialog):
             pass
 
 
+# --- Main ensure function ---
+
 def ensure_ffmpeg(log_signal=None, parent=None):
     def log(msg):
         if log_signal:
             try:
                 log_signal(msg)
-            except:
+            except Exception:
                 pass
 
     if is_ffmpeg_available():
         try:
-            output = subprocess.run(["ffmpeg", "-version"], capture_output=True, text=True, check=True)
-            log("✅ FFmpeg is installed:\n" + output.stdout.splitlines()[0])
-            return True
-        except Exception as e:
-            log(f"⚠️ FFmpeg check failed: {e}")
-            return False
-
-    log("❌ FFmpeg not found on this system.")
-    if not prompt_user_install_ffmpeg():
-        log("User declined installation.")
-        return False
-
-    current_platform = platform.system().lower()
-    progress_dialog = InstallProgressDialog(parent=parent)
-    progress_dialog.setLabelText("Installing FFmpeg, please wait...")
-    progress_dialog.show()
-    QApplication.processEvents()
-
-    install_success = False
-    if current_platform == "windows":
-        install_success = install_ffmpeg_windows(log)
-    elif current_platform == "linux":
-        install_success = install_ffmpeg_linux(log)
-    elif current_platform == "darwin":
-        install_success = install_ffmpeg_mac(log)
-
-    progress_dialog.close()
-
-    msgbox_parent = parent if parent else QApplication.activeWindow()
-    if install_success:
-        msg = QMessageBox(msgbox_parent)
-        msg.setIcon(QMessageBox.Icon.Information)
-        msg.setWindowTitle("FFmpeg Installed")
-        msg.setText("FFmpeg was installed successfully!\nWould you like to restart the app now?")
-        msg.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-        apply_neumorphism_popup_style(msg)
-        apply_dynamic_width(msg)
-        if msg.exec() == QMessageBox.StandardButton.Yes:
-            QApplication.quit()
-            subprocess.Popen([sys.executable] + sys.argv)
-            sys.exit(0)
+            output = subprocess.run(["ffmpeg", "-version"], capture_output=True, text=True)
+            version_line = output.stdout.splitlines()[0]
+            log(f"✅ FFmpeg found: {version_line}")
+        except Exception:
+            log("✅ FFmpeg found")
         return True
+
+    # Prompt user
+    if parent:
+        if not prompt_user_install_ffmpeg():
+            log("User declined FFmpeg installation.")
+            return False
     else:
-        msg = QMessageBox(msgbox_parent)
-        msg.setIcon(QMessageBox.Icon.Critical)
-        msg.setWindowTitle("FFmpeg Installation Failed")
-        msg.setText("Automatic installation failed.\nPlease install FFmpeg manually.")
-        msg.setStandardButtons(QMessageBox.StandardButton.Ok)
-        apply_neumorphism_popup_style(msg)
-        apply_dynamic_width(msg)
-        msg.exec()
+        print("FFmpeg is not installed. Please install FFmpeg and try again.")
         return False
+
+    system = platform.system()
+    log(f"Detected platform: {system}")
+
+    progress_dialog = None
+    if parent:
+        progress_dialog = InstallProgressDialog(parent=parent)
+        progress_dialog.show()
+
+    success = False
+    try:
+        if system == "Linux":
+            success = install_ffmpeg_linux(log)
+        elif system == "Darwin":  # macOS
+            success = install_ffmpeg_mac(log)
+        elif system == "Windows":
+            success = install_ffmpeg_windows(log)
+        else:
+            log("Unsupported OS. Please install FFmpeg manually.")
+    finally:
+        if progress_dialog:
+            progress_dialog.close()
+
+    if not success:
+        log("FFmpeg installation failed or was cancelled.")
+        if parent:
+            QMessageBox.critical(parent, "Error", "FFmpeg installation failed.\nPlease install it manually.")
+    else:
+        log("FFmpeg installation process completed (check your terminal).")
+
+    return success
+
+
+# Example usage (for testing, remove or adapt in your app)
+# if __name__ == "__main__":
+#     def logger(msg):
+#         print(msg)
+
+#     app = QApplication([])
+#     ensure_ffmpeg(log_signal=logger)
+#     app.exec()

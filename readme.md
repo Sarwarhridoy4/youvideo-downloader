@@ -10,7 +10,7 @@
 - Log window displaying download status and messages.
 - Switch between dark and light themes inspired by YouTube.
 - Handles downloading and merging audio/video formats automatically.
-- Built with PyQt6 for a sleek desktop experience.
+- Built with Pyside6 for a sleek desktop experience.
 - Modern neumorphism-inspired UI with separate QSS files for each theme and dialog.
 - Welcome screen before main window for a friendly start.
 
@@ -22,7 +22,7 @@
 
 - Python 3.8 or higher
 - `yt-dlp` (YouTube downloader backend)
-- PyQt6
+- Pyside6
 - ffmpeg
 
 ### Steps
@@ -100,7 +100,7 @@ python main.py
 - ডাউনলোড স্ট্যাটাস এবং মেসেজ দেখানোর লগ উইন্ডো。
 - ইউটিউব অনুপ্রাণিত ডার্ক ও লাইট থিম পরিবর্তন করার সুবিধা。
 - অডিও ও ভিডিও ফরম্যাট স্বয়ংক্রিয়ভাবে ডাউনলোড ও মার্জ করার ব্যবস্থা。
-- PyQt6 ব্যবহার করে একটি আধুনিক ডেস্কটপ অ্যাপ্লিকেশন。
+- Pyside6 ব্যবহার করে একটি আধুনিক ডেস্কটপ অ্যাপ্লিকেশন。
 - আলাদা QSS ফাইলসহ আধুনিক নিউমরফিজম অনুপ্রাণিত UI প্রতিটি থিম এবং ডায়ালগের জন্য。
 - প্রধান উইন্ডোর আগে স্বাগতম স্ক্রীন, বন্ধুত্বপূর্ণ শুরু করার জন্য।
 
@@ -112,7 +112,7 @@ python main.py
 
 - Python 3.8 বা তার উপরে
 - `yt-dlp` (ইউটিউব ডাউনলোডার ব্যাকএন্ড)
-- PyQt6
+- Pyside6
 - ffmpeg
 
 ### ধাপসমূহ
@@ -235,7 +235,6 @@ youvideo-downloader/
 └── readme.md                    # This README file
 ```
 
-
 ---
 
 ## 🖥️ Download & Install
@@ -256,14 +255,10 @@ youvideo-downloader/
   </a>
 </p>
 
-
-
-
 1. Click the link above to download the installer.
 2. Run the installer and follow the setup instructions.
 3. Launch the application and start downloading!
-4. Portable for linux AppImage 
-
+4. Portable for linux AppImage
 
 ## ⚙️ Requirements (Built-in)
 
@@ -281,12 +276,11 @@ If you encounter bugs or want to suggest features, please [open an issue](https:
 
 ---
 
-
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 > For comlpile guide
-[HOW TO cOPMILE](compile_guide.md)
+> [HOW TO cOPMILE](compile_guide.md)
 
 Made with ❤️ by Sarwar Hossain

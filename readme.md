@@ -241,7 +241,8 @@ youvideo-downloader/
 
 Watch the full tutorial on YouTube:
 
-[![Watch the video](https://img.youtube.com/vi/nne7-6P1agU/0.jpg)](https://www.youtube.com/watch?v=nne7-6P1agU)
+<iframe width="560" height="315" src="https://www.youtube.com/embed/nne7-6P1agU?si=StcbjAZhldgaA6qI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 
 
 ## 🖥️ Download & Install

@@ -237,6 +237,13 @@ youvideo-downloader/
 
 ---
 
+# 📺 Tutorial Video
+
+Watch the full tutorial on YouTube:
+
+[![Watch the video](https://img.youtube.com/vi/nne7-6P1agU/0.jpg)](https://www.youtube.com/watch?v=nne7-6P1agU)
+
+
 ## 🖥️ Download & Install
 
 **Windows users can download the latest version here:**

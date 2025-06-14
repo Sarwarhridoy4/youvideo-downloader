@@ -15,7 +15,7 @@ Execution:
 """
 
 from PySide6.QtWidgets import QApplication
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QIcon
 from ui.welcome_screen import WelcomeScreen
 from ui.main_window import MainWindow
 import sys
@@ -31,8 +31,8 @@ def main():
     when the main event loop finishes.
     """
     app = QApplication(sys.argv)
-    app_icon = QIcon(resource_path("assets/icons/appicon.png"))
-    app.setWindowIcon(app_icon)
+    app_icon = resource_path("assets/icons/appicon.png")
+    app.setWindowIcon(QIcon(app_icon))
 
     main_win = MainWindow()
 

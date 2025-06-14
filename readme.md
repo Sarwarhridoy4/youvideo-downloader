@@ -241,11 +241,6 @@ youvideo-downloader/
 
 [![Watch the Demo](https://raw.githubusercontent.com/edent/SuperTinyIcons/master/images/svg/youtube.svg)](https://drive.google.com/file/d/1MfvxdM8NGUY02P9VjrEMSlkNO7JptZsE/preview)
 
-
-
-
-
-
 ## 🖥️ Download & Install
 
 **Windows users can download the latest version here:**
@@ -258,8 +253,18 @@ youvideo-downloader/
 
 **Linux users can download the latest version here:**
 
+**AppImage**
+
 <p align="center">
   <a href="https://github.com/Sarwarhridoy4/youvideo-downloader/releases/download/1.0/YouVideoDownloader-x86_64.AppImage">
+    <img src="https://img.shields.io/badge/Download-YouVideo_Downloader-blue?style=for-the-badge&logo=linux&logoColor=orange" alt="Download YouVideo Downloader">
+  </a>
+</p>
+
+**Debian(.deb) for debian based distro**
+
+<p align="center">
+  <a href="https://github.com/Sarwarhridoy4/youvideo-downloader/releases/download/1.0/youvideo-downloader_1.0-1.deb">
     <img src="https://img.shields.io/badge/Download-YouVideo_Downloader-blue?style=for-the-badge&logo=linux&logoColor=orange" alt="Download YouVideo Downloader">
   </a>
 </p>
@@ -298,6 +303,5 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 > For comlpile guide
 
 [HOW TO COPMILE](compile_guide.md)
-
 
 Made with ❤️ by Sarwar Hossain

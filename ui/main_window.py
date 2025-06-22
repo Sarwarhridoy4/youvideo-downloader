@@ -1,9 +1,10 @@
 # ui/main_window.py
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-    QPushButton, QLabel, QLineEdit, QFileDialog, QComboBox,
-    QProgressBar, QTextEdit, QMessageBox, QDialog
+    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton,
+    QFileDialog, QMenuBar, QMenu, QMessageBox, QDialog,QComboBox,QProgressBar,QTextEdit
 )
+from PySide6.QtGui import QAction
+
 from PySide6.QtCore import Qt, QThread, Signal, QTimer
 from PySide6.QtGui import QMovie, QIcon
 from downloader.yt_downloader import get_formats, download_and_merge
@@ -11,6 +12,11 @@ import os
 from downloader.ffmpeg_utils import ensure_ffmpeg
 from PySide6.QtWidgets import QApplication
 from utils.pathfinder import resource_path
+import requests
+import subprocess
+
+APP_VERSION = "1.0.0"
+GITHUB_RELEASES_URL = "https://api.github.com/repos/Sarwarhridoy4/youvideo-downloader/releases/latest"
 
 icon_path = resource_path("assets/icons/appicon.png")
 gif_path = resource_path("assets/icons/spinner.gif")
@@ -119,6 +125,9 @@ class MainWindow(QMainWindow):
                 self.setStyleSheet(f.read())
         except Exception as e:
             print(f"Could not load dark.qss: {e}")
+
+        # Add this line to show the menubar
+        self._setup_menu()
 
         if not ensure_ffmpeg(self.log_window.append, parent=self):
             self.show_error("FFmpeg Missing", "FFmpeg is not installed or not in PATH.")
@@ -285,3 +294,61 @@ class MainWindow(QMainWindow):
 
         self.log_window.append("Download started...")
         self.log_window.append(f"Downloading {url} with format {format_code} to {self.output_path}")
+
+    def _setup_menu(self):
+        menubar = QMenuBar(self)
+        self.setMenuBar(menubar)
+
+        file_menu = QMenu("&File", self)
+        quit_action = QAction("&Quit", self)
+        quit_action.triggered.connect(self.close)
+        file_menu.addAction(quit_action)
+        menubar.addMenu(file_menu)
+
+        info_menu = QMenu("&Info", self)
+        dev_action = QAction("Developer Info", self)
+        dev_action.triggered.connect(self.show_dev_info)
+        update_action = QAction("Check for Update", self)
+        update_action.triggered.connect(self.check_update)
+        info_menu.addAction(dev_action)
+        info_menu.addAction(update_action)
+        menubar.addMenu(info_menu)
+
+        # Increase menu font size
+        menubar.setStyleSheet("QMenuBar { font-size: 15px; } QMenu { font-size: 15px; }")
+
+    def show_dev_info(self):
+        dev_dialog = QDialog(self)
+        dev_dialog.setWindowTitle("Developer Info")
+        dev_dialog.setFixedSize(400, 200)
+        # Center the dialog over the main window
+        parent_rect = self.geometry()
+        x = parent_rect.x() + (parent_rect.width() - 400) // 2
+        y = parent_rect.y() + (parent_rect.height() - 200) // 2
+        dev_dialog.move(x, y)
+        layout = QVBoxLayout()
+        info = QLabel(
+            "<h2>YouVideo Downloader</h2>"
+            "<p><b>Developer:</b> Sarwar</p>"
+            "<p><b>GitHub:</b> <a href='https://github.com/Sarwarhridoy4/youvideo-downloader'>https://github.com/Sarwarhridoy4/youvideo-downloader</a></p>"
+        )
+        info.setOpenExternalLinks(True)
+        info.setAlignment(Qt.AlignCenter)
+        layout.addWidget(info)
+        dev_dialog.setLayout(layout)
+        dev_dialog.exec()
+
+    def check_update(self):
+        try:
+            resp = requests.get(GITHUB_RELEASES_URL, timeout=5)
+            data = resp.json()
+            latest = data.get("tag_name")
+            if not latest:
+                raise Exception("No tag_name in response")
+            if latest != APP_VERSION:
+                QMessageBox.information(self, "Update Available",
+                    f"New version available: {latest}\nVisit:\nhttps://github.com/Sarwarhridoy4/youvideo-downloader/releases/tag/{latest}")
+            else:
+                QMessageBox.information(self, "Up to Date", "You have the latest version.")
+        except Exception as e:
+            QMessageBox.warning(self, "Update Error", f"Could not check for updates: {e}")

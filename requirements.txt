@@ -4,3 +4,4 @@
 # yt-dlp  : A command-line program to download videos from YouTube and other sites, used here for video downloading functionality.
 PySide6
 yt-dlp
+requests

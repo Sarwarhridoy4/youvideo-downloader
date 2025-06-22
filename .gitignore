@@ -8,3 +8,6 @@ AppDir
 YouVideoDownloader-x86_64.AppImage
 youvideo-downloader_1.0-1
 youvideo-downloader_1.0-1.deb
+.vscode
+.idea
+*.pyc

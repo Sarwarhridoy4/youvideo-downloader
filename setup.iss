@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "YouVideo Downloader"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.5"
 #define MyAppPublisher "Sarwar Hossain"
 #define MyAppURL "https://github.com/Sarwarhridoy4/youvideo-downloader"
 #define MyAppExeName "YouVideoDownloader.exe"
@@ -10,7 +10,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{A0D4FE73-BF2A-48ED-87F0-E88E875F5E46}
+AppId={{85D1AB67-1846-4734-AD77-6D5BBE5D108C}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -29,14 +29,14 @@ ArchitecturesAllowed=x64compatible
 ; meaning it should use the native 64-bit Program Files directory and
 ; the 64-bit view of the registry.
 ArchitecturesInstallIn64BitMode=x64compatible
-DisableProgramGroupPage=yes
+DefaultGroupName={#MyAppName}
+AllowNoIcons=yes
 LicenseFile=C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\LICENSE
 InfoBeforeFile=C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\readme.md
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
-PrivilegesRequiredOverridesAllowed=dialog
-OutputDir=C:\Users\Sarwar Hossain\Desktop
-OutputBaseFilename=YouVideoDownloader_setup
+OutputDir=C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\Output
+OutputBaseFilename=YouVideo_Downloader_setup
 SetupIconFile=C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\assets\icons\appicon.ico
 SolidCompression=yes
 WizardStyle=modern
@@ -49,11 +49,12 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 
 [Files]
 Source: "C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\assets\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\{cm:ProgramOnTheWeb,{#MyAppName}}"; Filename: "{#MyAppURL}"
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]

@@ -1,7 +1,8 @@
 # ui/main_window.py
 from PySide6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton,
-    QFileDialog, QMenuBar, QMenu, QMessageBox, QDialog,QComboBox,QProgressBar,QTextEdit
+    QFileDialog, QMenuBar, QMenu, QMessageBox, QDialog,QComboBox,QProgressBar,QTextEdit,
+    QRadioButton, QButtonGroup
 )
 from PySide6.QtGui import QAction
 
@@ -28,14 +29,17 @@ class DownloadThread(QThread):
     error = Signal(str)
     log = Signal(str)
 
-    def __init__(self, url, format_code, output_path):
+    def __init__(self, url, format_code, output_path, is_audio):
         super().__init__()
         self.url = url
         self.format_code = format_code
         self.output_path = output_path
+        self.is_audio = is_audio
 
     def run(self):
         try:
+            from yt_dlp import YoutubeDL
+
             def hook(d):
                 if d.get("status") == "downloading":
                     downloaded = d.get("downloaded_bytes") or 0
@@ -44,7 +48,32 @@ class DownloadThread(QThread):
                     self.progress.emit(int(percent))
                     self.log.emit(f"Downloading: {percent:.2f}%")
 
-            download_and_merge(self.url, self.format_code, self.output_path, hook, self.log)
+            output_file_template = os.path.join(self.output_path, '%(title)s.%(ext)s')
+            ydl_opts = {
+                'progress_hooks': [hook],
+                'outtmpl': output_file_template,
+                'quiet': True,
+                'noplaylist': False,  # Allow playlist download
+            }
+
+            if self.is_audio:
+                ydl_opts.update({
+                    'format': 'bestaudio/best',
+                    'postprocessors': [{
+                        'key': 'FFmpegExtractAudio',
+                        'preferredcodec': 'mp3',
+                        'preferredquality': '192',
+                    }],
+                    'merge_output_format': 'mp3',
+                })
+            else:
+                # Use selected format for video
+                ydl_opts['format'] = f"{self.format_code}+bestaudio/best"
+
+            with YoutubeDL(ydl_opts) as ydl:
+                self.log.emit("Starting download...")
+                ydl.download([self.url])
+                self.log.emit("Download and merge complete.")
             self.finished.emit()
         except Exception as e:
             self.error.emit(str(e))
@@ -140,8 +169,20 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
 
         self.url_input = QLineEdit()
-        self.url_input.setPlaceholderText("Enter YouTube URL")
+        self.url_input.setPlaceholderText("Enter YouTube URL or Playlist")
         layout.addWidget(self.url_input)
+
+        # --- Audio/Video selection ---
+        self.video_radio = QRadioButton("Video")
+        self.audio_radio = QRadioButton("Audio (MP3)")
+        self.video_radio.setChecked(True)
+        self.type_group = QButtonGroup()
+        self.type_group.addButton(self.video_radio)
+        self.type_group.addButton(self.audio_radio)
+        type_layout = QHBoxLayout()
+        type_layout.addWidget(self.video_radio)
+        type_layout.addWidget(self.audio_radio)
+        layout.addLayout(type_layout)
 
         self.format_dropdown = QComboBox()
         self.format_dropdown.setMinimumWidth(400)
@@ -182,6 +223,8 @@ class MainWindow(QMainWindow):
         self.output_path = os.getcwd()
         self.current_theme = "dark"
         self.spinner_dialog = None
+
+        self.audio_radio.toggled.connect(lambda checked: self.format_dropdown.setVisible(not checked))
 
     def browse_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "Select Output Folder")
@@ -273,18 +316,19 @@ class MainWindow(QMainWindow):
             self.log_window.append("Error: URL is empty.")
             return
 
-        format_code = self.format_dropdown.currentData()
-        if not format_code:
-            self.log_window.append("Error: No format selected.")
-            return
+        is_audio = self.audio_radio.isChecked()
+        format_code = self.format_dropdown.currentData() if not is_audio else None
 
         self.progress.setValue(0)
         self.progress.setFormat("0%")
         self.download_btn.setEnabled(False)
 
-        self.log_window.append(f"Starting download with format: {format_code}")
+        if is_audio:
+            self.log_window.append("Starting audio (MP3) download...")
+        else:
+            self.log_window.append(f"Starting video download with format: {format_code}")
 
-        self.thread = DownloadThread(url, format_code, self.output_path)
+        self.thread = DownloadThread(url, format_code, self.output_path, is_audio)
         self.thread.progress.connect(self.update_progress)
         self.thread.finished.connect(self.download_finished)
         self.thread.error.connect(lambda e: self.show_error("Download Failed", e))
@@ -292,8 +336,7 @@ class MainWindow(QMainWindow):
         self.thread.log.connect(self.log_window.append)
         self.thread.start()
 
-        self.log_window.append("Download started...")
-        self.log_window.append(f"Downloading {url} with format {format_code} to {self.output_path}")
+        self.log_window.append(f"Downloading {url} to {self.output_path}")
 
     def _setup_menu(self):
         menubar = QMenuBar(self)

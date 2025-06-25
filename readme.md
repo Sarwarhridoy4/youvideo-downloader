@@ -5,6 +5,7 @@
 - Download YouTube, Facebook, and other videos by specifying the URL.
 - Detects if _ffmpeg_ is installed; if not, offers automatic installation for any OS.
 - Choose from multiple available video/audio formats.
+- Add Option to download mp3
 - Select output folder to save downloads.
 - Real-time progress bar showing download and conversion progress.
 - Log window displaying download status and messages.
@@ -95,6 +96,7 @@ python main.py
 - ফেসবুকসহ অন্যান্য প্ল্যাটফর্ম থেকেও ভিডিও ডাউনলোড করার সুবিধা (ইউটিউব ও ফেসবুক পরীক্ষিত)。
 - _ffmpeg_ ইনস্টল আছে কিনা স্বয়ংক্রিয়ভাবে শনাক্ত করে এবং না থাকলে যেকোনো অপারেটিং সিস্টেমে স্বয়ংক্রিয়ভাবে ইনস্টল করার ব্যবস্থা。
 - বিভিন্ন ভিডিও/অডিও ফরম্যাট থেকে পছন্দ করার অপশন。
+- mp3 ডাউনলোড করার অপশন।
 - ডাউনলোড সংরক্ষণের জন্য ফোল্ডার নির্বাচন。
 - ডাউনলোড এবং কনভার্সনের অগ্রগতি দেখানো প্রগ্রেস বার。
 - ডাউনলোড স্ট্যাটাস এবং মেসেজ দেখানোর লগ উইন্ডো。

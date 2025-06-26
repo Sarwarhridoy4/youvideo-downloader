@@ -5,6 +5,7 @@
 - Download YouTube, Facebook, and other videos by specifying the URL.
 - Detects if _ffmpeg_ is installed; if not, offers automatic installation for any OS.
 - Choose from multiple available video/audio formats.
+- Load Playlist using range & and download best quality 
 - Add Option to download mp3
 - Select output folder to save downloads.
 - Real-time progress bar showing download and conversion progress.

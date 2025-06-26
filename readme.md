@@ -230,6 +230,7 @@ youvideo-downloader/
 │   ├── __init__.py
 │   ├── main_window.py
 │   ├── themes.py
+|   ├── playlist window.py
 │   └── welcome_screen.py
 │
 ├── main.py                      # Main application entry point

@@ -23,20 +23,25 @@ mkdir -p "${BUILD_DIR}"/{usr/bin,usr/share/{applications,icons/hicolor/256x256/a
 echo "📁 Copying PyInstaller bundle ..."
 cp -r "${DIST_DIR}/"* "${BUILD_DIR}/usr/bin/"
 
+echo "🔧 Making executable runnable ..."
+chmod +x "${BUILD_DIR}/usr/bin/${EXECUTABLE}"
+
 echo "🖼  Installing icon ..."
 cp "${ICON_SRC}" "${BUILD_DIR}/usr/share/icons/hicolor/256x256/apps/youvideo.png"
+chmod 644 "${BUILD_DIR}/usr/share/icons/hicolor/256x256/apps/youvideo.png"
 
 echo "📄 Creating .desktop file ..."
 cat > "${BUILD_DIR}/usr/share/applications/${APP_NAME}.desktop" <<EOF
 [Desktop Entry]
 Type=Application
 Name=YouVideo Downloader
-Exec=${EXECUTABLE}
+Exec=/usr/bin/${EXECUTABLE}
 Icon=youvideo
 Terminal=false
 Categories=AudioVideo;Network;Utility;
 StartupNotify=true
 EOF
+chmod 644 "${BUILD_DIR}/usr/share/applications/${APP_NAME}.desktop"
 
 echo "📜 Creating control file ..."
 cat > "${BUILD_DIR}/DEBIAN/control" <<EOF
@@ -56,18 +61,18 @@ EOF
 
 # ── Docs ───────────────────────────────────────────────────────────────────────
 if [[ -f README.md ]]; then
-  cp README.md  "${BUILD_DIR}/usr/share/doc/${APP_NAME}/readme"
+  cp README.md "${BUILD_DIR}/usr/share/doc/${APP_NAME}/readme"
   gzip -9 "${BUILD_DIR}/usr/share/doc/${APP_NAME}/readme"
 fi
 
 if [[ -f LICENSE ]]; then
-  cp LICENSE    "${BUILD_DIR}/usr/share/doc/${APP_NAME}/copyright"
+  cp LICENSE "${BUILD_DIR}/usr/share/doc/${APP_NAME}/copyright"
   gzip -9 "${BUILD_DIR}/usr/share/doc/${APP_NAME}/copyright"
 fi
 
 # ── Permissions ───────────────────────────────────────────────────────────────
 chmod -R 755 "${BUILD_DIR}/usr"
-chmod 755    "${BUILD_DIR}/DEBIAN"
+chmod 755 "${BUILD_DIR}/DEBIAN"
 
 # ── Build the .deb ────────────────────────────────────────────────────────────
 echo "📦 Building Debian package ..."
@@ -85,4 +90,4 @@ echo "🔄 Updating icon cache ..."
 sudo gtk-update-icon-cache /usr/share/icons/hicolor
 
 echo "✅ Done! YouVideo Downloader should now appear with icon in Dash."
-# ── Cleanup ───────────────────────────────────────────────────────────────────
+echo "🚀 Launch it from the Dash or via terminal with: ${EXECUTABLE}"

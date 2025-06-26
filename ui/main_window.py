@@ -141,6 +141,7 @@ class SpinnerDialog(QDialog):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self._back_callback = None
         self.setWindowTitle("YouVideo Downloader")
         self.setWindowIcon(QIcon(icon_path))
         QApplication.setWindowIcon(QIcon(icon_path))
@@ -162,6 +163,9 @@ class MainWindow(QMainWindow):
             self.show_error("FFmpeg Missing", "FFmpeg is not installed or not in PATH.")
             self.download_btn.setEnabled(False)
             self.load_formats_btn.setEnabled(False)
+
+    def set_back_callback(self, callback):
+        self._back_callback = callback
 
     def setup_ui(self):
         central = QWidget()
@@ -204,6 +208,11 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.log_window)
 
         hlayout = QHBoxLayout()
+
+        # Add Back button
+        back_btn = QPushButton("Back")
+        back_btn.clicked.connect(self._on_back)
+        hlayout.addWidget(back_btn)
 
         self.load_formats_btn = QPushButton("Load Formats")
         self.load_formats_btn.clicked.connect(self.load_formats)
@@ -395,3 +404,8 @@ class MainWindow(QMainWindow):
                 QMessageBox.information(self, "Up to Date", "You have the latest version.")
         except Exception as e:
             QMessageBox.warning(self, "Update Error", f"Could not check for updates: {e}")
+
+    def _on_back(self):
+        if self._back_callback:
+            self.hide()
+            self._back_callback()

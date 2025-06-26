@@ -1,4 +1,3 @@
-
 from yt_dlp import YoutubeDL
 import os
 
@@ -17,6 +16,32 @@ def get_formats(url):
             ) and f['ext'] in ('mp4', 'webm', 'm4a')
         ]
         return formats
+
+def get_playlist_videos(url):
+    """
+    Returns a list of dicts with 'title' and 'url' for each video in the playlist.
+    """
+    ydl_opts = {
+        'quiet': True,
+        'extract_flat': True,
+        'skip_download': True,
+        'force_generic_extractor': False,
+    }
+    with YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=False)
+        entries = info.get('entries', [])
+        videos = []
+        for entry in entries:
+            # For flat extraction, entry['url'] is a video id, so build full URL
+            video_url = entry.get('url')
+            if not video_url.startswith('http'):
+                # Assume YouTube
+                video_url = f"https://www.youtube.com/watch?v={video_url}"
+            videos.append({
+                'title': entry.get('title', 'Untitled'),
+                'url': video_url
+            })
+        return videos
 
 def download_and_merge(url, format_code, output_path, progress_hook, log_signal):
     """

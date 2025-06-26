@@ -10,15 +10,14 @@ icon_path = resource_path("assets/icons/appicon.png")
 class WelcomeScreen(QWidget):
     """
     A QWidget-based welcome screen for the YouVideo Downloader application.
-    This screen displays the application icon, title, subtitle, and a "Continue" button.
-    It loads and applies a QSS stylesheet for custom appearance.
-
-    Args:
-        on_continue (callable): Callback function to be called when the "Continue" button is clicked.
+    This screen displays the application icon, title, subtitle, and two buttons:
+    "Single Video" and "Playlist".
     """
 
-    def __init__(self, on_continue):
+    def __init__(self, on_single_video=None, on_playlist=None):
         super().__init__()
+        self._on_single_video = on_single_video
+        self._on_playlist = on_playlist
         self.setWindowTitle("Welcome - YouVideo Downloader")
         self.setWindowIcon(QIcon(icon_path))
         self.setFixedSize(640, 400)
@@ -54,10 +53,15 @@ class WelcomeScreen(QWidget):
         subtitle.setAlignment(Qt.AlignCenter)
         layout.addWidget(subtitle)
 
-        # Continue button
-        continue_btn = QPushButton("Continue")
-        continue_btn.clicked.connect(on_continue)
-        layout.addWidget(continue_btn)
+        # Single Video button
+        single_btn = QPushButton("Single Video")
+        single_btn.clicked.connect(self._handle_single)
+        layout.addWidget(single_btn)
+
+        # Playlist button
+        playlist_btn = QPushButton("Playlist")
+        playlist_btn.clicked.connect(self._handle_playlist)
+        layout.addWidget(playlist_btn)
 
         # Credit
         credit_label = QLabel()
@@ -68,3 +72,15 @@ class WelcomeScreen(QWidget):
         credit_label.setOpenExternalLinks(True)
         credit_label.setObjectName("credit_label")
         layout.addWidget(credit_label)
+
+    def set_callbacks(self, on_single_video, on_playlist):
+        self._on_single_video = on_single_video
+        self._on_playlist = on_playlist
+
+    def _handle_single(self):
+        if self._on_single_video:
+            self._on_single_video()
+
+    def _handle_playlist(self):
+        if self._on_playlist:
+            self._on_playlist()

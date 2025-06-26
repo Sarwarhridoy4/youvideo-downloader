@@ -18,6 +18,7 @@ from PySide6.QtWidgets import QApplication
 from PySide6.QtGui import QIcon, QIcon
 from ui.welcome_screen import WelcomeScreen
 from ui.main_window import MainWindow
+from ui.playlist_window import PlaylistWindow
 import sys
 
 from utils.pathfinder import resource_path
@@ -34,15 +35,35 @@ def main():
     app_icon = resource_path("assets/icons/appicon.png")
     app.setWindowIcon(QIcon(app_icon))
 
+    # Create windows but don't show yet
     main_win = MainWindow()
+    playlist_win = PlaylistWindow()
+    welcome = WelcomeScreen()
+
+    # Make windows bigger
+    main_win.resize(900, 650)
+    playlist_win.resize(900, 650)
+    welcome.resize(700, 500)
 
     def show_main():
-        welcome.close()
+        welcome.hide()
         main_win.show()
 
-    welcome = WelcomeScreen(on_continue=show_main)
-    welcome.show()
+    def show_playlist():
+        welcome.hide()
+        playlist_win.show()
 
+    def show_welcome():
+        main_win.hide()
+        playlist_win.hide()
+        welcome.show()
+
+    # Pass back callback to windows
+    main_win.set_back_callback(show_welcome)
+    playlist_win.set_back_callback(show_welcome)
+    welcome.set_callbacks(on_single_video=show_main, on_playlist=show_playlist)
+
+    welcome.show()
     sys.exit(app.exec())
 
 if __name__ == "__main__":

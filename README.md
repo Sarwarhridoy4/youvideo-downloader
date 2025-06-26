@@ -250,7 +250,7 @@ youvideo-downloader/
 **Windows users can download the latest version here:**
 
 <p align="center">
-  <a href="https://github.com/Sarwarhridoy4/youvideo-downloader/releases/download/1.0/YouVideoDownloader_setup.exe">
+  <a href="https://github.com/Sarwarhridoy4/youvideo-downloader/releases/download/1.5/YouVideo_Downloader_setup.exe">
     <img src="https://img.shields.io/badge/Download-YouVideo_Downloader-blue?style=for-the-badge&logo=windows&logoColor=white" alt="Download YouVideo Downloader">
   </a>
 </p>

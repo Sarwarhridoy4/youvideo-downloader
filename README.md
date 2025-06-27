@@ -216,27 +216,29 @@ The following is the main folder structure of the **YouVideo Downloader** projec
 ```
 youvideo-downloader/
 │
-├── assets/                      # Contains assets like icons, QSS themes, screenshots, etc.
-│   ├── icons/                   # Application icons (e.g., appicon.png, spinner.gif)
-│   ├── qss/                     # Qt Style Sheets (dark.qss, light.qss, welcome.qss)
-│   └── screenshot/              # Screenshots for documentation
+├── assets/ # Icons, styles, screenshots
+│ ├── icons/
+│ ├── qss/
+│ └── screenshot/
 │
-├── downloader/                  # Core download logic and ffmpeg utilities
-│   ├── __init__.py
-│   ├── ffmpeg_utils.py
-│   └── yt_downloader.py
+├── downloader/ # Core logic
+│ ├── ffmpeg_utils.py
+│ └── yt_downloader.py
 │
-├── ui/                          # User interface components
-│   ├── __init__.py
-│   ├── main_window.py
-│   ├── themes.py
-|   ├── playlist window.py
-│   └── welcome_screen.py
+├── ui/ # PySide6 UI components
+│ ├── main_window.py
+│ ├── playlist_window.py
+│ ├── welcome_screen.py
+│ └── themes.py
 │
-├── main.py                      # Main application entry point
-├── requirements.txt             # Python package dependencies
-├── LICENSE                      # License file for the project
-└── readme.md                    # This README file
+├── main.py # App entry point
+├── requirements.txt
+├── LICENSE
+├── build.sh
+├── build_appimage.sh
+├── build.iss
+├── .gitignore
+└── readme.md
 ```
 
 ---

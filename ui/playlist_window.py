@@ -22,12 +22,16 @@ Save this as ``playlist_window.py`` (or any module name) and import it into
 from __future__ import annotations
 
 import os
+import requests
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QDialog, QVBoxLayout
+from utils.pathfinder import resource_path
 import sys
 import subprocess
 from typing import List
 
 from PySide6.QtCore import QThread, Signal
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -42,6 +46,8 @@ from PySide6.QtWidgets import (
     QTextEdit,
     QVBoxLayout,
     QWidget,
+    QMenuBar,
+    QMenu
 )
 
 from utils.pathfinder import resource_path
@@ -51,6 +57,14 @@ from downloader.yt_downloader import get_playlist_videos, download_and_merge
 # ──────────────────────────── paths & constants ─────────────────────────────
 icon_path = resource_path("assets/icons/appicon.png")
 qss_path = resource_path("assets/qss/dark.qss")
+
+
+# GitHub releases URL for update checking
+# This should point to the latest release of your GitHub repository.
+# Make sure to update the repository name accordingly.
+# Example:
+APP_VERSION = "1.0.0"
+GITHUB_RELEASES_URL = "https://api.github.com/repos/Sarwarhridoy4/youvideo-downloader/releases/latest"
 
 
 # ──────────────────────────── helpers ───────────────────────────────────────
@@ -85,6 +99,7 @@ def slice_by_range(txt: str, length: int) -> List[int]:
         start, end = end, start
 
     return list(range(start - 1, end))
+
 
 
 # ──────────────────────────── worker threads ────────────────────────────────
@@ -171,12 +186,16 @@ class PlaylistWindow(QMainWindow):
         self.setMinimumSize(900, 650)
         self._setup_ui()
         self._apply_stylesheet()
+        self._setup_menu()
 
     # ―― UI assembly ―――――――――――――――――――――――――――――――――――――――――――――――――――
     def _setup_ui(self) -> None:
         central = QWidget(self)
         self.setCentralWidget(central)
         layout = QVBoxLayout(central)
+
+        # - current theme
+        self.current_theme = "dark"  # default theme
 
         # — URL & range input
         self.url_input = QLineEdit(placeholderText="Enter playlist URL")
@@ -203,7 +222,11 @@ class PlaylistWindow(QMainWindow):
         open_folder_btn = QPushButton("Open output folder")
         open_folder_btn.clicked.connect(self._open_output_folder)  # type: ignore[arg-type]
 
+        theme_btn = QPushButton("Switch Theme")
+        theme_btn.clicked.connect(self.switch_theme)
+        # button layout
         hlayout.addWidget(back_btn)
+        hlayout.addWidget(theme_btn)
         hlayout.addWidget(self.download_btn)
         hlayout.addWidget(open_folder_btn)
 
@@ -233,7 +256,64 @@ class PlaylistWindow(QMainWindow):
                 self.setStyleSheet(f.read())
         except Exception as exc:
             print(f"[PlaylistWindow] Could not load stylesheet: {exc}")
+    # ──────────────────────────── menu bar ───────────────────────────────────────
+    def _setup_menu(self):
+        menubar = QMenuBar(self)
+        self.setMenuBar(menubar)
 
+        file_menu = QMenu("&File", self)
+        quit_action = QAction("&Quit", self)
+        quit_action.triggered.connect(self.close)
+        file_menu.addAction(quit_action)
+        menubar.addMenu(file_menu)
+
+        info_menu = QMenu("&Info", self)
+        dev_action = QAction("Developer Info", self)
+        dev_action.triggered.connect(self.show_dev_info)
+        update_action = QAction("Check for Update", self)
+        update_action.triggered.connect(self.check_update)
+        info_menu.addAction(dev_action)
+        info_menu.addAction(update_action)
+        menubar.addMenu(info_menu)
+
+        # Increase menu font size
+        menubar.setStyleSheet("QMenuBar { font-size: 15px; } QMenu { font-size: 15px; }")
+
+    def show_dev_info(self):
+        dev_dialog = QDialog(self)
+        dev_dialog.setWindowTitle("Developer Info")
+        dev_dialog.setFixedSize(400, 200)
+        # Center the dialog over the main window
+        parent_rect = self.geometry()
+        x = parent_rect.x() + (parent_rect.width() - 400) // 2
+        y = parent_rect.y() + (parent_rect.height() - 200) // 2
+        dev_dialog.move(x, y)
+        layout = QVBoxLayout()
+        info = QLabel(
+            "<h2>YouVideo Downloader</h2>"
+            "<p><b>Developer:</b> Sarwar</p>"
+            "<p><b>GitHub:</b> <a href='https://github.com/Sarwarhridoy4/youvideo-downloader'>https://github.com/Sarwarhridoy4/youvideo-downloader</a></p>"
+        )
+        info.setOpenExternalLinks(True)
+        info.setAlignment(Qt.AlignCenter)
+        layout.addWidget(info)
+        dev_dialog.setLayout(layout)
+        dev_dialog.exec()
+
+    def check_update(self):
+        try:
+            resp = requests.get(GITHUB_RELEASES_URL, timeout=5)
+            data = resp.json()
+            latest = data.get("tag_name")
+            if not latest:
+                raise Exception("No tag_name in response")
+            if latest != APP_VERSION:
+                QMessageBox.information(self, "Update Available",
+                    f"New version available: {latest}\nVisit:\nhttps://github.com/Sarwarhridoy4/youvideo-downloader/releases/tag/{latest}")
+            else:
+                QMessageBox.information(self, "Up to Date", "You have the latest version.")
+        except Exception as e:
+            QMessageBox.warning(self, "Update Error", f"Could not check for updates: {e}")
     # ―― actions ——————————————————————————————————————————————
     # 1) choose folder --------------------------------------------------------
     def _browse_folder(self) -> None:  # noqa: D401
@@ -336,3 +416,21 @@ class PlaylistWindow(QMainWindow):
         if self._back_callback:
             self.hide()
             self._back_callback()
+
+    # Theme switching --------------------------------------------------------
+    def apply_theme(self, theme_path):
+        try:
+            with open(theme_path, "r") as f:
+                style = f.read()
+                self.setStyleSheet(style)
+        except Exception as e:
+            self.show_error("Error loading theme", str(e))
+
+            
+    def switch_theme(self):
+        if self.current_theme == "dark":
+            self.apply_theme(resource_path("assets/qss/light.qss"))
+            self.current_theme = "light"
+        else:
+            self.apply_theme(resource_path("assets/qss/dark.qss"))
+            self.current_theme = "dark"

@@ -79,6 +79,21 @@ class DownloadThread(QThread):
         except Exception as e:
             self.error.emit(str(e))
 
+class FormatLoaderThread(QThread):
+    formats_loaded = Signal(list)
+    error = Signal(str)
+
+    def __init__(self, url):
+        super().__init__()
+        self.url = url
+
+    def run(self):
+        try:
+            formats = get_formats(self.url)
+            self.formats_loaded.emit(formats)
+        except Exception as e:
+            self.error.emit(str(e))
+
 
 class SpinnerDialog(QDialog):
     def __init__(self, message="Loading..."):
@@ -270,7 +285,6 @@ class MainWindow(QMainWindow):
             self.update_download_button_state()  # Update button state after selecting folder
             self.log_window.append(f"Output folder set to: {folder}")
             
-
     def switch_theme(self):
         if self.current_theme == "dark":
             self.apply_theme(resource_path("assets/qss/light.qss"))
@@ -435,7 +449,6 @@ class MainWindow(QMainWindow):
         except Exception as e:
             QMessageBox.warning(self, "Update Error", f"Could not check for updates: {e}")
     
-
     def _open_output_folder(self):
         if not self.output_path:
             self.show_error("No folder", "Select an output folder first.")
@@ -451,3 +464,20 @@ class MainWindow(QMainWindow):
         if self._back_callback:
             self.hide()
             self._back_callback()
+
+    def _on_formats_loaded(self, formats):
+        self.format_dropdown.clear()
+        for f in formats:
+            label = f"{f['format_id']} - {f['ext']} - {f.get('format_note', '')} - {f.get('resolution', '') or f.get('abr', '')}"
+        self.format_dropdown.addItem(label, f['format_id'])
+        if self.spinner_dialog:
+            self.spinner_dialog.accept()
+            self.spinner_dialog = None
+
+    def _on_formats_error(self, error_message):
+        self.format_dropdown.clear()
+        self.format_dropdown.addItem(f"Error: {error_message}")
+        if self.spinner_dialog:
+            self.spinner_dialog.accept()
+            self.spinner_dialog = None
+        self.show_error("Error loading formats", error_message)

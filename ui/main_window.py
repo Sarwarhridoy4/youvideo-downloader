@@ -10,6 +10,7 @@ from PySide6.QtCore import Qt, QThread, Signal, QTimer
 from PySide6.QtGui import QMovie, QIcon
 from downloader.yt_downloader import get_formats, download_and_merge
 import os
+import sys
 from downloader.ffmpeg_utils import ensure_ffmpeg
 from PySide6.QtWidgets import QApplication
 from utils.pathfinder import resource_path
@@ -219,6 +220,7 @@ class MainWindow(QMainWindow):
         hlayout.addWidget(self.load_formats_btn)
 
         self.download_btn = QPushButton("Download")
+        self.download_btn.setEnabled(False)           # ← start disabled
         self.download_btn.clicked.connect(self.download)
         hlayout.addWidget(self.download_btn)
 
@@ -234,12 +236,40 @@ class MainWindow(QMainWindow):
         self.spinner_dialog = None
 
         self.audio_radio.toggled.connect(lambda checked: self.format_dropdown.setVisible(not checked))
+        self.video_radio.toggled.connect(self.update_download_button_state)
+        self.audio_radio.toggled.connect(self.update_download_button_state)
+
+        self.format_dropdown.currentIndexChanged.connect(
+        self.update_download_button_state
+        
+)
+        # Output folder section
+        self.open_folder_btn = QPushButton("Open Output Folder")
+        self.open_folder_btn.clicked.connect(self._open_output_folder)
+        self.open_folder_btn.setEnabled(False)
+        layout.addWidget(self.open_folder_btn)
+
+    def update_download_button_state(self):
+        url_ok = bool(self.url_input.text().strip())
+        folder_ok = bool(self.output_path)
+        format_ok = bool(self.format_dropdown.currentData())
+
+        self.open_folder_btn.setEnabled(folder_ok)
+
+        if self.audio_radio.isChecked():
+            ready = url_ok and folder_ok
+        else:
+            ready = url_ok and folder_ok and format_ok
+        self.download_btn.setEnabled(ready)
 
     def browse_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "Select Output Folder")
         if folder:
             self.output_path = folder
             self.output_label.setText(f"Output folder: {folder}")
+            self.update_download_button_state()  # Update button state after selecting folder
+            self.log_window.append(f"Output folder set to: {folder}")
+            
 
     def switch_theme(self):
         if self.current_theme == "dark":
@@ -404,6 +434,18 @@ class MainWindow(QMainWindow):
                 QMessageBox.information(self, "Up to Date", "You have the latest version.")
         except Exception as e:
             QMessageBox.warning(self, "Update Error", f"Could not check for updates: {e}")
+    
+
+    def _open_output_folder(self):
+        if not self.output_path:
+            self.show_error("No folder", "Select an output folder first.")
+            return
+        if sys.platform.startswith("win"):
+            os.startfile(self.output_path)
+        elif sys.platform == "darwin":
+            subprocess.Popen(["open", self.output_path])
+        else:
+            subprocess.Popen(["xdg-open", self.output_path])
 
     def _on_back(self):
         if self._back_callback:

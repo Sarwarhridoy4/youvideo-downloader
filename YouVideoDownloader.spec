@@ -33,6 +33,7 @@ exe = EXE(
     [],
     name='YouVideoDownloader',
     debug=False,
+    onefile=False,  # ← default, can be explicit
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
@@ -55,4 +56,14 @@ coll = COLLECT(
     upx=True,
     upx_exclude=[],
     name='YouVideoDownloader'
+)
+
+# one‑dir bundle
+dist = COLLECT(
+    exe,
+    a.binaries,
+    a.datas,
+    strip=False,
+    upx=True,
+    name='YouVideoDownloader',
 )

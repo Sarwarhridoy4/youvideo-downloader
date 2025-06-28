@@ -4,7 +4,7 @@ set -e
 # ── Core metadata ─────────────────────────────────────────────────────────────
 APP_NAME="youvideo-downloader"
 EXECUTABLE="YouVideoDownloader"
-VERSION="1.5.0"
+VERSION="1.6.0"
 ARCH="$(dpkg --print-architecture)"
 MAINTAINER="Sarwar Hossain <sarwarhridoy4@gmail.com>"
 HOMEPAGE="https://github.com/Sarwarhridoy4/youvideo-downloader"

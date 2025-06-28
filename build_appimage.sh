@@ -4,7 +4,7 @@ set -e
 # ──────────────────────────────────  Core metadata  ───────────────────────────
 APP_NAME="youvideo-downloader"
 EXECUTABLE="YouVideoDownloader"              # PyInstaller launcher
-VERSION="1.5.0"
+VERSION="1.6.0"
 ARCH="$(uname -m)"                           # x86_64, aarch64, …
 DESCRIPTION="Elegant and modern YouTube/Video Downloader with PyQt6"
 HOMEPAGE="https://github.com/SarwarHridoy4/youvideo-downloader"

@@ -10,7 +10,7 @@
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{01A3BD0F-B367-4D70-9E3F-DEBE9F0E35E3}
+AppId={{634478EB-BA8C-40C3-B893-7C049A3A918D}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -31,7 +31,7 @@ ArchitecturesInstallIn64BitMode=x64compatible
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
 LicenseFile=C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\LICENSE
-InfoBeforeFile=C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\README.md
+InfoAfterFile=C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\README.md
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
@@ -48,8 +48,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\dist\YouVideoDownloader\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\dist\YouVideoDownloader\_internal\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

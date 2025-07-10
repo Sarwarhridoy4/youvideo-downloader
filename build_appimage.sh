@@ -29,9 +29,7 @@ chmod +x "${BUILD_DIR}/usr/bin/${EXECUTABLE}"
 
 # ────────────────────────────────  Icon & .desktop  ───────────────────────────
 echo "🖼  Installing icon ..."
-# Theme-directory copy (good for desktop integration)
 cp "${ICON_SRC}" "${BUILD_DIR}/usr/share/icons/hicolor/256x256/apps/youvideo.png"
-# Extra copy so appimagetool finds it directly
 cp "${ICON_SRC}" "${BUILD_DIR}/youvideo.png"
 
 echo "📄 Creating .desktop file ..."
@@ -47,12 +45,18 @@ Categories=AudioVideo;Video;
 StartupNotify=true
 EOF
 
-# Secondary copy in the usual XDG location
 install -Dm644 "${BUILD_DIR}/${APP_NAME}.desktop" \
                "${BUILD_DIR}/usr/share/applications/${APP_NAME}.desktop"
 
-# ────────────────────────────────  AppRun symlink  ────────────────────────────
-ln -s "usr/bin/${EXECUTABLE}" "${BUILD_DIR}/AppRun"
+# ────────────────────────────────  AppRun wrapper  ────────────────────────────
+echo "🔗 Creating AppRun launcher ..."
+cat > "${BUILD_DIR}/AppRun" <<'EOF'
+#!/bin/bash
+HERE="$(dirname "$(readlink -f "$0")")"
+export QT_QPA_PLATFORM_PLUGIN_PATH="$HERE/usr/bin/platforms"
+exec "$HERE/usr/bin/YouVideoDownloader"
+EOF
+
 chmod +x "${BUILD_DIR}/AppRun"
 
 # ───────────────────────────────  Optional README  ────────────────────────────
@@ -78,8 +82,8 @@ echo "✅ Using appimagetool at: ${APPIMAGE_TOOL_CMD}"
 
 # ───────────────────────────────  Build AppImage  ─────────────────────────────
 echo "📦 Building AppImage ..."
-"${APPIMAGE_TOOL_CMD}" "${BUILD_DIR}"            # produces ${APP_NAME}.AppImage
+"${APPIMAGE_TOOL_CMD}" "${BUILD_DIR}"
 mv "${APP_NAME}.AppImage" "${FINAL_IMAGE}"
 
 echo "✅ Created: ${FINAL_IMAGE}"
-echo -e "\nRun it anywhere with:\n  ./$(printf '%q' "${FINAL_IMAGE}")"
+echo -e "\n🚀 Run it anywhere with:\n  ./$(printf '%q' "${FINAL_IMAGE}")"

@@ -50,7 +50,7 @@ Version: ${VERSION}
 Section: video
 Priority: optional
 Architecture: ${ARCH}
-Depends: libc6 (>= 2.31), ffmpeg
+Depends: libc6 (>= 2.31), ffmpeg, libxcb-cursor0, libxcb-xinerama0, libxkbcommon-x11-0, libxcb-xinput0
 Maintainer: ${MAINTAINER}
 Homepage: ${HOMEPAGE}
 Description: ${DESCRIPTION}
@@ -79,8 +79,6 @@ echo "📦 Building Debian package ..."
 dpkg-deb --build "${BUILD_DIR}"
 DEB_FILE="${APP_NAME}_${VERSION}_${ARCH}.deb"
 mv "${BUILD_DIR}.deb" "${DEB_FILE}"
-
-echo "✅ Created: ${DEB_FILE}"
 
 # ── Install package & update icon cache ───────────────────────────────────────
 echo "📥 Installing ${DEB_FILE} ..."

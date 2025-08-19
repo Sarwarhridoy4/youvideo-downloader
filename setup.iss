@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "YouVideo Downloader"
-#define MyAppVersion "1.6"
+#define MyAppVersion "1.6.1"
 #define MyAppPublisher "Sarwar Hossain"
 #define MyAppURL "https://github.com/Sarwarhridoy4/youvideo-downloader/wiki"
 #define MyAppExeName "YouVideoDownloader.exe"
@@ -30,14 +30,14 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 DefaultGroupName={#MyAppName}
 AllowNoIcons=yes
-LicenseFile=C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\LICENSE
-InfoAfterFile=C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\README.md
+LicenseFile=C:\Users\Sarwar_Hossain\Desktop\youvideo-downloader\LICENSE
+InfoAfterFile=C:\Users\Sarwar_Hossain\Desktop\youvideo-downloader\README.md
 ; Uncomment the following line to run in non administrative install mode (install for current user only).
 ;PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-OutputDir=C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\Output
+OutputDir=C:\Users\Sarwar_Hossain\Desktop\youvideo-downloader\Output
 OutputBaseFilename=YouVideo_Downloader_setup
-SetupIconFile=C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\assets\icons\appicon.ico
+SetupIconFile=C:\Users\Sarwar_Hossain\Desktop\youvideo-downloader\assets\icons\appicon.ico
 SolidCompression=yes
 WizardStyle=modern
 
@@ -48,7 +48,7 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\Sarwar Hossain\Desktop\youvideo-downloader\dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Sarwar_Hossain\Desktop\youvideo-downloader\dist\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

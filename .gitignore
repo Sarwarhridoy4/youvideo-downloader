@@ -10,6 +10,7 @@ youvideo-downloader_1.0-1
 youvideo-downloader_1.0-1.deb
 .vscode
 .idea
+.venv
 *.pyc
 youvideo-downloader-deb
 youvideo-downloader_1.5.0_amd64.deb

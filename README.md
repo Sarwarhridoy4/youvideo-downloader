@@ -186,13 +186,13 @@ python main.py
 
 ![YouVideo Downloader Screenshot](./assets/screenshot/welcome.png)
 
-## Screenshot(Dark) Default
+## Screenshot Playlist
 
-![YouVideo Downloader Screenshot](./assets/screenshot/dark.png)
+![YouVideo Downloader Screenshot](./assets/screenshot/playlist.png)
 
-## Screenshot(Light)
+## Screenshot Single
 
-![YouVideo Downloader Screenshot](./assets/screenshot/light.png)
+![YouVideo Downloader Screenshot](./assets/screenshot/single.png)
 
 ## Contributing
 

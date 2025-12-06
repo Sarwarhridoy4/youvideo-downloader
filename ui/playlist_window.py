@@ -222,7 +222,7 @@ class PlaylistWindow(QMainWindow):
         open_folder_btn = QPushButton("Open output folder")
         open_folder_btn.clicked.connect(self._open_output_folder)  # type: ignore[arg-type]
 
-        theme_btn = QPushButton("Switch Theme")
+        theme_btn = QPushButton("🎨 Theme")
         theme_btn.clicked.connect(self.switch_theme)
 
         # button layout

@@ -1,23 +1,67 @@
+/* ──────────────── QProgressDialog – Modern Dark Style ──────────────── */
 QProgressDialog {
-    background-color: #232526;
-    color: #fff;
-    border-radius: 10px;
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+                                stop:0 #1e1f24, stop:1 #18191d);
+    color: #e0e0e0;
+    border: 2px solid #2d3038;
+    border-radius: 16px;
+    min-width: 420px;
+    max-width: 520px;
+    padding: 16px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+QProgressDialog QLabel {
+    color: #ffffff;
     font-size: 16px;
+    font-weight: 500;
+    background: transparent;
+    padding: 8px 4px;
+    margin: 0;
 }
-QLabel {
-    color: #fff;
-    font-size: 15px;
+
+/* Title bar text (if shown) */
+QProgressDialog #qt_msgbox_label,
+QProgressDialog #qt_title_label {
+    color: #ff5e62;
+    font-size: 18px;
+    font-weight: bold;
 }
-QProgressBar {
-    background-color: #1e1e1e;
-    border: 1px solid #303030;
-    border-radius: 4px;
+
+/* Progress Bar inside QProgressDialog */
+QProgressDialog QProgressBar {
+    background-color: #141518;
+    border: 2px solid #2d3038;
+    border-radius: 12px;
     text-align: center;
-    color: white;
-    height: 18px;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 15px;
+    height: 32px;
+    min-height: 32px;
 }
-QProgressBar::chunk {
-    background-color: #ff0000;
-    width: 10px;
-    margin: 1px;
+
+QProgressDialog QProgressBar::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #ff3b5c, stop:1 #ff1744);
+    border-radius: 10px;
+    margin: 3px;
+}
+
+/* Cancel button (if present) */
+QProgressDialog QPushButton {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                                stop:0 #353740, stop:1 #2a2b30);
+    color: #ff5e62;
+    border: 2px solid #ff5e62;
+    border-radius: 10px;
+    padding: 10px 24px;
+    font-weight: 600;
+    min-width: 100px;
+}
+
+QProgressDialog QPushButton:hover {
+    background: #ff3b5c;
+    color: white;
+    border-color: #ff3b5c;
 }

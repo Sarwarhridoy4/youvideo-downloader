@@ -12,9 +12,13 @@ youvideo-downloader_1.0-1.deb
 .idea
 .venv
 *.pyc
+*.deb
+*.AppImage
 youvideo-downloader-deb
 youvideo-downloader_1.5.0_amd64.deb
 appimagetool-x86_64.AppImage
 YouVideo_Downloader-x86_64.AppImage
 Output
 youvideo-downloader_1.6.0_amd64.deb
+squashfs-root
+*.log

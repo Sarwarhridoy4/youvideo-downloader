@@ -1,16 +1,29 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.utils.hooks import collect_data_files
+import os
+
+# Collect all files from assets folder recursively
+def collect_assets():
+    assets_data = []
+    assets_path = './assets'
+    
+    for root, dirs, files in os.walk(assets_path):
+        for file in files:
+            file_path = os.path.join(root, file)
+            # Get the relative directory path from assets
+            rel_dir = os.path.relpath(root, '.')
+            assets_data.append((file_path, rel_dir))
+    
+    return assets_data
 
 a = Analysis(
     ['main.py'],
     pathex=['.'],  # Include current directory
     binaries=[],
     datas=[
-        ('./assets/qss/light.qss', 'assets/qss'),
-        ('./assets/qss/dark.qss', 'assets/qss'),
-        ('./assets/qss/welcome.qss', 'assets/qss'),
-        ('./assets/icons/appicon.png', 'assets/icons'),
-        ('./assets/icons/spinner.gif', 'assets/icons'),
-        ('./assets/screenshot/', 'assets/screenshot'),
+        # Include entire assets folder recursively
+        ('./assets', 'assets'),
+        # Include other folders
         ('./downloader/', 'downloader'),
         ('./ui/', 'ui'),
     ],
@@ -45,6 +58,7 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     icon=['assets/icons/appicon.ico'],  # Optional
+    version='version.txt'
 )
 
 coll = COLLECT(

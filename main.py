@@ -20,6 +20,8 @@ from ui.playlist_window import PlaylistWindow
 from utils.pathfinder import resource_path
 
 
+ICON_PATH = resource_path("assets/icons/appicon.png")
+
 def fix_linux_wmclass():
     """
     Fix Linux WM_CLASS before QApplication is created.
@@ -54,6 +56,7 @@ def setup_application() -> QApplication:
     )
     
     app = QApplication(sys.argv)
+    app.setWindowIcon(QIcon(ICON_PATH))
 
     # Application metadata
     app.setApplicationName("YouVideo Downloader")

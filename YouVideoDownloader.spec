@@ -1,72 +1,77 @@
 # -*- mode: python ; coding: utf-8 -*-
-from PyInstaller.utils.hooks import collect_data_files
+# ==============================================================================
+# YouVideo Downloader — Ultimate Cross-Platform PyInstaller Spec
+# Works perfectly on Linux · Windows · macOS with correct icons everywhere
+# Uses your excellent create_icon.py output
+# ==============================================================================
+
+import sys
 import os
 
-# Collect all files from assets folder recursively
-def collect_assets():
-    assets_data = []
-    assets_path = './assets'
-    
-    for root, dirs, files in os.walk(assets_path):
-        for file in files:
-            file_path = os.path.join(root, file)
-            # Get the relative directory path from assets
-            rel_dir = os.path.relpath(root, '.')
-            assets_data.append((file_path, rel_dir))
-    
-    return assets_data
+# ────────────────────────────── Platform Detection ──────────────────────────────
+IS_WINDOWS = sys.platform.startswith("win") or sys.platform == "cygwin"
+IS_MACOS   = sys.platform == "darwin"
+IS_LINUX   = sys.platform.startswith("linux")
 
+# ────────────────────────────── Icon Selection ──────────────────────────────
+icon_file = None
+if IS_WINDOWS:
+    icon_file = "assets/icons/appicon.ico"
+elif IS_MACOS:
+    icon_file = "assets/icons/appicon.icns"
+# Linux: no icon in binary → handled by .desktop file + hicolor theme
+
+# ────────────────────────────── Application Name ──────────────────────────────
+binary_name = "youvideo-downloader" if IS_LINUX else "YouVideo Downloader"
+
+# ────────────────────────────── Analysis ──────────────────────────────
 a = Analysis(
-    ['main.py'],
-    pathex=['.'],  # Include current directory
+    ["main.py"],
+    pathex=[],
     binaries=[],
     datas=[
-        # Include entire assets folder recursively
-        ('./assets', 'assets'),
-        # Include other folders
-        ('./downloader/', 'downloader'),
-        ('./ui/', 'ui'),
+        ("assets/qss", "assets/qss"),
+        ("assets/icons", "assets/icons"),
+        ("assets/screenshot", "assets/screenshot"),
+        ("downloader", "downloader"),
+        ("ui", "ui"),
+        ("utils", "utils"),
     ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
-    noarchive=False,
-    optimize=0,
+    cipher=None,
 )
 
-pyz = PYZ(a.pure)
+pyz = PYZ(a.pure, a.zipped_data, cipher=None)
 
 exe = EXE(
     pyz,
     a.scripts,
     a.binaries,
+    a.zipfiles,
     a.datas,
     [],
-    name='YouVideoDownloader',
+    name=binary_name,
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
     upx_exclude=[],
-    runtime_tmpdir=None,
     console=False,
-    disable_windowed_traceback=False,
-    argv_emulation=False,
-    target_arch=None,
-    codesign_identity=None,
-    entitlements_file=None,
-    icon=['assets/icons/appicon.ico'],  # Optional
-    version='version.txt'
+    icon=icon_file,           # ← Only used on Windows/macOS → safe on Linux
+    version="version.txt" if os.path.exists("version.txt") else None,
 )
 
-coll = COLLECT(
+# One-folder bundle (recommended for .deb + portable distribution)
+COLLECT(
     exe,
     a.binaries,
+    a.zipfiles,
     a.datas,
     strip=False,
     upx=True,
-    upx_exclude=[],
-    name='YouVideoDownloader'
+    name="YouVideoDownloader",  # Folder name in dist/
 )

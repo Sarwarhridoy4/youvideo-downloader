@@ -93,25 +93,25 @@ python main.py
 
 ## বৈশিষ্ট্যসমূহ
 
-- ইউটিউব ভিডিও ডাউনলোড করার সুবিধা。
-- ফেসবুকসহ অন্যান্য প্ল্যাটফর্ম থেকেও ভিডিও ডাউনলোড করার সুবিধা (ইউটিউব ও ফেসবুক পরীক্ষিত)。
-- _ffmpeg_ ইনস্টল আছে কিনা স্বয়ংক্রিয়ভাবে শনাক্ত করে এবং না থাকলে যেকোনো অপারেটিং সিস্টেমে স্বয়ংক্রিয়ভাবে ইনস্টল করার ব্যবস্থা。
-- বিভিন্ন ভিডিও/অডিও ফরম্যাট থেকে পছন্দ করার অপশন。
+- ইউটিউব ভিডিও ডাউনলোড করার সুবিধা।
+- ফেসবুকসহ অন্যান্য প্ল্যাটফর্ম থেকেও ভিডিও ডাউনলোড করার সুবিধা (ইউটিউব ও ফেসবুক পরীক্ষিত)।
+- _ffmpeg_ ইনস্টল আছে কিনা স্বয়ংক্রিয়ভাবে শনাক্ত করে এবং না থাকলে যেকোনো অপারেটিং সিস্টেমে স্বয়ংক্রিয়ভাবে ইনস্টল করার ব্যবস্থা।
+- বিভিন্ন ভিডিও/অডিও ফরম্যাট থেকে পছন্দ করার অপশন।
 - mp3 ডাউনলোড করার অপশন।
-- ডাউনলোড সংরক্ষণের জন্য ফোল্ডার নির্বাচন。
-- ডাউনলোড এবং কনভার্সনের অগ্রগতি দেখানো প্রগ্রেস বার。
-- ডাউনলোড স্ট্যাটাস এবং মেসেজ দেখানোর লগ উইন্ডো。
-- ইউটিউব অনুপ্রাণিত ডার্ক ও লাইট থিম পরিবর্তন করার সুবিধা。
-- অডিও ও ভিডিও ফরম্যাট স্বয়ংক্রিয়ভাবে ডাউনলোড ও মার্জ করার ব্যবস্থা。
-- Pyside6 ব্যবহার করে একটি আধুনিক ডেস্কটপ অ্যাপ্লিকেশন。
-- আলাদা QSS ফাইলসহ আধুনিক নিউমরফিজম অনুপ্রাণিত UI প্রতিটি থিম এবং ডায়ালগের জন্য。
+- ডাউনলোড সংরক্ষণের জন্য ফোল্ডার নির্বাচন।
+- ডাউনলোড এবং কনভার্সনের অগ্রগতি দেখানো প্রগ্রেস বার।
+- ডাউনলোড স্ট্যাটাস এবং মেসেজ দেখানোর লগ উইন্ডো।
+- ইউটিউব অনুপ্রাণিত ডার্ক ও লাইট থিম পরিবর্তন করার সুবিধা।
+- অডিও ও ভিডিও ফরম্যাট স্বয়ংক্রিয়ভাবে ডাউনলোড ও মার্জ করার ব্যবস্থা।
+- Pyside6 ব্যবহার করে একটি আধুনিক ডেস্কটপ অ্যাপ্লিকেশন।
+- আলাদা QSS ফাইলসহ আধুনিক নিউমরফিজম অনুপ্রাণিত UI প্রতিটি থিম এবং ডায়ালগের জন্য।
 - প্রধান উইন্ডোর আগে স্বাগতম স্ক্রীন, বন্ধুত্বপূর্ণ শুরু করার জন্য।
 
 ---
 
 ## ইনস্টলেশন
 
-### প্রয়োজনীয়তা
+### প্রয়োজনীয়তা
 
 - Python 3.8 বা তার উপরে
 - `yt-dlp` (ইউটিউব ডাউনলোডার ব্যাকএন্ড)
@@ -123,11 +123,11 @@ python main.py
 1. রিপোজিটরি ক্লোন অথবা ডাউনলোড করুন।
 
 ```bash
-git clone https://github.com/yourusername/youvideo-downloader.git
+git clone https://github.com/Sarwarhridoy4/youvideo-downloader.git
 cd youvideo-downloader
 ```
 
-2. পাইটনের ভার্চুয়াল এনভায়রনমেন্ট তৈরি ও সক্রিয় করুন (ঐচ্ছিক):
+2. পাইটনের ভার্চুয়াল এনভায়রনমেন্ট তৈরি ও সক্রিয় করুন (ঐচ্ছিক):
 
 ```bash
 python -m venv venv
@@ -135,7 +135,7 @@ source venv/bin/activate  # Linux/macOS
 venv\Scripts\activate   # Windows
 ```
 
-3. প্রয়োজনীয় প্যাকেজ ইনস্টল করুন:
+3. প্রয়োজনীয় প্যাকেজ ইনস্টল করুন:
 
 ```bash
 pip install -r requirements.txt
@@ -145,13 +145,13 @@ pip install -r requirements.txt
 
 #### Windows
 
-- [ffmpeg.org/download.html](https://ffmpeg.org/download.html) থেকে সর্বশেষ স্ট্যাটিক বিল্ড ডাউনলোড করুন。
-- জিপ ফাইলটি এক্সট্রাক্ট করুন。
+- [ffmpeg.org/download.html](https://ffmpeg.org/download.html) থেকে সর্বশেষ স্ট্যাটিক বিল্ড ডাউনলোড করুন।
+- জিপ ফাইলটি এক্সট্রাক্ট করুন।
 - এক্সট্রাক্ট করা ফোল্ডারের ভিতরের `bin` ফোল্ডারটি আপনার সিস্টেম `PATH`-এ যোগ করুন।
 
 #### Windows (বিকল্প: winget ব্যবহার করে)
 
-- যদি আপনার [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/) ইনস্টল করা থাকে, তাহলে নিচের কমান্ড দিয়ে ffmpeg ইনস্টল করতে পারেন:
+- যদি আপনার [winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/) ইনস্টল করা থাকে, তাহলে নিচের কমান্ড দিয়ে ffmpeg ইনস্টল করতে পারেন:
 
 ```bash
 winget install --id=Gyan.FFmpeg -e
@@ -159,7 +159,7 @@ winget install --id=Gyan.FFmpeg -e
 
 #### Linux
 
-- প্যাকেজ ম্যানেজার দিয়ে ইনস্টল করুন (উদাহরণ: Ubuntu/Debian):
+- প্যাকেজ ম্যানেজার দিয়ে ইনস্টল করুন (উদাহরণ: Ubuntu/Debian):
 
 ```bash
 sudo apt update
@@ -194,6 +194,92 @@ python main.py
 
 ![YouVideo Downloader Screenshot](./assets/screenshot/single.png)
 
+---
+
+## 🚀 Building Packages
+
+YouVideo Downloader provides comprehensive build scripts for creating DEB packages and AppImages on Linux.
+
+### Quick Start - Build Packages
+
+#### Method 1: Using Master Build Script (Easiest)
+
+```bash
+# Make the master script executable
+chmod +x build.sh
+
+# Run interactive menu
+./build.sh
+
+# Or use direct commands:
+./build.sh deps        # Install all dependencies
+./build.sh deb         # Build DEB package
+./build.sh appimage    # Build AppImage
+./build.sh all         # Build both packages
+```
+
+#### Method 2: Install Dependencies First
+
+```bash
+# Install all required dependencies (FFmpeg, Qt6, PySide6, etc.)
+chmod +x install_dependencies.sh
+sudo ./install_dependencies.sh
+
+# Then build your package
+chmod +x build_deb.sh        # For DEB package
+./build_deb.sh
+
+# OR
+chmod +x build_appimage.sh   # For AppImage
+./build_appimage.sh
+```
+
+### Available Build Scripts
+
+1. **`build.sh`** - Master build script with interactive menu
+2. **`install_dependencies.sh`** - Automated dependency installer for all Linux distributions
+3. **`build_deb.sh`** - Creates `.deb` packages for Debian-based systems
+4. **`build_appimage.sh`** - Creates portable AppImages for universal Linux compatibility
+
+### What Gets Installed
+
+The dependency installer handles:
+- ✅ Python 3.8+ and pip
+- ✅ FFmpeg (video/audio processing)
+- ✅ Qt6 libraries (PySide6 dependencies)
+- ✅ X11 and graphics libraries
+- ✅ Audio libraries
+- ✅ Build tools and packaging utilities
+- ✅ PyInstaller, PySide6, yt-dlp
+
+### Supported Linux Distributions
+
+- Ubuntu / Debian / Linux Mint / Pop!_OS
+- Fedora / RHEL / CentOS / Rocky Linux
+- Arch Linux / Manjaro / EndeavourOS
+- openSUSE / SLES
+
+### Build Output
+
+**DEB Package:**
+- File: `youvideo-downloader_1.6.0_amd64.deb`
+- Install: `sudo dpkg -i youvideo-downloader_1.6.0_amd64.deb`
+- Run: `youvideo-downloader`
+
+**AppImage:**
+- File: `YouVideo_Downloader-x86_64.AppImage`
+- Make executable: `chmod +x YouVideo_Downloader-x86_64.AppImage`
+- Run: `./YouVideo_Downloader-x86_64.AppImage`
+
+### Documentation
+
+For detailed build instructions, troubleshooting, and customization:
+- **[BUILD_GUIDE.md](BUILD_GUIDE.md)** - Complete step-by-step build guide
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Command cheat sheet
+- **[BUILD_SCRIPTS_README.md](BUILD_SCRIPTS_README.md)** - Technical documentation
+
+---
+
 ## Contributing
 
 Contributions are welcome! To contribute:
@@ -216,29 +302,36 @@ The following is the main folder structure of the **YouVideo Downloader** projec
 ```
 youvideo-downloader/
 │
-├── assets/ # Icons, styles, screenshots
-│ ├── icons/
-│ ├── qss/
-│ └── screenshot/
+├── assets/                      # Icons, styles, screenshots
+│   ├── icons/
+│   ├── qss/
+│   └── screenshot/
 │
-├── downloader/ # Core logic
-│ ├── ffmpeg_utils.py
-│ └── yt_downloader.py
+├── downloader/                  # Core logic
+│   ├── ffmpeg_utils.py
+│   └── yt_downloader.py
 │
-├── ui/ # PySide6 UI components
-│ ├── main_window.py
-│ ├── playlist_window.py
-│ ├── welcome_screen.py
-│ └── themes.py
+├── ui/                          # PySide6 UI components
+│   ├── main_window.py
+│   ├── playlist_window.py
+│   ├── welcome_screen.py
+│   └── themes.py
 │
-├── main.py # App entry point
-├── requirements.txt
+├── main.py                      # App entry point
+├── requirements.txt             # Python dependencies
+│
+├── build.sh                     # Master build script
+├── install_dependencies.sh      # Dependency installer
+├── build_deb.sh                 # DEB package builder
+├── build_appimage.sh            # AppImage builder
+│
+├── BUILD_GUIDE.md              # Complete build documentation
+├── QUICK_REFERENCE.md          # Command cheat sheet
+├── BUILD_SCRIPTS_README.md     # Technical documentation
+│
 ├── LICENSE
-├── build.sh
-├── build_appimage.sh
-├── build.iss
 ├── .gitignore
-└── readme.md
+└── README.md
 ```
 
 ---
@@ -247,7 +340,11 @@ youvideo-downloader/
 
 [![Watch the Demo](https://raw.githubusercontent.com/edent/SuperTinyIcons/master/images/svg/youtube.svg)](https://drive.google.com/file/d/1MfvxdM8NGUY02P9VjrEMSlkNO7JptZsE/preview)
 
+---
+
 ## 🖥️ Download & Install
+
+### Windows
 
 **Windows users can download the latest version here:**
 
@@ -257,42 +354,67 @@ youvideo-downloader/
   </a>
 </p>
 
-**Linux users can download the latest version here:**
-
-**AppImage**
-
-<p align="center">
-  <a href="https://github.com/Sarwarhridoy4/youvideo-downloader/releases/download/1.6.0/YouVideo_Downloader-x86_64.AppImage">
-    <img src="https://img.shields.io/badge/Download-YouVideo_Downloader-blue?style=for-the-badge&logo=linux&logoColor=orange" alt="Download YouVideo Downloader">
-  </a>
-</p>
-
-**Debian(.deb) for debian based distro**
-
-<p align="center">
-  <a href="https://github.com/Sarwarhridoy4/youvideo-downloader/releases/download/1.6.0/youvideo-downloader_1.6.0_amd64.deb">
-    <img src="https://img.shields.io/badge/Download-YouVideo_Downloader-blue?style=for-the-badge&logo=linux&logoColor=orange" alt="Download YouVideo Downloader">
-  </a>
-</p>
-
 1. Click the link above to download the installer.
 2. Run the installer and follow the setup instructions.
 3. Launch the application and start downloading!
-4. Portable for linux AppImage
 
-## 🔍Issues
+### Linux
 
-- ffmpeg auto install not working as expected in linux and maybe in mac due to not getting the super user privillage(in compiled version only) (Resolved)
-- install manually in this case will works fine (Resolved)
-- command are given in readme already (Resolved)
+**AppImage (Universal - Works on all distributions)**
 
-## ⚙️ Requirements (Built-in)
+<p align="center">
+  <a href="https://github.com/Sarwarhridoy4/youvideo-downloader/releases/download/1.6.0/YouVideo_Downloader-x86_64.AppImage">
+    <img src="https://img.shields.io/badge/Download-AppImage-blue?style=for-the-badge&logo=linux&logoColor=orange" alt="Download YouVideo Downloader AppImage">
+  </a>
+</p>
 
-You don't need to install Python or FFmpeg separately. The installer includes:
+```bash
+# Download and run
+chmod +x YouVideo_Downloader-x86_64.AppImage
+./YouVideo_Downloader-x86_64.AppImage
+```
+
+**DEB Package (Debian/Ubuntu/Mint)**
+
+<p align="center">
+  <a href="https://github.com/Sarwarhridoy4/youvideo-downloader/releases/download/1.6.0/youvideo-downloader_1.6.0_amd64.deb">
+    <img src="https://img.shields.io/badge/Download-DEB_Package-blue?style=for-the-badge&logo=debian&logoColor=red" alt="Download YouVideo Downloader DEB">
+  </a>
+</p>
+
+```bash
+# Install
+sudo dpkg -i youvideo-downloader_1.6.0_amd64.deb
+sudo apt --fix-broken install  # Fix any dependency issues
+
+# Run
+youvideo-downloader
+```
+
+### Build From Source
+
+Want to build packages yourself? See the [🚀 Building Packages](#-building-packages) section above.
+
+---
+
+## 🔍 Issues & Known Limitations
+
+- ✅ ffmpeg auto install not working as expected in Linux/macOS (in compiled version only) - **Resolved**
+  - Solution: Install manually using package manager (commands provided in README)
+  - Build scripts now handle this automatically
+
+---
+
+## ⚙️ Requirements (Pre-built Packages)
+
+Pre-built installers include everything you need:
 
 - Python runtime
 - Embedded FFmpeg binary
 - Pre-packaged `yt-dlp`
+- All dependencies bundled
+
+**For building from source:** See [BUILD_GUIDE.md](BUILD_GUIDE.md) for complete dependency list.
 
 ---
 
@@ -306,8 +428,32 @@ If you encounter bugs or want to suggest features, please [open an issue](https:
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
-> For comlpile guide
+---
 
-[HOW TO COPMILE](compile_guide.md)
+## 📚 Additional Documentation
 
-Made with ❤️ by Sarwar Hossain
+- **[BUILD_GUIDE.md](BUILD_GUIDE.md)** - Complete guide for building DEB and AppImage packages
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Quick command reference and troubleshooting
+- **[BUILD_SCRIPTS_README.md](BUILD_SCRIPTS_README.md)** - Technical documentation for build scripts
+- **[compile_guide.md](compile_guide.md)** - Original compilation guide
+
+---
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/Sarwarhridoy4">Sarwar Hossain</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Sarwarhridoy4/youvideo-downloader/stargazers">
+    <img src="https://img.shields.io/github/stars/Sarwarhridoy4/youvideo-downloader?style=social" alt="Stars">
+  </a>
+  <a href="https://github.com/Sarwarhridoy4/youvideo-downloader/network/members">
+    <img src="https://img.shields.io/github/forks/Sarwarhridoy4/youvideo-downloader?style=social" alt="Forks">
+  </a>
+  <a href="https://github.com/Sarwarhridoy4/youvideo-downloader/issues">
+    <img src="https://img.shields.io/github/issues/Sarwarhridoy4/youvideo-downloader" alt="Issues">
+  </a>
+  <a href="https://github.com/Sarwarhridoy4/youvideo-downloader/blob/production/LICENSE">
+    <img src="https://img.shields.io/github/license/Sarwarhridoy4/youvideo-downloader" alt="License">
+  </a>
+</p>

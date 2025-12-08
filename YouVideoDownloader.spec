@@ -19,6 +19,8 @@ if IS_WINDOWS:
     icon_file = "assets/icons/appicon.ico"
 elif IS_MACOS:
     icon_file = "assets/icons/appicon.icns"
+elif IS_LINUX:
+    icon_file = "assets/icons/appicon.png"
 # Linux: no icon in binary → handled by .desktop file + hicolor theme
 
 # ────────────────────────────── Application Name ──────────────────────────────

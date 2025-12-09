@@ -752,4 +752,38 @@ echo -e "   ${BLUE}./${APP_NAME}-${VERSION}-x86_64.AppImage${NC}"
 echo
 echo -e "   ${GREEN}Integration (Optional):${NC}"
 echo -e "   • Install AppImageLauncher for desktop integration"
-echo -e "   • Or use: ${BLUE}
+echo -e "   • Move to ~/Applications for easy access"
+echo
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo
+echo -e "${BLUE}📋 Package Information:${NC}"
+echo -e "   Name:        ${APP_NAME}"
+echo -e "   Version:     ${GREEN}${VERSION}${NC}"
+echo -e "   Maintainer:  ${MAINTAINER} <${EMAIL}>"
+echo -e "   Binary:      ${SAFE_BIN_NAME}"
+echo -e "   Categories:  ${CATEGORIES}"
+echo
+echo -e "${BLUE}🔧 Dependencies Included:${NC}"
+echo -e "   • Python 3.8+"
+echo -e "   • PyQt6 (GUI framework)"
+echo -e "   • yt-dlp (video downloader)"
+echo -e "   • FFmpeg (recommended for best results)"
+echo
+echo -e "${BLUE}📚 Documentation:${NC}"
+echo -e "   • Man page: ${BLUE}man ${SAFE_BIN_NAME}${NC}"
+echo -e "   • Project: https://github.com/Sarwarhridoy4/youvideo-downloader"
+echo -e "   • Issues: https://github.com/Sarwarhridoy4/youvideo-downloader/issues"
+echo
+echo -e "${YELLOW}💡 Testing Recommendations:${NC}"
+echo -e "   1. Install .deb package"
+echo -e "   2. Check application appears in menu with correct icon"
+echo -e "   3. Test video download functionality"
+echo -e "   4. Verify ffmpeg integration"
+echo -e "   5. Test playlist download feature"
+echo
+echo -e "${GREEN}✅ Build completed successfully!${NC}"
+echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo
+echo -e "${MAGENTA}Created by ${MAINTAINER}${NC}"
+echo -e "${CYAN}Thank you for using YouVideo Downloader!${NC}"
+echo

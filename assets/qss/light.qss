@@ -1,203 +1,244 @@
 /* ─────────────────────────────────────────────────────────────
-   YouVideo Downloader – Clean Modern Light Theme (2025)
-   Perfect pair with the dark theme – no UI bugs, full polish
+   YouTube 2025 Light Theme – Qt Style Sheet
+   Perfectly mimics the real YouTube desktop/web light mode
    ───────────────────────────────────────────────────────────── */
 
 QMainWindow, QWidget#centralWidget {
-    background-color: #f8f9fc;
-    color: #2d3748;
-    font-family: 'Segoe UI', 'Inter', 'Roboto', sans-serif;
-    font-weight: 400;
+    background-color: #ffffff;
+    color: #0f0f0f;
+    font-family: 'Roboto', 'YouTube Sans', 'Segoe UI', sans-serif;
+    font-size: 14px;
 }
 
-/* ──────────────── Base Widgets ──────────────── */
+/* ──────────────── Buttons ──────────────── */
 QPushButton {
-    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #ffffff, stop:1 #f1f3f8);
-    color: #2d3748;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 11px 22px;
-    font-weight: 600;
-    font-size: 15px;
-    min-height: 24px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    background-color: #f9f9f9;
+    color: #0f0f0f;
+    border: 1px solid #dadce0;
+    border-radius: 18px;           /* YouTube uses very round buttons */
+    padding: 10px 20px;
+    font-weight: 500;
+    font-size: 14px;
+    min-height: 20px;
 }
 
 QPushButton:hover {
-    background: #eef2ff;
-    border-color: #a0aec0;
-    color: #4a5568;
-    transform: translateY(-1px);
+    background-color: #f1f1f1;
+    border-color: #c6c6c6;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
 QPushButton:pressed {
-    background: #e2e8f0;
-    border-color: #cbd5e0;
-    box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+    background-color: #e5e5e5;
 }
 
-QPushButton:disabled {
-    background: #f7fafc;
-    color: #a0aec0;
-    border-color: #e2e8f0;
-}
-
-/* Special Download Button – Vibrant Green */
-QPushButton#downloadButton {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                stop:0 #10b981, stop:1 #059669);
+/* Primary Action Button – YouTube Red (Subscribe, Download, etc.) */
+QPushButton#downloadButton,
+QPushButton#subscribeButton,
+QPushButton[accessibleName="primary"] {
+    background-color: #ff0000;
     color: white;
-    font-size: 16px;
-    font-weight: bold;
     border: none;
-    border-radius: 12px;
-    padding: 16px 36px;
-    box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+    border-radius: 18px;
+    font-weight: 600;
+    padding: 12px 32px;
+    font-size: 14px;
 }
 
-QPushButton#downloadButton:hover {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                stop:0 #059669, stop:1 #047857);
-    box-shadow: 0 12px 28px rgba(5, 150, 105, 0.4);
+QPushButton#downloadButton:hover,
+QPushButton#subscribeButton:hover {
+    background-color: #e60000;
+    box-shadow: 0 4px 8px rgba(255,0,0,0.3);
 }
 
 QPushButton#downloadButton:disabled {
-    background: #9ca3af;
-    box-shadow: none;
+    background-color: #fccccc;
+    color: #990000;
 }
 
 /* ──────────────── Input Fields ──────────────── */
 QLineEdit, QComboBox, QTextEdit {
-    background: white;
-    color: #2d3748;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 12px 14px;
-    font-size: 15px;
-    selection-background-color: #ff5e62;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    background-color: #ffffff;
+    color: #0f0f0f;
+    border: 1px solid #dadce0;
+    border-radius: 20px;           /* YouTube search bar is very rounded */
+    padding: 12px 18px;
+    font-size: 16px;
+    selection-background-color: #ffaaaa;
 }
 
 QLineEdit:focus, QComboBox:focus {
-    border-color: #ff5e62;
+    border: 1px solid #ff0000;
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.15);
     outline: none;
-    box-shadow: 0 0 0 4px rgba(255, 94, 98, 0.15);
 }
 
-QComboBox::drop-down {
-    border: none;
-    width: 36px;
-    border-left: 1px solid #e2e8f0;
+/* Search bar specific */
+QLineEdit#urlInput, QLineEdit#searchInput {
+    padding-left: 50px;            /* space for magnifying glass icon */
+    font-size: 16px;
+    border-radius: 24px;
+    border: 1px solid #dadce0 solid;
 }
 
-QComboBox::down-arrow {
-    image: url(:/icons/down-arrow-light.png); /* optional */
-    width: 12px;
-    height: 12px;
-}
-
-/* ─────────────── Labels ──────────────── */
+/* ──────────────── Labels & Titles ──────────────── */
 QLabel {
-    color: #2d3748;
-    font-size: 15px;
+    color: #0f0f0f;
     background: transparent;
 }
 
-QLabel#headerLabel {
-    font-size: 28px;
-    font-weight: 700;
-    color: #1a202c;
-    background: transparent;
-    padding: 12px;
+QLabel#headerLabel, QLabel#titleLabel {
+    font-size: 24px;
+    font-weight: bold;
+    color: #0f0f0f;
+    padding: 8px 0;
 }
 
-/* ──────────────── Video List ──────────────── */
-QListWidget {
-    background: white;
-    border: 2px solid #e2e8f0;
-    border-radius: 14px;
-    alternate-background-color: #f8fafc;
+QLabel#channelName {
+    font-size: 16px;
+    color: #606060;
+    font-weight: 500;
+}
+
+/* Video title in list */
+QLabel#videoTitle {
+    font-size: 16px;
+    font-weight: 500;
+    color: #0f0f0f;
+}
+
+QLabel#videoMeta {
+    font-size: 13px;
+    color: #606060;
+}
+
+/* ──────────────── Video List / Results ──────────────── */
+QListWidget, QTreeWidget {
+    background: #ffffff;
+    border: none;
     outline: none;
     padding: 8px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    border-radius: 16px;
 }
 
 QListWidget::item {
-    padding: 12px 10px;
-    border-bottom: 1px solid #edf2f7;
-    border-radius: 8px;
-    margin: 2px 4px;
+    padding: 12px 8px;
+    border-radius: 12px;
+    margin: 4px 0;
+}
+
+QListWidget::item:hover {
+    background: #f5f5f5;
+    border-radius: 12px;
 }
 
 QListWidget::item:selected {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                stop:0 #ff5e62, stop:1 #ff1744);
-    color: white;
-    border-radius: 10px;
+    background: rgba(255, 0, 0, 0.1);
+    color: #0f0f0f;
+    border-radius: 12px;
 }
 
-QListWidget::item:hover:!selected {
-    background: #fef5f5;
-    border-radius: 10px;
-}
-
-/* ──────────────── Progress Bar ──────────────── */
+/* ──────────────── Progress Bar (Download) ──────────────── */
 QProgressBar {
-    border: 2px solid #e2e8f0;
-    border-radius: 14px;
-    background-color: #f1f5f9;
+    border: none;
+    border-radius: 8px;
+    background-color: #f1f1f1;
     text-align: center;
-    font-weight: bold;
-    font-size: 15px;
-    height: 32px;
-    color: #1a202c;
-    box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+    height: 8px;
+    font-size: 12px;
+    color: #0f0f0f;
 }
 
 QProgressBar::chunk {
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                stop:0 #ff5e62, stop:1 #ff1744);
-    border-radius: 12px;
-    margin: 3px;
+    background-color: #ff0000;
+    border-radius: 8px;
 }
 
-/* ──────────────── Frames & Panels ──────────────── */
-QFrame[frameShape="4"], QFrame[frameShape="5"] {
-    background: rgba(255, 255, 255, 0.7);
-    border: 1px solid #e2e8f0;
-    border-radius: 14px;
+/* ──────────────── Cards / Containers ──────────────── */
+QFrame#videoCard, QGroupBox {
+    background: #fbfbfb;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
     padding: 16px;
-    margin: 6px;
-    backdrop-filter: blur(10px);
+    margin: 8px;
 }
 
-/* ──────────────── Scrollbars ──────────────── */
+/* Thumbnail placeholder */
+QLabel#thumbnail {
+    border-radius: 12px;
+    background: #f1f1f1;
+    min-width: 220px;
+    min-height: 124px;
+}
+
+/* ──────────────── Scrollbars (minimal, YouTube style) ──────────────── */
 QScrollBar:vertical {
-    background: #f1f5f9;
-    width: 12px;
-    border-radius: 6px;
-    margin: 4px;
+    background: transparent;
+    width: 8px;
+    margin: 0;
 }
 
 QScrollBar::handle:vertical {
-    background: #cbd5e0;
-    border-radius: 6px;
+    background: #c1c1c1;
+    border-radius: 4px;
     min-height: 40px;
 }
 
 QScrollBar::handle:vertical:hover {
-    background: #ff5e62;
+    background: #a8a8a8;
 }
 
-QFrame#urlCard {
-    background: rgba(40, 42, 50, 0.5);
-    border: 2px solid #353740;
-    border-radius: 18px;
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
 }
 
-QLabel#headerLabel {
-    font-size: bold 32px;
-    color: #ff5e62;
-    padding: 10px;
+/* ──────────────── Tooltips ──────────────── */
+QToolTip {
+    background-color: rgba(50, 50, 50, 0.95);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+
+
+/* ──────────────── Final Polish ──────────────── */
+* {
+    selection-background-color: rgba(255, 0, 0, 0.3);
+}
+
+/* ────────────────────── Radio Buttons – Works perfectly in Light & Dark ────────────────────── */
+QRadioButton {
+    color: inherit;            /* automatically #0f0f0f in light, #f1f1f1 in dark */
+    font-weight: 500;
+    spacing: 10px;
+    padding: 6px 0;
+}
+
+QRadioButton::indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+}
+
+QRadioButton::indicator:unchecked {
+    border: 2px solid #80868b;
+    background-color: transparent;
+}
+
+QRadioButton::indicator:checked {
+    border: 5px solid #ff0000;   /* red ring */
+    background-color: #ffffff;   /* white dot */
+}
+
+QRadioButton::indicator:hover {
+    border-color: #ff0000;
+}
+
+QRadioButton:disabled,
+QRadioButton::indicator:disabled {
+    color: #888888;
+    border-color: #666666;
 }

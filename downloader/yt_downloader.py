@@ -1,12 +1,14 @@
 """
-yt_downloader.py – 2025-12-06 Enhanced Edition
------------------------------------------------
+yt_downloader.py – 2025-12-06 Enhanced Edition (Fixed Duplicate Popup)
+------------------------------------------------------------------------
 Improvements:
+• Fixed duplicate success/failure popups during video+audio merge
 • Robust error handling with detailed messages
 • Dual time display (elapsed + remaining)
 • ALL qualities captured (including premium/1080p60/1440p/4K)
 • Formats sorted ASCENDING (lowest to highest quality)
 • Progress tracking with ETA
+• Optimized performance with smart state tracking
 """
 
 from yt_dlp import YoutubeDL
@@ -37,10 +39,9 @@ def get_formats(url: str) -> list[dict]:
     ydl_opts = {
         "quiet": True,
         "skip_download": True,
-        "listformats": True,  # Get comprehensive format list
+        "listformats": True,
         "no_warnings": True,
         "socket_timeout": 30,
-        # Don't skip any formats - get everything
         "youtube_include_dash_manifest": True,
         "youtube_include_hls_manifest": True,
     }
@@ -58,13 +59,11 @@ def get_formats(url: str) -> list[dict]:
             for f in info.get("formats", []):
                 format_id = f.get("format_id")
                 
-                # Skip duplicates
                 if not format_id or format_id in seen_format_ids:
                     continue
                 
                 seen_format_ids.add(format_id)
                 
-                # Get format details
                 vcodec = f.get("vcodec", "none")
                 acodec = f.get("acodec", "none")
                 ext = f.get("ext", "unknown")
@@ -78,11 +77,9 @@ def get_formats(url: str) -> list[dict]:
                 filesize = f.get("filesize") or f.get("filesize_approx", 0)
                 format_note = f.get("format_note", "")
                 
-                # Skip if neither video nor audio
                 if vcodec == "none" and acodec == "none":
                     continue
                 
-                # Determine stream type
                 has_video = vcodec != "none"
                 has_audio = acodec != "none"
                 
@@ -95,15 +92,12 @@ def get_formats(url: str) -> list[dict]:
                 else:
                     continue
                 
-                # Calculate quality score for sorting
-                # Higher resolution, higher fps, higher bitrate = better
                 quality_score = (
-                    (height * 10000) +      # Height is most important
-                    (fps * 100) +            # FPS second
-                    (tbr if tbr else vbr)    # Bitrate third
+                    (height * 10000) +
+                    (fps * 100) +
+                    (tbr if tbr else vbr)
                 )
                 
-                # Build human-readable quality label
                 if has_video:
                     quality_label = f"{height}p"
                     if fps > 30:
@@ -117,7 +111,6 @@ def get_formats(url: str) -> list[dict]:
                 else:
                     quality_label = "Unknown"
                 
-                # Add to formats list
                 formats.append({
                     "format_id": format_id,
                     "ext": ext,
@@ -135,11 +128,9 @@ def get_formats(url: str) -> list[dict]:
                     "format_note": format_note,
                     "stream_type": stream_type,
                     "_quality_score": quality_score,
-                    # Keep original data
                     "_raw": f
                 })
             
-            # Sort ASCENDING (lowest quality first, highest last)
             formats.sort(key=lambda x: x.get("_quality_score", 0))
             
             return formats
@@ -165,7 +156,6 @@ def get_best_format(url: str) -> Optional[str]:
         if not formats:
             return "bestvideo+bestaudio/best"
         
-        # Get video formats only (we'll merge with best audio)
         video_formats = [
             f for f in formats
             if f["stream_type"] in ("video", "combined")
@@ -174,14 +164,11 @@ def get_best_format(url: str) -> Optional[str]:
         if not video_formats:
             return "bestvideo+bestaudio/best"
         
-        # Get the LAST item (highest quality due to ascending sort)
         best = video_formats[-1]
         
-        # If it's a combined stream, use it directly
         if best["stream_type"] == "combined":
             return best["format_id"]
         
-        # Otherwise, merge with best audio
         return f"{best['format_id']}+bestaudio"
         
     except Exception:
@@ -197,15 +184,13 @@ def get_format_display_info(formats: list[dict]) -> list[dict]:
     display_formats = []
     
     for f in formats:
-        # Create display string
         if f["stream_type"] == "video":
             display_str = f"{f['quality_label']} ({f['vcodec']}) [video only]"
         elif f["stream_type"] == "audio":
             display_str = f"{f['quality_label']} ({f['acodec']})"
-        else:  # combined
+        else:
             display_str = f"{f['quality_label']} ({f['vcodec']}+{f['acodec']})"
         
-        # Add filesize if available
         if f["filesize_mb"]:
             display_str += f" - {f['filesize_mb']}MB"
         
@@ -256,14 +241,13 @@ def get_playlist_videos(url: str, playlist_items: Optional[str] = None) -> list[
             entries = info.get("entries", [])
             
             for entry in entries:
-                if not entry:  # Skip None entries (deleted/private videos)
+                if not entry:
                     continue
                 
                 vid_id = entry.get("id") or entry.get("url", "")
                 title = entry.get("title") or "Untitled"
                 duration = entry.get("duration", 0)
                 
-                # Build full URL
                 if vid_id and not vid_id.startswith("http"):
                     vid_url = f"https://www.youtube.com/watch?v={vid_id}"
                 else:
@@ -287,11 +271,15 @@ def get_playlist_videos(url: str, playlist_items: Optional[str] = None) -> list[
 
 # ─────────────────────── download / merge ───────────────────
 class ProgressTracker:
-    """Tracks download progress with dual time display"""
+    """Tracks download progress with dual time display and state management"""
     
     def __init__(self):
         self.start_time = time.time()
         self.last_update = 0
+        self.finished_count = 0  # Track how many streams finished
+        self.is_merging = False  # Track if we're in merge phase
+        self.download_complete = False  # Track overall completion
+        self.current_stream = None  # Track current stream (video/audio/merge)
     
     def format_time(self, seconds: float) -> str:
         """Convert seconds to HH:MM:SS or MM:SS format"""
@@ -318,6 +306,14 @@ class ProgressTracker:
         remaining_bytes = total - downloaded
         remaining_secs = remaining_bytes / speed
         return self.format_time(remaining_secs)
+    
+    def reset(self):
+        """Reset tracker for new download"""
+        self.start_time = time.time()
+        self.finished_count = 0
+        self.is_merging = False
+        self.download_complete = False
+        self.current_stream = None
 
 
 def download_and_merge(
@@ -343,11 +339,38 @@ def download_and_merge(
     tracker = ProgressTracker()
     
     def enhanced_progress_hook(d):
-        """Enhanced progress hook with dual time display"""
+        """
+        Enhanced progress hook with dual time display and smart completion detection.
+        Shows progress for BOTH video and audio streams separately.
+        Only signals final completion ONCE after all streams are finished and merged.
+        """
         try:
             status = d.get("status", "")
+            filename = d.get("filename", "")
             
             if status == "downloading":
+                # Detect which stream we're downloading
+                if "f" in d:  # yt-dlp includes format info
+                    # Determine stream type from filename or format
+                    if ".f" in filename:
+                        # Extract format ID from filename (e.g., video.fXXX.mp4)
+                        if "audio" in filename.lower() or ".m4a" in filename or ".webm" in filename.lower():
+                            stream_type = "audio"
+                        else:
+                            stream_type = "video"
+                    else:
+                        stream_type = "combined"
+                else:
+                    stream_type = "unknown"
+                
+                # Update current stream if changed
+                if tracker.current_stream != stream_type:
+                    tracker.current_stream = stream_type
+                    log_signal.emit(f"📥 Downloading {stream_type}...")
+                
+                # Reset merge flag if we're downloading again
+                tracker.is_merging = False
+                
                 downloaded = d.get("downloaded_bytes", 0)
                 total = d.get("total_bytes") or d.get("total_bytes_estimate", 0)
                 speed = d.get("speed", 0) or 0
@@ -355,24 +378,60 @@ def download_and_merge(
                 elapsed = tracker.get_elapsed()
                 remaining = tracker.get_remaining(speed, total, downloaded)
                 
-                # Add timing info to the dict
                 d["elapsed_str"] = elapsed
                 d["remaining_str"] = remaining
                 d["dual_time"] = f"{elapsed} / {remaining}"
+                d["stream_type"] = stream_type  # Add stream type to progress data
                 
-                # Add percentage
                 if total > 0:
                     d["percent"] = (downloaded / total) * 100
+                else:
+                    d["percent"] = 0
+                
+                # Always emit progress updates
+                progress_hook(d)
                 
             elif status == "finished":
-                elapsed = tracker.get_elapsed()
-                d["elapsed_str"] = elapsed
-                d["dual_time"] = f"Completed in {elapsed}"
-                d["percent"] = 100
-            
-            # Call original hook
-            progress_hook(d)
-            
+                # Increment finished count (video and/or audio stream)
+                tracker.finished_count += 1
+                
+                # Determine what just finished
+                if ".f" in filename and not filename.endswith(".mp4"):
+                    # This is a partial stream (video or audio)
+                    if "audio" in filename.lower() or ".m4a" in filename:
+                        stream_finished = "audio"
+                    else:
+                        stream_finished = "video"
+                    
+                    log_signal.emit(f"✓ {stream_finished.capitalize()} stream downloaded")
+                    
+                    # Emit progress for individual stream completion
+                    # but don't mark as final completion
+                    d["stream_type"] = stream_finished
+                    d["percent"] = 100
+                    d["final_completion"] = False  # Not final yet
+                    progress_hook(d)
+                    
+                elif filename.endswith(".mp4") or filename.endswith(".mkv"):
+                    # This is the final merged file
+                    if not tracker.download_complete:
+                        tracker.download_complete = True
+                        tracker.is_merging = False
+                        
+                        elapsed = tracker.get_elapsed()
+                        log_signal.emit(f"✓ Download complete! (Total time: {elapsed})")
+                        
+                        d["elapsed_str"] = elapsed
+                        d["dual_time"] = f"Completed in {elapsed}"
+                        d["percent"] = 100
+                        d["stream_type"] = "final"
+                        d["final_completion"] = True  # THIS IS THE FINAL COMPLETION
+                        progress_hook(d)
+                
+            elif status == "error":
+                # Always emit error status
+                progress_hook(d)
+                
         except Exception as e:
             log_signal.emit(f"Progress tracking error: {str(e)}")
     
@@ -385,7 +444,6 @@ def download_and_merge(
     
     # Build format string
     if format_code and format_code != "best":
-        # If format doesn't have audio, merge with best audio
         if "+" not in format_code:
             format_str = f"{format_code}+bestaudio/best"
         else:
@@ -406,7 +464,6 @@ def download_and_merge(
         "retries": 5,
         "fragment_retries": 5,
         "file_access_retries": 3,
-        # Enable all manifest types for premium formats
         "youtube_include_dash_manifest": True,
         "youtube_include_hls_manifest": True,
         "postprocessors": [
@@ -418,7 +475,7 @@ def download_and_merge(
         "postprocessor_args": [
             "-c:v", "copy",
             "-c:a", "aac",
-            "-b:a", "192k",  # Good audio quality
+            "-b:a", "192k",
             "-movflags", "faststart"
         ],
     }
@@ -429,13 +486,24 @@ def download_and_merge(
             log_signal.emit(f"Saving to: {output_path}")
             
             # Reset tracker
-            tracker.start_time = time.time()
+            tracker.reset()
             
             # Download
             ydl.download([url])
             
-            elapsed = tracker.get_elapsed()
-            log_signal.emit(f"✓ Download complete! (Total time: {elapsed})")
+            # Ensure completion is signaled if not already done
+            if not tracker.download_complete:
+                elapsed = tracker.get_elapsed()
+                log_signal.emit(f"✓ Download complete! (Total time: {elapsed})")
+                
+                # Emit final completion
+                progress_hook({
+                    "status": "finished",
+                    "elapsed_str": elapsed,
+                    "dual_time": f"Completed in {elapsed}",
+                    "percent": 100,
+                    "final_completion": True
+                })
             
     except YtdlpDownloadError as e:
         raise DownloadError(f"Download failed: {str(e)}")
@@ -466,7 +534,6 @@ def download_playlist(
         quality: "best", "worst", or specific format code
     """
     try:
-        # Get playlist items
         playlist_items = f"1-{max_videos}" if max_videos else None
         videos = get_playlist_videos(playlist_url, playlist_items)
         
@@ -476,7 +543,6 @@ def download_playlist(
         log_signal.emit(f"Found {len(videos)} videos in playlist")
         log_signal.emit(f"Quality setting: {quality}\n")
         
-        # Download each video
         success_count = 0
         failed_count = 0
         
@@ -484,7 +550,6 @@ def download_playlist(
             log_signal.emit(f"[{idx}/{len(videos)}] {video['title']}")
             
             try:
-                # Determine format code
                 if quality == "best":
                     fmt = get_best_format(video['url'])
                 elif quality == "worst":
@@ -496,7 +561,6 @@ def download_playlist(
                 
                 log_signal.emit(f"  Format: {fmt}")
                 
-                # Download
                 download_and_merge(
                     video['url'],
                     fmt,
@@ -512,7 +576,6 @@ def download_playlist(
                 failed_count += 1
                 continue
         
-        # Summary
         log_signal.emit(f"\n{'='*50}")
         log_signal.emit(f"Playlist download complete!")
         log_signal.emit(f"✓ Success: {success_count}/{len(videos)}")

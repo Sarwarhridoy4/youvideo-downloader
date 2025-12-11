@@ -1,14 +1,14 @@
-/* ──────────────── QProgressDialog – Modern Dark Style ──────────────── */
+/* ──────────────── QProgressDialog – YouTube Dark Style ──────────────── */
 QProgressDialog {
     background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-                                stop:0 #1e1f24, stop:1 #18191d);
-    color: #e0e0e0;
-    border: 2px solid #2d3038;
+                                stop:0 #212121, stop:1 #0f0f0f);
+    color: #ffffff;
+    border: 2px solid #3d3d3d;
     border-radius: 16px;
     min-width: 420px;
     max-width: 520px;
     padding: 16px;
-    font-family: 'Segoe UI', sans-serif;
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
 }
 
 QProgressDialog QLabel {
@@ -23,15 +23,15 @@ QProgressDialog QLabel {
 /* Title bar text (if shown) */
 QProgressDialog #qt_msgbox_label,
 QProgressDialog #qt_title_label {
-    color: #ff5e62;
+    color: #ff0000;
     font-size: 18px;
     font-weight: bold;
 }
 
 /* Progress Bar inside QProgressDialog */
 QProgressDialog QProgressBar {
-    background-color: #141518;
-    border: 2px solid #2d3038;
+    background-color: #1a1a1a;
+    border: 2px solid #3d3d3d;
     border-radius: 12px;
     text-align: center;
     color: #ffffff;
@@ -43,25 +43,169 @@ QProgressDialog QProgressBar {
 
 QProgressDialog QProgressBar::chunk {
     background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                stop:0 #ff3b5c, stop:1 #ff1744);
+                                stop:0 #ff0000, stop:1 #cc0000);
     border-radius: 10px;
     margin: 3px;
+}
+
+/* Indeterminate/busy indicator animation */
+QProgressDialog QProgressBar:indeterminate {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #1a1a1a,
+                                stop:0.3 #ff0000,
+                                stop:0.7 #ff0000,
+                                stop:1 #1a1a1a);
 }
 
 /* Cancel button (if present) */
 QProgressDialog QPushButton {
     background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
-                                stop:0 #353740, stop:1 #2a2b30);
-    color: #ff5e62;
-    border: 2px solid #ff5e62;
+                                stop:0 #3d3d3d, stop:1 #2d2d2d);
+    color: #ff0000;
+    border: 2px solid #ff0000;
     border-radius: 10px;
     padding: 10px 24px;
     font-weight: 600;
     min-width: 100px;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 QProgressDialog QPushButton:hover {
-    background: #ff3b5c;
-    color: white;
-    border-color: #ff3b5c;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                                stop:0 #ff0000, stop:1 #cc0000);
+    color: #ffffff;
+    border-color: #ff0000;
+}
+
+QProgressDialog QPushButton:pressed {
+    background: #cc0000;
+    border-color: #990000;
+}
+
+QProgressDialog QPushButton:disabled {
+    background: #2d2d2d;
+    color: #717171;
+    border-color: #3d3d3d;
+}
+
+/* Alternative: Blue secondary button style */
+QProgressDialog QPushButton#secondary {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                                stop:0 #3d3d3d, stop:1 #2d2d2d);
+    color: #3ea6ff;
+    border: 2px solid #3ea6ff;
+}
+
+QProgressDialog QPushButton#secondary:hover {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                                stop:0 #3ea6ff, stop:1 #2a8dd6);
+    color: #ffffff;
+    border-color: #3ea6ff;
+}
+
+QProgressDialog QPushButton#secondary:pressed {
+    background: #2a8dd6;
+    border-color: #1976d2;
+}
+
+/* ──────────────── Standalone QProgressBar – YouTube Style ──────────────── */
+QProgressBar {
+    background-color: #1a1a1a;
+    border: 2px solid #3d3d3d;
+    border-radius: 12px;
+    text-align: center;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 14px;
+    height: 28px;
+    min-height: 28px;
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
+}
+
+QProgressBar::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #ff0000, stop:1 #cc0000);
+    border-radius: 10px;
+    margin: 2px;
+}
+
+/* Hover effect for interactive progress bars */
+QProgressBar:hover {
+    border-color: #ff0000;
+}
+
+/* Alternative: Blue progress bar for secondary actions */
+QProgressBar#secondary {
+    border-color: #3d3d3d;
+}
+
+QProgressBar#secondary::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #3ea6ff, stop:1 #2a8dd6);
+}
+
+QProgressBar#secondary:hover {
+    border-color: #3ea6ff;
+}
+
+/* Success state (when progress reaches 100%) */
+QProgressBar#success::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #00c853, stop:1 #00a843);
+}
+
+/* Warning state */
+QProgressBar#warning::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #ffc107, stop:1 #ffb300);
+}
+
+/* Error state */
+QProgressBar#error::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #ff0000, stop:1 #d32f2f);
+}
+
+/* Thin progress bar variant (like YouTube video progress) */
+QProgressBar#thin {
+    height: 4px;
+    min-height: 4px;
+    border: none;
+    border-radius: 2px;
+    background-color: #3d3d3d;
+}
+
+QProgressBar#thin::chunk {
+    background: #ff0000;
+    border-radius: 2px;
+    margin: 0;
+}
+
+QProgressBar#thin:hover {
+    height: 6px;
+    min-height: 6px;
+}
+
+/* Circular/Indeterminate progress indicator styling */
+QProgressBar:indeterminate {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #1a1a1a,
+                                stop:0.3 #ff0000,
+                                stop:0.5 #ff3333,
+                                stop:0.7 #ff0000,
+                                stop:1 #1a1a1a);
+    border: 2px solid #3d3d3d;
+}
+
+/* Percentage text styling */
+QProgressBar[textVisible="true"] {
+    color: #ffffff;
+    font-weight: 600;
+}
+
+QProgressBar[textVisible="false"]::chunk {
+    /* Full radius when no text */
+    border-radius: 10px;
 }

@@ -368,6 +368,7 @@ class MainWindow(QMainWindow):
         type_layout = QHBoxLayout(type_frame)
         
         type_label = QLabel("Download Type:")
+        type_label.setObjectName("typeLabel")
         type_layout.addWidget(type_label)
         
         self.video_radio = QRadioButton("Video (MP4)")

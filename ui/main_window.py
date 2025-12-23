@@ -659,14 +659,14 @@ class MainWindow(QMainWindow):
         self.progress.setFormat("✓ Complete")
         self.download_btn.setEnabled(True)
         
-        self._show_info("Download Complete", 
-                       f"File saved to:\n{self.output_path}")
+        # self._show_info("Download Complete", 
+        #                f"File saved to:\n{self.output_path}")
     
     def _on_download_error(self, error: str):
         """Handle download error."""
         self.progress.setFormat("✗ Failed")
         self.download_btn.setEnabled(True)
-        self._show_error("Download Failed", error)
+        # self._show_error("Download Failed", error)
     
     def _show_dev_info(self):
         """Show developer information dialog."""

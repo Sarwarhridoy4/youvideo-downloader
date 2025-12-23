@@ -3,7 +3,7 @@
 # YouVideo Downloader - Ultra-Robust Linux Package Builder
 # Creates .deb and AppImage with zero-failure guarantee
 # Author: Sarwar Hossain <sarwarhridoy4@gmail.com>
-# Version: 2.0 (Fully Fixed & Optimized - December 2025)
+# Version: 3.0 (Final, Fully Fixed & Optimized - December 23, 2025)
 ################################################################################
 
 set -euo pipefail
@@ -268,7 +268,7 @@ mkdir -p "$BUILD_DIR"
 print_step "Running PyInstaller (this may take a few minutes)..."
 pyinstaller --clean --noconfirm "$SPEC_FILE"
 
-# Determine source directory (supports onedir mode: dist/YouVideoDownloader/)
+# Determine source directory (requires onedir output: dist/YouVideoDownloader/)
 if [[ -d "$BUILD_DIR/$APP_NAME" ]]; then
     SOURCE_DIR="$BUILD_DIR/$APP_NAME"
     print_info "Using onedir build: $SOURCE_DIR"
@@ -466,11 +466,19 @@ EOF
 cp "$APPDIR/${APP_NAME}.desktop" "$APPDIR/usr/share/applications/"
 
 print_step "Installing icons..."
-# Main icon for AppImage root
-cp "$ICON_DIR/icon_256.png" "$APPDIR/$APP_ID.png" 2>/dev/null || cp "$ICON_SOURCE" "$APPDIR/$APP_ID.png"
-cp "$APPDIR/$APP_ID.png" "$APPDIR/usr/share/icons/hicolor/256x256/apps/$APP_ID.png"
+# Main icon at root and in hicolor
+if [[ -f "$ICON_DIR/icon_256.png" ]]; then
+    MAIN_ICON="$ICON_DIR/icon_256.png"
+elif [[ -f "$ICON_DIR/icon_512.png" ]]; then
+    MAIN_ICON="$ICON_DIR/icon_512.png"
+else
+    MAIN_ICON="$ICON_SOURCE"
+fi
 
-# All sizes
+cp "$MAIN_ICON" "$APPDIR/$APP_ID.png"
+cp "$MAIN_ICON" "$APPDIR/usr/share/icons/hicolor/256x256/apps/$APP_ID.png"
+
+# All other sizes
 for size in 16 22 24 32 48 64 128 256 512; do
     if [[ -f "$ICON_DIR/icon_${size}.png" ]]; then
         cp "$ICON_DIR/icon_${size}.png" "$APPDIR/usr/share/icons/hicolor/${size}x${size}/apps/$APP_ID.png"
@@ -486,7 +494,15 @@ APPIMAGE_OUTPUT="$BUILD_DIR/${APP_NAME}-${VERSION}-x86_64.AppImage"
     --icon-file="$ICON_SOURCE" \
     --output appimage
 
-mv ./*.AppImage "$APPIMAGE_OUTPUT"
+print_step "Locating and renaming generated AppImage..."
+GENERATED_APPIMAGE=$(find . -maxdepth 1 -name "*.AppImage" -type f -printf '%f\n' | head -n1)
+
+if [[ -z "$GENERATED_APPIMAGE" ]]; then
+    print_error "AppImage was not generated!"
+    exit 1
+fi
+
+mv "./$GENERATED_APPIMAGE" "$APPIMAGE_OUTPUT"
 chmod +x "$APPIMAGE_OUTPUT"
 
 APPIMAGE_SIZE=$(du -h "$APPIMAGE_OUTPUT" | cut -f1)
@@ -504,4 +520,4 @@ echo -e "${YELLOW}AppImage:${NC}         $APPIMAGE_OUTPUT\n"
 echo -e "${CYAN}All professional icons generated and integrated${NC}"
 echo -e "${CYAN}Created by ${MAINTAINER}${NC}\n"
 
-print_success "Build completed successfully!"
+print_success "Build completed successfully! Both packages are ready for distribution."

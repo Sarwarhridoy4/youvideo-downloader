@@ -1,6 +1,6 @@
 """
 YouVideo Downloader v1.6.2
-Main entry point — FIXED taskbar icon for Linux/GNOME
+Main entry point — FIXED taskbar icon for Linux/GNOME (Enhanced)
 """
 
 import sys
@@ -48,39 +48,11 @@ def fix_windows_taskbar_icon():
     return True
 
 
-def setup_application() -> QApplication:
-    """Create and configure QApplication with best compatibility."""
-    # Enable high DPI scaling
-    QApplication.setHighDpiScaleFactorRoundingPolicy(
-        Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
-    )
-    
-    app = QApplication(sys.argv)
-    app.setWindowIcon(QIcon(ICON_PATH))
-
-    # Application metadata
-    app.setApplicationName("YouVideo Downloader")
-    app.setApplicationDisplayName("YouVideo Downloader")
-    app.setOrganizationName("Sarwar Hossain")
-    app.setOrganizationDomain("youvideo.app")
-    app.setApplicationVersion("1.6.2")
-
-    # Platform-specific settings
-    if sys.platform.startswith("linux"):
-        # Remove .desktop suffix - Qt will add it
-        app.setDesktopFileName("youvideo-downloader")
-        
-        # CRITICAL: Set the application class name
-        # This must match the StartupWMClass in .desktop file
-        app.setProperty("applicationName", "youvideo-downloader")
-    
-    return app
-
-
 def get_icon() -> QIcon:
     """
     Get the application icon with proper fallback chain.
     Returns a QIcon that works across all platforms.
+    MUST be called AFTER QApplication is created!
     """
     icon = QIcon()
     base = Path(resource_path("assets/icons"))
@@ -89,7 +61,7 @@ def get_icon() -> QIcon:
     
     if base.exists():
         files = [f.name for f in base.iterdir()]
-        print(f"   Contents: {files}")
+        print(f"   Contents: {files[:5]}...")  # Show first 5 only
     
     # Try multiple icon files in order of preference
     icon_files = []
@@ -125,7 +97,7 @@ def get_icon() -> QIcon:
                         icon.addPixmap(scaled)
                     
                     print(f" ✓ LOADED ({pixmap.width()}x{pixmap.height()})")
-                    print(f"\n✓ Using icon: {path}")
+                    print(f"✓ Using icon: {path}")
                     return icon
                 else:
                     print(f" ✗ INVALID")
@@ -134,15 +106,44 @@ def get_icon() -> QIcon:
                 test_icon = QIcon(str(path))
                 if not test_icon.isNull():
                     print(f" ✓ LOADED")
-                    print(f"\n✓ Using icon: {path}")
+                    print(f"✓ Using icon: {path}")
                     return test_icon
                 else:
                     print(f" ✗ NULL")
         else:
             print(f"NOT FOUND")
     
-    print("\n✗ ERROR: No valid icon found!")
+    print("✗ ERROR: No valid icon found!")
     return QIcon()
+
+
+def setup_application() -> QApplication:
+    """Create and configure QApplication with best compatibility."""
+    # Enable high DPI scaling
+    QApplication.setHighDpiScaleFactorRoundingPolicy(
+        Qt.HighDpiScaleFactorRoundingPolicy.PassThrough
+    )
+    
+    app = QApplication(sys.argv)
+    
+    # Application metadata
+    app.setApplicationName("YouVideo Downloader")
+    app.setApplicationDisplayName("YouVideo Downloader")
+    app.setOrganizationName("Sarwar Hossain")
+    app.setOrganizationDomain("youvideo.app")
+    app.setApplicationVersion("1.6.2")
+
+    # Platform-specific settings
+    if sys.platform.startswith("linux"):
+        # Remove .desktop suffix - Qt will add it
+        app.setDesktopFileName("youvideo-downloader")
+        
+        # CRITICAL: Set the application class name
+        # This must match the StartupWMClass in .desktop file
+        app.setProperty("applicationName", "youvideo-downloader")
+        print("✓ Linux desktop integration configured")
+    
+    return app
 
 
 def install_linux_desktop_file(icon_path: str):
@@ -155,6 +156,47 @@ def install_linux_desktop_file(icon_path: str):
     
     try:
         home = Path.home()
+        
+        # ═══════════════════════════════════════════════════════════
+        # STEP 1: Install icon to standard system location
+        # ═══════════════════════════════════════════════════════════
+        icon_dir = home / ".local" / "share" / "icons" / "hicolor" / "256x256" / "apps"
+        icon_dir.mkdir(parents=True, exist_ok=True)
+        
+        icon_dest = icon_dir / "youvideo-downloader.png"
+        
+        # Copy icon if source exists
+        if os.path.exists(icon_path):
+            import shutil
+            shutil.copy2(icon_path, icon_dest)
+            icon_dest.chmod(0o644)
+            print(f"✓ Icon installed to: {icon_dest}")
+            
+            # Also install to other common sizes
+            for size in [16, 22, 24, 32, 48, 64, 128]:
+                size_dir = home / ".local" / "share" / "icons" / "hicolor" / f"{size}x{size}" / "apps"
+                size_dir.mkdir(parents=True, exist_ok=True)
+                size_dest = size_dir / "youvideo-downloader.png"
+                
+                # Create scaled version
+                try:
+                    from PIL import Image
+                    img = Image.open(icon_path)
+                    img_resized = img.resize((size, size), Image.Resampling.LANCZOS)
+                    img_resized.save(str(size_dest))
+                except ImportError:
+                    # If PIL not available, just copy the main icon
+                    shutil.copy2(icon_path, size_dest)
+                except Exception as e:
+                    print(f"⚠ Could not create {size}x{size} icon: {e}")
+            
+            print(f"✓ Multiple icon sizes installed")
+        else:
+            print(f"⚠ Source icon not found: {icon_path}")
+        
+        # ═══════════════════════════════════════════════════════════
+        # STEP 2: Create desktop file
+        # ═══════════════════════════════════════════════════════════
         desktop_dir = home / ".local" / "share" / "applications"
         desktop_dir.mkdir(parents=True, exist_ok=True)
         
@@ -166,9 +208,8 @@ def install_linux_desktop_file(icon_path: str):
         else:
             exec_path = f"python3 {os.path.abspath(sys.argv[0])}"
         
-        icon_abs_path = os.path.abspath(icon_path)
-        
-        # CRITICAL: WM_CLASS must match what Qt sets
+        # IMPORTANT: Use icon name (without path) for system integration
+        # This allows the system to find the icon in standard locations
         content = f"""[Desktop Entry]
 Type=Application
 Version=1.0
@@ -176,7 +217,7 @@ Name=YouVideo Downloader
 GenericName=Video Downloader
 Comment=Download videos from YouTube and other platforms
 Exec={exec_path}
-Icon={icon_abs_path}
+Icon=youvideo-downloader
 Terminal=false
 Categories=AudioVideo;Video;Network;Qt;
 MimeType=x-scheme-handler/http;x-scheme-handler/https;
@@ -191,11 +232,15 @@ Keywords=youtube;video;download;
         print(f"\n✓ Linux desktop file created:")
         print(f"   Location: {desktop_file}")
         print(f"   Exec: {exec_path}")
-        print(f"   Icon: {icon_abs_path}")
+        print(f"   Icon: youvideo-downloader (system)")
         print(f"   WM_CLASS: youvideo-downloader")
         
-        # Update desktop database
+        # ═══════════════════════════════════════════════════════════
+        # STEP 3: Update system caches
+        # ═══════════════════════════════════════════════════════════
         import subprocess
+        
+        # Update desktop database
         try:
             result = subprocess.run(
                 ["update-desktop-database", str(desktop_dir)],
@@ -205,28 +250,58 @@ Keywords=youtube;video;download;
             )
             if result.returncode == 0:
                 print("✓ Desktop database updated")
+            else:
+                print(f"⚠ Desktop database update warning: {result.stderr.strip()}")
         except FileNotFoundError:
-            print("⚠ update-desktop-database not found")
+            print("⚠ update-desktop-database not found (optional)")
         except Exception as e:
             print(f"⚠ Could not update desktop database: {e}")
         
-        # Also try to update icon cache
+        # Update icon cache
         try:
-            icon_dir = home / ".local" / "share" / "icons"
-            if icon_dir.exists():
-                subprocess.run(
-                    ["gtk-update-icon-cache", str(icon_dir)],
-                    capture_output=True,
-                    timeout=5
-                )
+            icon_base = home / ".local" / "share" / "icons" / "hicolor"
+            result = subprocess.run(
+                ["gtk-update-icon-cache", "-f", "-t", str(icon_base)],
+                capture_output=True,
+                timeout=5,
+                text=True
+            )
+            if result.returncode == 0:
                 print("✓ Icon cache updated")
-        except:
-            pass
+            else:
+                print(f"⚠ Icon cache update warning: {result.stderr.strip()}")
+        except FileNotFoundError:
+            print("⚠ gtk-update-icon-cache not found (optional)")
+        except Exception as e:
+            print(f"⚠ Could not update icon cache: {e}")
             
         return True
     except Exception as e:
         print(f"\n✗ Desktop file creation failed: {e}")
+        import traceback
+        traceback.print_exc()
         return False
+
+
+def set_window_properties(window, icon):
+    """
+    Set all necessary properties for proper taskbar integration.
+    This ensures consistent behavior across all windows.
+    """
+    # Set icon
+    window.setWindowIcon(icon)
+    
+    if sys.platform.startswith("linux"):
+        # Force WM_CLASS to be consistent
+        window.setProperty("_q_xcb_wm_class", b"youvideo-downloader")
+        
+        # Set window class hint
+        try:
+            # This helps X11 window managers match the window
+            flags = window.windowFlags()
+            window.setWindowFlags(flags)
+        except:
+            pass
 
 
 def set_x11_wmclass():
@@ -241,6 +316,10 @@ def set_x11_wmclass():
         # Check if we're on X11 (not Wayland)
         if os.environ.get('WAYLAND_DISPLAY'):
             print("✓ Running on Wayland (WM_CLASS set via Qt)")
+            return
+        
+        if not os.environ.get('DISPLAY'):
+            print("⚠ No X11 display detected")
             return
         
         # Try to set via xprop
@@ -268,6 +347,9 @@ def set_x11_wmclass():
                 timeout=2
             )
             print(f"✓ X11 WM_CLASS set via xprop (window {window_id})")
+    except FileNotFoundError:
+        # xdotool or xprop not installed - that's fine
+        pass
     except Exception as e:
         # This is optional, so don't worry if it fails
         pass
@@ -292,12 +374,12 @@ def main() -> None:
         os.environ["QT_QPA_PLATFORMTHEME"] = ""
     
     # ═══════════════════════════════════════════════════════════════
-    # STEP 2: Create QApplication
+    # STEP 2: Create QApplication FIRST
     # ═══════════════════════════════════════════════════════════════
     app = setup_application()
 
     # ═══════════════════════════════════════════════════════════════
-    # STEP 3: Load and set icon GLOBALLY
+    # STEP 3: Load icon AFTER QApplication exists
     # ═══════════════════════════════════════════════════════════════
     icon = get_icon()
     
@@ -306,33 +388,29 @@ def main() -> None:
         print("   Check that assets/icons/appicon.png exists")
     else:
         print("\n✓ Icon loaded successfully")
-        
         # Set icon globally for ALL windows
         app.setWindowIcon(icon)
-        
-        # Linux: Create desktop file for taskbar integration
-        if sys.platform.startswith("linux"):
-            icon_path = resource_path("assets/icons/appicon.png")
-            if os.path.exists(icon_path):
-                install_linux_desktop_file(icon_path)
-            else:
-                print(f"\n✗ Icon file not found: {icon_path}")
 
     # ═══════════════════════════════════════════════════════════════
-    # STEP 4: Create windows
+    # STEP 4: Linux - Install desktop file and system icon
+    # ═══════════════════════════════════════════════════════════════
+    if sys.platform.startswith("linux") and not icon.isNull():
+        icon_path = resource_path("assets/icons/appicon.png")
+        if os.path.exists(icon_path):
+            install_linux_desktop_file(icon_path)
+        else:
+            print(f"\n✗ Icon file not found: {icon_path}")
+
+    # ═══════════════════════════════════════════════════════════════
+    # STEP 5: Create windows and set properties
     # ═══════════════════════════════════════════════════════════════
     welcome = WelcomeScreen()
     main_win = MainWindow()
     playlist_win = PlaylistWindow()
 
-    # Explicitly set icon on each window
+    # Set icon and properties on each window
     for window in [welcome, main_win, playlist_win]:
-        window.setWindowIcon(icon)
-        
-        # Linux: Set class name for window matching
-        if sys.platform.startswith("linux"):
-            window.setWindowFlags(window.windowFlags())
-            # This ensures Qt uses our WM_CLASS
+        set_window_properties(window, icon)
 
     # Window configuration
     main_win.resize(1000, 680)
@@ -370,7 +448,7 @@ def main() -> None:
     playlist_win.set_back_callback(show_welcome)
 
     # ═══════════════════════════════════════════════════════════════
-    # STEP 5: Start application
+    # STEP 6: Start application
     # ═══════════════════════════════════════════════════════════════
     welcome.show()
     welcome.raise_()
@@ -387,35 +465,36 @@ def main() -> None:
     
     # Platform-specific instructions
     if sys.platform.startswith("linux"):
-        print("\n📌 LINUX TASKBAR ICON - IMMEDIATE FIXES:")
-        print("\n   METHOD 1 - Restart GNOME Shell (FASTEST):")
+        print("\n📌 LINUX TASKBAR ICON - TROUBLESHOOTING:")
+        print("\n   🔄 QUICKEST FIX - Restart GNOME Shell:")
         print("      • Press Alt+F2")
         print("      • Type: r")
         print("      • Press Enter")
         print("      • Icon should appear immediately")
         
-        print("\n   METHOD 2 - Check WM_CLASS match:")
-        print("      • Run: xprop WM_CLASS")
-        print("      • Click on the app window")
-        print("      • Should show: youvideo-downloader")
+        print("\n   🔍 VERIFY SETUP:")
+        print("      1. Check WM_CLASS:")
+        print("         xprop WM_CLASS")
+        print("         (click window, should show: youvideo-downloader)")
         
-        print("\n   METHOD 3 - Verify desktop file:")
-        print("      • Run: desktop-file-validate ~/.local/share/applications/youvideo-downloader.desktop")
+        print("\n      2. Check desktop file:")
+        print("         desktop-file-validate ~/.local/share/applications/youvideo-downloader.desktop")
         
-        print("\n   METHOD 4 - Manual icon install:")
-        print("      • Run these commands:")
-        print("      • mkdir -p ~/.local/share/icons/hicolor/256x256/apps")
-        print("      • cp assets/icons/appicon.png ~/.local/share/icons/hicolor/256x256/apps/youvideo-downloader.png")
-        print("      • gtk-update-icon-cache ~/.local/share/icons/hicolor")
+        print("\n      3. Check icon installation:")
+        print("         ls -la ~/.local/share/icons/hicolor/*/apps/youvideo-downloader.png")
         
-        print("\n   If still not working:")
-        print("      • Logout and login")
+        print("\n   🔧 MANUAL REFRESH (if needed):")
+        print("      gtk-update-icon-cache -f -t ~/.local/share/icons/hicolor")
+        print("      update-desktop-database ~/.local/share/applications")
+        
+        print("\n   ⚠️  If STILL not working:")
+        print("      • Logout and login again")
         print("      • Or: killall gnome-shell")
         
     elif sys.platform.startswith("win"):
         print("\n📌 WINDOWS TASKBAR ICON:")
-        print("   • AppUserModelID set for proper grouping")
-        print("   • Icon should show immediately")
+        print("   ✓ AppUserModelID set for proper grouping")
+        print("   ✓ Icon should show immediately")
         
     print("\n" + "="*70 + "\n")
 

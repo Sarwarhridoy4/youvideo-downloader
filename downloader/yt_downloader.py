@@ -1,8 +1,8 @@
 """
-yt_downloader.py – 2025-12-06 Enhanced Edition (Fixed Duplicate Popup)
+yt_downloader.py – 2025-12-06 Enhanced Edition (Log Messages Only)
 ------------------------------------------------------------------------
 Improvements:
-• Fixed duplicate success/failure popups during video+audio merge
+• All completion messages shown in text log (NO popups)
 • Robust error handling with detailed messages
 • Dual time display (elapsed + remaining)
 • ALL qualities captured (including premium/1080p60/1440p/4K)
@@ -326,12 +326,15 @@ def download_and_merge(
     """
     Download video with format code + best audio, then merge to MP4.
     
+    ALL completion messages are sent to log_signal (text log).
+    NO popup dialogs are triggered from this function.
+    
     Args:
         url: Video URL
         format_code: Format ID or "best"
         output_path: Directory to save file
         progress_hook: Callback for progress updates (receives dict)
-        log_signal: Signal for logging messages
+        log_signal: Signal for logging messages (receives str)
     
     Raises:
         DownloadError: If download fails
@@ -342,7 +345,8 @@ def download_and_merge(
         """
         Enhanced progress hook with dual time display and smart completion detection.
         Shows progress for BOTH video and audio streams separately.
-        Only signals final completion ONCE after all streams are finished and merged.
+        Signals completion status via progress_hook for UI updates,
+        but ALL text messages go to log_signal only.
         """
         try:
             status = d.get("status", "")
@@ -388,7 +392,9 @@ def download_and_merge(
                 else:
                     d["percent"] = 0
                 
-                # Always emit progress updates
+                # Emit progress for UI (progress bar updates)
+                # DO NOT trigger any popups from here
+                d["show_popup"] = False  # Explicitly prevent popups
                 progress_hook(d)
                 
             elif status == "finished":
@@ -403,13 +409,14 @@ def download_and_merge(
                     else:
                         stream_finished = "video"
                     
+                    # Log to text console only
                     log_signal.emit(f"✓ {stream_finished.capitalize()} stream downloaded")
                     
-                    # Emit progress for individual stream completion
-                    # but don't mark as final completion
+                    # Emit progress for UI update (NOT for popup)
                     d["stream_type"] = stream_finished
                     d["percent"] = 100
                     d["final_completion"] = False  # Not final yet
+                    d["show_popup"] = False  # No popup for partial completion
                     progress_hook(d)
                     
                 elif filename.endswith(".mp4") or filename.endswith(".mkv"):
@@ -419,26 +426,43 @@ def download_and_merge(
                         tracker.is_merging = False
                         
                         elapsed = tracker.get_elapsed()
-                        log_signal.emit(f"✓ Download complete! (Total time: {elapsed})")
                         
+                        # ═══════════════════════════════════════════════
+                        # LOG COMPLETION MESSAGE (instead of popup)
+                        # ═══════════════════════════════════════════════
+                        log_signal.emit("=" * 60)
+                        log_signal.emit("✅ DOWNLOAD COMPLETE!")
+                        log_signal.emit(f"⏱️  Total time: {elapsed}")
+                        log_signal.emit(f"📁 Saved to: {output_path}")
+                        log_signal.emit(f"📄 File: {os.path.basename(filename)}")
+                        log_signal.emit("=" * 60)
+                        
+                        # Emit progress for UI state update (NOT for popup)
                         d["elapsed_str"] = elapsed
                         d["dual_time"] = f"Completed in {elapsed}"
                         d["percent"] = 100
                         d["stream_type"] = "final"
-                        d["final_completion"] = True  # THIS IS THE FINAL COMPLETION
+                        d["final_completion"] = True
+                        d["show_popup"] = False  # CRITICAL: No popup dialog
                         progress_hook(d)
                 
             elif status == "error":
-                # Always emit error status
+                # Log error to console
+                error_msg = d.get("error", "Unknown error")
+                log_signal.emit(f"❌ Error: {error_msg}")
+                
+                # Emit error status (NOT for popup)
+                d["show_popup"] = False
                 progress_hook(d)
                 
         except Exception as e:
-            log_signal.emit(f"Progress tracking error: {str(e)}")
+            log_signal.emit(f"⚠️  Progress tracking error: {str(e)}")
     
     # Validate output path
     if not os.path.exists(output_path):
         try:
             os.makedirs(output_path, exist_ok=True)
+            log_signal.emit(f"📁 Created output directory: {output_path}")
         except Exception as e:
             raise DownloadError(f"Could not create output directory: {str(e)}")
     
@@ -482,8 +506,11 @@ def download_and_merge(
     
     try:
         with YoutubeDL(ydl_opts) as ydl:
-            log_signal.emit(f"Starting download with format: {format_str}")
-            log_signal.emit(f"Saving to: {output_path}")
+            log_signal.emit("=" * 60)
+            log_signal.emit(f"🎬 Starting download")
+            log_signal.emit(f"🔧 Format: {format_str}")
+            log_signal.emit(f"📁 Output: {output_path}")
+            log_signal.emit("=" * 60)
             
             # Reset tracker
             tracker.reset()
@@ -491,25 +518,34 @@ def download_and_merge(
             # Download
             ydl.download([url])
             
-            # Ensure completion is signaled if not already done
+            # Ensure completion is logged if not already done
             if not tracker.download_complete:
                 elapsed = tracker.get_elapsed()
-                log_signal.emit(f"✓ Download complete! (Total time: {elapsed})")
                 
-                # Emit final completion
+                log_signal.emit("=" * 60)
+                log_signal.emit("✅ DOWNLOAD COMPLETE!")
+                log_signal.emit(f"⏱️  Total time: {elapsed}")
+                log_signal.emit(f"📁 Saved to: {output_path}")
+                log_signal.emit("=" * 60)
+                
+                # Emit final status (NOT for popup)
                 progress_hook({
                     "status": "finished",
                     "elapsed_str": elapsed,
                     "dual_time": f"Completed in {elapsed}",
                     "percent": 100,
-                    "final_completion": True
+                    "final_completion": True,
+                    "show_popup": False  # No popup
                 })
             
     except YtdlpDownloadError as e:
+        log_signal.emit(f"❌ Download failed: {str(e)}")
         raise DownloadError(f"Download failed: {str(e)}")
     except ExtractorError as e:
+        log_signal.emit(f"❌ Extraction failed: {str(e)}")
         raise DownloadError(f"Extraction failed: {str(e)}")
     except Exception as e:
+        log_signal.emit(f"❌ Unexpected error: {str(e)}")
         raise DownloadError(f"Unexpected error during download: {str(e)}")
 
 
@@ -524,6 +560,8 @@ def download_playlist(
 ) -> None:
     """
     Download entire playlist with specified quality.
+    
+    All completion messages are logged to text console (NO popups).
     
     Args:
         playlist_url: Playlist URL
@@ -540,14 +578,18 @@ def download_playlist(
         if not videos:
             raise DownloadError("No videos found in playlist")
         
-        log_signal.emit(f"Found {len(videos)} videos in playlist")
-        log_signal.emit(f"Quality setting: {quality}\n")
+        log_signal.emit("=" * 60)
+        log_signal.emit(f"📋 Playlist: {len(videos)} videos found")
+        log_signal.emit(f"🎯 Quality: {quality}")
+        log_signal.emit(f"📁 Output: {output_path}")
+        log_signal.emit("=" * 60)
         
         success_count = 0
         failed_count = 0
         
         for idx, video in enumerate(videos, 1):
-            log_signal.emit(f"[{idx}/{len(videos)}] {video['title']}")
+            log_signal.emit(f"\n[{idx}/{len(videos)}] {video['title']}")
+            log_signal.emit("-" * 60)
             
             try:
                 if quality == "best":
@@ -559,7 +601,7 @@ def download_playlist(
                 else:
                     fmt = quality
                 
-                log_signal.emit(f"  Format: {fmt}")
+                log_signal.emit(f"🔧 Format: {fmt}")
                 
                 download_and_merge(
                     video['url'],
@@ -570,18 +612,22 @@ def download_playlist(
                 )
                 
                 success_count += 1
+                log_signal.emit(f"✅ Video {idx} complete\n")
                 
             except Exception as e:
-                log_signal.emit(f"  ✗ Failed: {str(e)}\n")
+                log_signal.emit(f"❌ Failed: {str(e)}\n")
                 failed_count += 1
                 continue
         
-        log_signal.emit(f"\n{'='*50}")
-        log_signal.emit(f"Playlist download complete!")
-        log_signal.emit(f"✓ Success: {success_count}/{len(videos)}")
+        # Final playlist summary (logged, not popup)
+        log_signal.emit("\n" + "=" * 60)
+        log_signal.emit("🎉 PLAYLIST DOWNLOAD COMPLETE!")
+        log_signal.emit(f"✅ Successful: {success_count}/{len(videos)}")
         if failed_count > 0:
-            log_signal.emit(f"✗ Failed: {failed_count}/{len(videos)}")
-        log_signal.emit(f"{'='*50}")
+            log_signal.emit(f"❌ Failed: {failed_count}/{len(videos)}")
+        log_signal.emit(f"📁 Location: {output_path}")
+        log_signal.emit("=" * 60)
         
     except Exception as e:
+        log_signal.emit(f"❌ Playlist download failed: {str(e)}")
         raise DownloadError(f"Playlist download failed: {str(e)}")

@@ -3,7 +3,7 @@
 # YouVideo Downloader - Ultra-Robust Linux Package Builder
 # Creates .deb and AppImage with zero-failure guarantee
 # Author: Sarwar Hossain <sarwarhridoy4@gmail.com>
-# Version: 3.0 (Final, Fully Fixed & Optimized - December 23, 2025)
+# Version: 3.1 (Integrated Icon Generation - December 24, 2025)
 ################################################################################
 
 set -euo pipefail
@@ -216,7 +216,7 @@ else
 fi
 
 # ═══════════════════════════════════════════════════════════════════════════
-# ICON PREPARATION
+# ICON PREPARATION (Integrated with create_icon.py)
 # ═══════════════════════════════════════════════════════════════════════════
 
 print_header "Icon Preparation"
@@ -224,6 +224,7 @@ print_header "Icon Preparation"
 ICON_DIR="assets/icons"
 mkdir -p "$ICON_DIR"
 
+# Check for source icon
 if [[ ! -f "$ICON_SOURCE" ]]; then
     print_warning "Icon not found: $ICON_SOURCE"
     print_step "Creating placeholder icon..."
@@ -240,15 +241,36 @@ else
     print_success "Source icon found: $ICON_SOURCE"
 fi
 
+# Check if create_icon.py exists
 if [[ ! -f "$CREATE_ICON_SCRIPT" ]]; then
     print_error "Icon generator script not found: $CREATE_ICON_SCRIPT"
     print_info "Please place create_icon.py in the project root."
     exit 1
 fi
 
-print_step "Generating professional icons (ICO, ICNS, PNGs, Favicon)..."
-python3 "$CREATE_ICON_SCRIPT" "$ICON_SOURCE"
-print_success "Professional icons generated successfully"
+# Check if icons already exist
+NEED_ICON_GENERATION=false
+if [[ ! -f "$ICON_DIR/appicon.ico" ]] || \
+   [[ ! -f "$ICON_DIR/appicon.icns" ]] || \
+   [[ ! -f "$ICON_DIR/icon_256.png" ]]; then
+    NEED_ICON_GENERATION=true
+fi
+
+if [[ "$NEED_ICON_GENERATION" == true ]]; then
+    print_step "Generating professional icons (ICO, ICNS, PNGs, Favicon)..."
+    python3 "$CREATE_ICON_SCRIPT" "$ICON_SOURCE"
+    
+    # Verify icon generation
+    if [[ -f "$ICON_DIR/icon_256.png" ]]; then
+        print_success "Professional icons generated successfully"
+    else
+        print_error "Icon generation failed - icon_256.png not found"
+        exit 1
+    fi
+else
+    print_success "All required icons already exist"
+    print_info "Skipping icon generation (delete icons to regenerate)"
+fi
 
 # ═══════════════════════════════════════════════════════════════════════════
 # PYINSTALLER BUILD
@@ -266,6 +288,7 @@ rm -rf "$BUILD_DIR" build __pycache__ 2>/dev/null || true
 mkdir -p "$BUILD_DIR"
 
 print_step "Running PyInstaller (this may take a few minutes)..."
+print_info "Icon generation will be handled by the spec file if needed"
 pyinstaller --clean --noconfirm "$SPEC_FILE"
 
 # Determine source directory (requires onedir output: dist/YouVideoDownloader/)
@@ -398,7 +421,8 @@ cat > "$DEB_DIR/usr/share/doc/$PACKAGE_NAME/changelog.Debian" << EOF
 ${PACKAGE_NAME} (${VERSION}) unstable; urgency=medium
 
   * New release ${VERSION}
-  * Professional icons and packaging
+  * Integrated icon generation system
+  * Professional packaging for all platforms
 
  -- ${MAINTAINER} <${EMAIL}>  $(date -R)
 EOF
@@ -491,7 +515,7 @@ APPIMAGE_OUTPUT="$BUILD_DIR/${APP_NAME}-${VERSION}-x86_64.AppImage"
 "$LINUXDEPLOY_FILE" \
     --appdir="$APPDIR" \
     --desktop-file="$APPDIR/${APP_NAME}.desktop" \
-    --icon-file="$ICON_SOURCE" \
+    --icon-file="$MAIN_ICON" \
     --output appimage
 
 print_step "Locating and renaming generated AppImage..."
@@ -517,7 +541,8 @@ print_header "Build Complete! 🎉"
 echo -e "${GREEN}Successfully built version ${VERSION}${NC}\n"
 echo -e "${YELLOW}Debian Package:${NC}  $DEB_OUTPUT"
 echo -e "${YELLOW}AppImage:${NC}         $APPIMAGE_OUTPUT\n"
-echo -e "${CYAN}All professional icons generated and integrated${NC}"
-echo -e "${CYAN}Created by ${MAINTAINER}${NC}\n"
+echo -e "${CYAN}✓ Icons automatically generated and integrated${NC}"
+echo -e "${CYAN}✓ All platforms supported (Windows/macOS/Linux)${NC}"
+echo -e "${CYAN}✓ Created by ${MAINTAINER}${NC}\n"
 
 print_success "Build completed successfully! Both packages are ready for distribution."

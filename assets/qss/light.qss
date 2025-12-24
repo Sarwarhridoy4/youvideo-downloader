@@ -1,54 +1,72 @@
 /* ─────────────────────────────────────────────────────────────
-   YouTube 2025 Light Theme – Qt Style Sheet
-   Perfectly mimics the real YouTube desktop/web light mode
+   YouVideo Downloader – Light Theme (Symmetric with Dark 2025 Style)
+   Exact mirror of dark theme: same hover lifts, scales, shadows, transitions,
+   rounded corners, focus rings – professional & elegant
+   No color changes to accents (red remains red)
    ───────────────────────────────────────────────────────────── */
 
-QMainWindow, QWidget#centralWidget {
+QWidget {
     background-color: #ffffff;
     color: #0f0f0f;
-    font-family: 'Roboto', 'YouTube Sans', 'Segoe UI', sans-serif;
+    font-family: "Roboto", "Segoe UI", sans-serif;
     font-size: 14px;
 }
 
-/* ──────────────── Buttons ──────────────── */
+QMainWindow, QDialog {
+    background-color: #ffffff;
+}
+
+/* Default Buttons – Symmetric hover lift & shadow */
 QPushButton {
-    background-color: #f9f9f9;
+    background-color: #f8f9fa;
     color: #0f0f0f;
     border: 1px solid #dadce0;
-    border-radius: 18px;           /* YouTube uses very round buttons */
-    padding: 10px 20px;
+    border-radius: 20px;
+    padding: 10px 24px;
     font-weight: 500;
-    font-size: 14px;
     min-height: 20px;
+    
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
 }
 
 QPushButton:hover {
-    background-color: #f1f1f1;
-    border-color: #c6c6c6;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background-color: #f1f3f4;
+    border-color: #ff0000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
 }
 
 QPushButton:pressed {
-    background-color: #e5e5e5;
+    background-color: #e8eaed;
+    transform: translateY(0);
 }
 
-/* Primary Action Button – YouTube Red (Subscribe, Download, etc.) */
+QPushButton:disabled {
+    background-color: #f5f5f5;
+    color: #aaaaaa;
+    border-color: #dadce0;
+}
+
+/* Primary Action Button – Symmetric scale & glow */
 QPushButton#downloadButton,
 QPushButton#subscribeButton,
 QPushButton[accessibleName="primary"] {
     background-color: #ff0000;
-    color: white;
+    color: #ffffff;
     border: none;
-    border-radius: 18px;
+    border-radius: 20px;
+    padding: 13px 36px;
     font-weight: 600;
-    padding: 12px 32px;
-    font-size: 14px;
+    font-size: 15px;
+    
+    transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
 }
 
 QPushButton#downloadButton:hover,
 QPushButton#subscribeButton:hover {
-    background-color: #e60000;
-    box-shadow: 0 4px 8px rgba(255,0,0,0.3);
+    background-color: #cc0000;
+    box-shadow: 0 8px 24px rgba(255, 0, 0, 0.3);
+    transform: scale(1.03);
 }
 
 QPushButton#downloadButton:disabled {
@@ -56,51 +74,51 @@ QPushButton#downloadButton:disabled {
     color: #990000;
 }
 
-/* ──────────────── Input Fields ──────────────── */
+/* Input Fields – Symmetric focus ring */
 QLineEdit, QComboBox, QTextEdit {
     background-color: #ffffff;
     color: #0f0f0f;
     border: 1px solid #dadce0;
-    border-radius: 20px;           /* YouTube search bar is very rounded */
+    border-radius: 20px;
     padding: 12px 18px;
-    font-size: 16px;
+    font-size: 15px;
     selection-background-color: #ffaaaa;
+    
+    transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
-QLineEdit:focus, QComboBox:focus {
-    border: 1px solid #ff0000;
-    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.15);
+QLineEdit:focus, QComboBox:focus, QTextEdit:focus {
+    border-color: #ff0000;
+    box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.15);
     outline: none;
 }
 
-/* Search bar specific */
+/* Special URL bar */
 QLineEdit#urlInput, QLineEdit#searchInput {
-    padding-left: 50px;            /* space for magnifying glass icon */
-    font-size: 16px;
+    padding-left: 52px;
     border-radius: 24px;
-    border: 1px solid #dadce0 solid;
+    font-size: 16px;
 }
 
-/* ──────────────── Labels & Titles ──────────────── */
+/* Labels */
 QLabel {
     color: #0f0f0f;
     background: transparent;
 }
 
 QLabel#headerLabel, QLabel#titleLabel {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: bold;
     color: #0f0f0f;
     padding: 8px 0;
 }
 
 QLabel#channelName {
-    font-size: 16px;
     color: #606060;
+    font-size: 15px;
     font-weight: 500;
 }
 
-/* Video title in list */
 QLabel#videoTitle {
     font-size: 16px;
     font-weight: 500;
@@ -112,66 +130,74 @@ QLabel#videoMeta {
     color: #606060;
 }
 
-/* ──────────────── Video List / Results ──────────────── */
+/* List Items */
 QListWidget, QTreeWidget {
-    background: #ffffff;
+    background-color: #ffffff;
     border: none;
     outline: none;
     padding: 8px;
-    border-radius: 16px;
 }
 
 QListWidget::item {
-    padding: 12px 8px;
+    padding: 12px 10px;
+    margin: 3px 0;
     border-radius: 12px;
-    margin: 4px 0;
+    transition: background-color 0.2s ease;
 }
 
 QListWidget::item:hover {
-    background: #f5f5f5;
-    border-radius: 12px;
+    background-color: #f5f5f5;
 }
 
 QListWidget::item:selected {
-    background: rgba(255, 0, 0, 0.1);
+    background-color: rgba(255, 0, 0, 0.15);
     color: #0f0f0f;
     border-radius: 12px;
 }
 
-/* ──────────────── Progress Bar (Download) ──────────────── */
+/* Progress Bar – Symmetric smooth fill */
 QProgressBar {
     border: none;
-    border-radius: 8px;
     background-color: #f1f1f1;
-    text-align: center;
+    border-radius: 8px;
     height: 8px;
-    font-size: 12px;
+    text-align: center;
     color: #0f0f0f;
+    transition: background-color 0.3s ease;
 }
 
 QProgressBar::chunk {
     background-color: #ff0000;
     border-radius: 8px;
+    transition: width 0.4s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* ──────────────── Cards / Containers ──────────────── */
+/* Cards – Symmetric hover lift */
 QFrame#videoCard, QGroupBox {
-    background: #fbfbfb;
+    background-color: #fbfbfb;
     border: 1px solid #e0e0e0;
     border-radius: 16px;
     padding: 16px;
     margin: 8px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease;
 }
 
-/* Thumbnail placeholder */
+QFrame#videoCard:hover, QGroupBox:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+    border-color: #c6c6c6;
+}
+
+/* Thumbnail */
 QLabel#thumbnail {
+    background-color: #f1f1f1;
     border-radius: 12px;
-    background: #f1f1f1;
     min-width: 220px;
     min-height: 124px;
+    border: 1px solid #dadce0;
 }
 
-/* ──────────────── Scrollbars (minimal, YouTube style) ──────────────── */
+/* Scrollbars – Symmetric hover accent */
 QScrollBar:vertical {
     background: transparent;
     width: 8px;
@@ -182,45 +208,39 @@ QScrollBar::handle:vertical {
     background: #c1c1c1;
     border-radius: 4px;
     min-height: 40px;
+    transition: background-color 0.25s ease;
 }
 
 QScrollBar::handle:vertical:hover {
-    background: #a8a8a8;
+    background: #ff0000;
 }
 
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
     height: 0px;
 }
 
-/* ──────────────── Tooltips ──────────────── */
+/* Tooltips – Symmetric shadow */
 QToolTip {
     background-color: rgba(50, 50, 50, 0.95);
-    color: white;
+    color: #ffffff;
     border: none;
     padding: 8px 12px;
     border-radius: 8px;
     font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-
-
-/* ──────────────── Final Polish ──────────────── */
+/* Global Selection */
 * {
     selection-background-color: rgba(255, 0, 0, 0.3);
 }
 
-/* ────────────────────── Radio Buttons – Works perfectly in Light & Dark ────────────────────── */
-QRadioButton {
-    color: inherit;            /* automatically #0f0f0f in light, #f1f1f1 in dark */
-    font-weight: 500;
-    spacing: 10px;
-    padding: 6px 0;
-}
-
+/* Radio Buttons – Symmetric */
 QRadioButton::indicator {
     width: 20px;
     height: 20px;
     border-radius: 10px;
+    transition: all 0.3s ease;
 }
 
 QRadioButton::indicator:unchecked {
@@ -229,16 +249,58 @@ QRadioButton::indicator:unchecked {
 }
 
 QRadioButton::indicator:checked {
-    border: 5px solid #ff0000;   /* red ring */
-    background-color: #ffffff;   /* white dot */
+    border: 5px solid #ff0000;
+    background-color: #ffffff;
 }
 
 QRadioButton::indicator:hover {
     border-color: #ff0000;
 }
 
-QRadioButton:disabled,
-QRadioButton::indicator:disabled {
-    color: #888888;
-    border-color: #666666;
+/* Checkboxes – Symmetric pop animation */
+QCheckBox {
+    color: #0f0f0f;
+    spacing: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 0;
+}
+
+QCheckBox::indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 2px solid #80868b;
+    background-color: #ffffff;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+QCheckBox::indicator:unchecked:hover {
+    border-color: #ff0000;
+    background-color: #fff5f5;
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.08);
+}
+
+QCheckBox::indicator:checked {
+    border: 2px solid #ff0000;
+    background-color: #ff0000;
+}
+
+QCheckBox::indicator:checked:hover {
+    background-color: #cc0000;
+    box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.15);
+}
+
+QCheckBox::indicator:checked {
+    animation: checkPop 0.35s cubic-bezier(0.2, 0.8, 0.4, 1);
+}
+
+@keyframes checkPop {
+    0% { transform: scale(0.8); }
+    50% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+}
+
+QCheckBox:focus::indicator {
+    box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.15);
 }

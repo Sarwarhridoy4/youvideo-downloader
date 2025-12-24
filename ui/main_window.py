@@ -27,10 +27,27 @@ from downloader.yt_downloader import get_formats, download_and_merge
 from downloader.ffmpeg_utils import ensure_ffmpeg
 from utils.pathfinder import resource_path
 
-# Constants
-APP_VERSION = "1.0.0"
-GITHUB_RELEASES_URL = "https://api.github.com/repos/Sarwarhridoy4/youvideo-downloader/releases/latest"
+# App version and GitHub releases URL
+import requests
 
+# Dynamically fetch the latest version at runtime
+def get_latest_version() -> str:
+    """Fetch the latest release tag from GitHub API."""
+    GITHUB_RELEASES_URL = "https://api.github.com/repos/Sarwarhridoy4/youvideo-downloader/releases/latest"
+    try:
+        resp = requests.get(GITHUB_RELEASES_URL, timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+        return data.get("tag_name", "Unknown").lstrip("v")  # e.g., "2.0.0" if tag is "v2.0.0"
+    except Exception as e:
+        print(f"Failed to fetch latest version: {e}")
+        return "1.0.0"  # Fallback to current hardcoded version
+
+# Use this as your app version
+APP_VERSION = get_latest_version()
+
+# For the update checker (keep the URL as constant)
+GITHUB_RELEASES_URL = "https://api.github.com/repos/Sarwarhridoy4/youvideo-downloader/releases/latest"
 # Resource paths
 ICON_PATH = resource_path("assets/icons/appicon.png")
 GIF_PATH = resource_path("assets/icons/spinner.gif")

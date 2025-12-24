@@ -41,6 +41,8 @@ from PySide6.QtWidgets import (
     QMenu,
     QApplication,
 )
+from PySide6.QtWidgets import QSpacerItem, QSizePolicy, QFrame,QMessageBox
+
 
 from utils.pathfinder import resource_path
 from downloader.yt_downloader import get_playlist_videos, download_and_merge
@@ -49,10 +51,26 @@ from downloader.yt_downloader import get_playlist_videos, download_and_merge
 icon_path = resource_path("assets/icons/appicon.png")
 qss_path = resource_path("assets/qss/dark.qss")
 
-APP_VERSION = "1.0.0"
-GITHUB_RELEASES_URL = (
-    "https://api.github.com/repos/Sarwarhridoy4/youvideo-downloader/releases/latest"
-)
+import requests
+
+# Dynamically fetch the latest version at runtime
+def get_latest_version() -> str:
+    """Fetch the latest release tag from GitHub API."""
+    GITHUB_RELEASES_URL = "https://api.github.com/repos/Sarwarhridoy4/youvideo-downloader/releases/latest"
+    try:
+        resp = requests.get(GITHUB_RELEASES_URL, timeout=10)
+        resp.raise_for_status()
+        data = resp.json()
+        return data.get("tag_name", "Unknown").lstrip("v")  # e.g., "2.0.0" if tag is "v2.0.0"
+    except Exception as e:
+        print(f"Failed to fetch latest version: {e}")
+        return "1.0.0"  # Fallback to current hardcoded version
+
+# Use this as your app version
+APP_VERSION = get_latest_version()
+
+# For the update checker (keep the URL as constant)
+GITHUB_RELEASES_URL = "https://api.github.com/repos/Sarwarhridoy4/youvideo-downloader/releases/latest"
 
 # ──────────────────────────── helpers ───────────────────────────────────────
 
@@ -171,6 +189,143 @@ class PlaylistDownloadThread(QThread):
         self.finished.emit()
 
 
+
+class DeveloperInfoDialog(QDialog):
+    """Modern developer information dialog."""
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("About YouVideo Downloader")
+        self.setFixedSize(500, 400)
+        self.setModal(True)
+        
+        self._apply_stylesheet()
+        self._build_ui()
+        self._center_on_parent()
+    
+    def _apply_stylesheet(self):
+        """Apply modern styling."""
+        self.setStyleSheet("""
+            QDialog {
+                background: qlineargradient(
+                    x1:0, y1:0, x2:0, y2:1,
+                    stop:0 #2c3e50,
+                    stop:1 #34495e
+                );
+            }
+            QLabel#title { color: #ecf0f1; font-size: 26px; font-weight: bold; }
+            QLabel#version { color: #95a5a6; font-size: 13px; font-style: italic; }
+            QLabel#desc { color: #bdc3c7; font-size: 13px; }
+            QLabel#section { color: #3498db; font-size: 11px; font-weight: bold; }
+            QLabel#info { color: #ecf0f1; font-size: 14px; }
+            QFrame#card {
+                background-color: rgba(44, 62, 80, 0.6);
+                border: 1px solid rgba(52, 152, 219, 0.3);
+                border-radius: 10px;
+                padding: 15px;
+            }
+            QPushButton {
+                background-color: rgba(52, 152, 219, 0.8);
+                color: white; border: none; border-radius: 5px;
+                padding: 10px 20px; font-weight: bold;
+            }
+            QPushButton:hover { background-color: rgba(52, 152, 219, 1); }
+            QPushButton#close { background-color: rgba(231, 76, 60, 0.8); }
+            QPushButton#close:hover { background-color: rgba(231, 76, 60, 1); }
+        """)
+    
+    def _build_ui(self):
+        """Build the dialog UI."""
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(30, 30, 30, 30)
+        layout.setSpacing(15)
+        
+        # App Icon
+        if os.path.exists(icon_path):
+            icon_label = QLabel()
+            icon_label.setPixmap(QIcon(icon_path).pixmap(70, 70))
+            icon_label.setAlignment(Qt.AlignCenter)
+            layout.addWidget(icon_label)
+        
+        # Title & Version
+        title = QLabel("YouVideo Downloader")
+        title.setObjectName("title")
+        title.setAlignment(Qt.AlignCenter)
+        layout.addWidget(title)
+        
+        version = QLabel(f"Version {APP_VERSION}")
+        version.setObjectName("version")
+        version.setAlignment(Qt.AlignCenter)
+        layout.addWidget(version)
+        
+        # Description
+        desc = QLabel("A powerful tool for downloading videos from\nYouTube, Facebook, and other platforms.")
+        desc.setObjectName("desc")
+        desc.setAlignment(Qt.AlignCenter)
+        layout.addWidget(desc)
+        
+        # Info Card
+        card = QFrame()
+        card.setObjectName("card")
+        card_layout = QVBoxLayout(card)
+        
+        dev_section = QLabel("DEVELOPER")
+        dev_section.setObjectName("section")
+        card_layout.addWidget(dev_section)
+        
+        dev_name = QLabel("Sarwar Hossain")
+        dev_name.setObjectName("info")
+        card_layout.addWidget(dev_name)
+        
+        github_link = QLabel(
+            '<a href="https://github.com/Sarwarhridoy4/youvideo-downloader" '
+            'style="color:#3498db;">📦 View on GitHub</a>'
+        )
+        github_link.setOpenExternalLinks(True)
+        github_link.setObjectName("info")
+        card_layout.addWidget(github_link)
+        
+        layout.addWidget(card)
+        
+        # Social Buttons
+        btn_layout = QHBoxLayout()
+        portfolio_btn = QPushButton("🌐 Portfolio")
+        portfolio_btn.clicked.connect(
+            lambda: subprocess.Popen(
+                ["start" if sys.platform == "win32" else "open", 
+                 "https://sarwar-hossain-vert.vercel.app"], shell=True
+            )
+        )
+        btn_layout.addWidget(portfolio_btn)
+        
+        github_btn = QPushButton("💻 GitHub")
+        github_btn.clicked.connect(
+            lambda: subprocess.Popen(
+                ["start" if sys.platform == "win32" else "open",
+                 "https://github.com/Sarwarhridoy4"], shell=True
+            )
+        )
+        btn_layout.addWidget(github_btn)
+        layout.addLayout(btn_layout)
+        
+        layout.addSpacerItem(QSpacerItem(20, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        
+        # Close Button
+        close_btn = QPushButton("Close")
+        close_btn.setObjectName("close")
+        close_btn.clicked.connect(self.accept)
+        layout.addWidget(close_btn)
+    
+    def _center_on_parent(self):
+        """Center dialog on parent window."""
+        if self.parent():
+            parent_rect = self.parent().geometry()
+            x = parent_rect.x() + (parent_rect.width() - self.width()) // 2
+            y = parent_rect.y() + (parent_rect.height() - self.height()) // 2
+            self.move(x, y)
+
+
+
 # ──────────────────────────── main window ───────────────────────────────────
 class PlaylistWindow(QMainWindow):
     """Main GUI class for playlist handling."""
@@ -268,7 +423,7 @@ class PlaylistWindow(QMainWindow):
 
         info_menu = QMenu("&Info", self)
         dev_action = QAction("Developer Info", self)
-        dev_action.triggered.connect(self.show_dev_info)
+        dev_action.triggered.connect(self._show_dev_info)  # ← calls the method
         update_action = QAction("Check for Update", self)
         update_action.triggered.connect(self.check_update)
         info_menu.addAction(dev_action)
@@ -281,47 +436,40 @@ class PlaylistWindow(QMainWindow):
         )
 
     # ───────────────────────────── info/actions ────────────────────────────
-    def show_dev_info(self):
-        dev_dialog = QDialog(self)
-        dev_dialog.setWindowTitle("Developer Info")
-        dev_dialog.setFixedSize(400, 200)
-        # Center the dialog over the main window
-        parent_rect = self.geometry()
-        x = parent_rect.x() + (parent_rect.width() - 400) // 2
-        y = parent_rect.y() + (parent_rect.height() - 200) // 2
-        dev_dialog.move(x, y)
-        layout = QVBoxLayout()
-        info = QLabel(
-            "<h2>YouVideo Downloader</h2>"
-            "<p><b>Developer:</b> Sarwar</p>"
-            "<p><b>GitHub:</b> <a href='https://github.com/Sarwarhridoy4/youvideo-downloader'>https://github.com/Sarwarhridoy4/youvideo-downloader</a></p>"
-        )
-        info.setOpenExternalLinks(True)
-        info.setAlignment(Qt.AlignCenter)
-        layout.addWidget(info)
-        dev_dialog.setLayout(layout)
-        dev_dialog.exec()
+    def _show_dev_info(self):
+        """Display the modern About/Developer dialog."""
+        dialog = DeveloperInfoDialog(self)
+        dialog.exec()
+
+    def _show_info(self, title: str, message: str):
+        """Show information message box."""
+        QMessageBox.information(self, title, message)
 
     def check_update(self):
+        """Check for application updates."""
         try:
             resp = requests.get(GITHUB_RELEASES_URL, timeout=5)
+            resp.raise_for_status()
             data = resp.json()
-            latest = data.get("tag_name")
+            latest = data.get("tag_name", "").lstrip("v")
+            
             if not latest:
-                raise Exception("No tag_name in response")
-            if latest != APP_VERSION:
-                QMessageBox.information(
-                    self,
-                    "Update Available",
-                    (
-                        f"New version available: {latest}\nVisit:\n"
-                        f"https://github.com/Sarwarhridoy4/youvideo-downloader/releases/tag/{latest}"
-                    ),
-                )
+                raise ValueError("No version information in response")
+            
+            current = APP_VERSION.lstrip("v")
+            
+            if latest != current:
+                self._show_info("Update Available",
+                              f"New version available: {latest}\n"
+                              f"Current version: {current}\n\n"
+                              f"Visit: https://github.com/Sarwarhridoy4/"
+                              f"youvideo-downloader/releases/tag/v{latest}")
             else:
-                QMessageBox.information(self, "Up to Date", "You have the latest version.")
+                self._show_info("Up to Date", 
+                              f"You have the latest version ({current}).")
         except Exception as e:
-            QMessageBox.warning(self, "Update Error", f"Could not check for updates: {e}")
+            self._show_error("Update Check Failed", 
+                           f"Could not check for updates:\n{str(e)}")
 
     # ───────────────────────────── folders/ui ──────────────────────────────
     def _browse_folder(self) -> None:  # noqa: D401
@@ -459,3 +607,5 @@ class PlaylistWindow(QMainWindow):
         else:
             self.apply_theme(resource_path("assets/qss/dark.qss"))
             self.current_theme = "dark"
+
+

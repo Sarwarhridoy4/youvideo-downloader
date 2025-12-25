@@ -220,17 +220,4 @@ This README includes:
 - Development and build guide
 - Step-by-step instructions to create a **professional AppImage** ready for distribution
 
-```
 
----
-
-This README is **fully professional**, mirrors your `.deb` README, and now serves **end users, developers, and maintainers** for AppImage releases.
-
-It can also be **included in the AppImage itself** under `/usr/share/doc/youvideo-downloader/README.md`.
-
----
-
-If you want, I can also create a **single “Universal Build & Release Workflow” README** covering both `.deb` and AppImage in one place, including GitHub Actions automation.
-
-Do you want me to do that?
-```

@@ -1,10 +1,5 @@
-Perfect — now that your Debian package is fully built, validated, and AppStream-compliant, here’s a **full professional README** that documents everything for users, developers, and maintainers. I’ve structured it step by step for clarity.
-
----
-
 # README.md — YouVideo Downloader (Professional)
 
-````markdown
 # YouVideo Downloader
 
 **YouVideo Downloader** is a modern, graphical video downloader for Linux built with PyQt6 and `yt-dlp`.  
@@ -14,36 +9,36 @@ It allows users to download videos from YouTube and many other platforms, select
 
 ## Table of Contents
 
-1. [Features](#features)  
-2. [System Requirements](#system-requirements)  
-3. [Installation](#installation)  
-4. [Usage](#usage)  
-5. [Desktop Integration](#desktop-integration)  
-6. [Updating](#updating)  
-7. [Development](#development)  
-8. [Building a Debian Package](#building-a-debian-package)  
-9. [AppStream Metadata](#appstream-metadata)  
-10. [License](#license)  
-11. [Repository](#repository)  
+1. [Features](#features)
+2. [System Requirements](#system-requirements)
+3. [Installation](#installation)
+4. [Usage](#usage)
+5. [Desktop Integration](#desktop-integration)
+6. [Updating](#updating)
+7. [Development](#development)
+8. [Building a Debian Package](#building-a-debian-package)
+9. [AppStream Metadata](#appstream-metadata)
+10. [License](#license)
+11. [Repository](#repository)
 
 ---
 
 ## Features
 
-- Download videos and playlists from YouTube and other supported platforms  
-- Select video quality and format (MP4, WEBM, etc.)  
-- Choose custom output folder for downloads  
-- Modern GUI interface built with PyQt6  
-- Tracks download progress with notifications  
-- Fully packaged as a standalone `.deb` for Debian/Ubuntu/Linux Mint  
+- Download videos and playlists from YouTube and other supported platforms
+- Select video quality and format (MP4, WEBM, etc.)
+- Choose custom output folder for downloads
+- Modern GUI interface built with PyQt6
+- Tracks download progress with notifications
+- Fully packaged as a standalone `.deb` for Debian/Ubuntu/Linux Mint
 
 ---
 
 ## System Requirements
 
-- **OS:** Debian, Ubuntu, Linux Mint (64-bit)  
-- **Dependencies:** `libc6`, `zlib1g`, `ffmpeg`  
-- **Disk space:** 100 MB (includes app and temporary download files)  
+- **OS:** Debian, Ubuntu, Linux Mint (64-bit)
+- **Dependencies:** `libc6`, `zlib1g`, `ffmpeg`
+- **Disk space:** 100 MB (includes app and temporary download files)
 
 ---
 
@@ -55,7 +50,7 @@ It allows users to download videos from YouTube and many other platforms, select
 
 ```bash
 wget https://github.com/Sarwarhridoy4/youvideo-downloader/releases/download/v2.0.0/youvideo-downloader_2.0.0-1_amd64.deb
-````
+```
 
 2. Install the package:
 
@@ -95,21 +90,21 @@ youvideo-downloader
 
 ## Desktop Integration
 
-* A `.desktop` file is included, so the app appears in **GNOME, KDE, and Linux Mint software menus**.
-* App icon installed under `/usr/share/icons/hicolor/256x256/apps/youvideo-downloader.png`
-* AppStream metadata ensures proper screenshot and description in software centers
+- A `.desktop` file is included, so the app appears in **GNOME, KDE, and Linux Mint software menus**.
+- App icon installed under `/usr/share/icons/hicolor/256x256/apps/youvideo-downloader.png`
+- AppStream metadata ensures proper screenshot and description in software centers
 
 ---
 
 ## Updating
 
-* Future releases can be installed over the previous version:
+- Future releases can be installed over the previous version:
 
 ```bash
 sudo dpkg -i youvideo-downloader_<new-version>_amd64.deb
 ```
 
-* Old versions are automatically replaced, and desktop entries remain intact.
+- Old versions are automatically replaced, and desktop entries remain intact.
 
 ---
 
@@ -206,7 +201,7 @@ Description: YouVideo Downloader is a simple and efficient YouTube video downloa
 
 7. Add maintainer scripts:
 
-* `postinst`:
+- `postinst`:
 
 ```sh
 #!/bin/sh
@@ -216,7 +211,7 @@ command -v gtk-update-icon-cache >/dev/null && gtk-update-icon-cache -q /usr/sha
 exit 0
 ```
 
-* `prerm`:
+- `prerm`:
 
 ```sh
 #!/bin/sh
@@ -272,22 +267,22 @@ sudo apt purge youvideo-downloader
 
 ## AppStream Metadata
 
-* Ensures software centers display the **screenshot, description, and license** correctly.
-* Screenshot URL must be **raw and padding-free**.
+- Ensures software centers display the **screenshot, description, and license** correctly.
+- Screenshot URL must be **raw and padding-free**.
 
 ---
 
 ## License
 
-* **MIT License**
-* Full text included in `/usr/share/doc/youvideo-downloader/copyright.gz`
+- **MIT License**
+- Full text included in `/usr/share/doc/youvideo-downloader/copyright.gz`
 
 ---
 
 ## Repository
 
-* GitHub: [https://github.com/Sarwarhridoy4/youvideo-downloader](https://github.com/Sarwarhridoy4/youvideo-downloader)
-* Bug reports: [https://github.com/Sarwarhridoy4/youvideo-downloader/issues](https://github.com/Sarwarhridoy4/youvideo-downloader/issues)
+- GitHub: [https://github.com/Sarwarhridoy4/youvideo-downloader](https://github.com/Sarwarhridoy4/youvideo-downloader)
+- Bug reports: [https://github.com/Sarwarhridoy4/youvideo-downloader/issues](https://github.com/Sarwarhridoy4/youvideo-downloader/issues)
 
 ---
 
@@ -301,10 +296,9 @@ sudo apt purge youvideo-downloader
 
 This README provides:
 
-* Installation instructions
-* Usage guide
-* Desktop integration and AppStream details
-* Full instructions for building a professional `.deb` package from PyInstaller binary
+- Installation instructions
+- Usage guide
+- Desktop integration and AppStream details
+- Full instructions for building a professional `.deb` package from PyInstaller binary
 
 Your package is **fully distribution-ready**, Debian/Ubuntu/Linux Mint compatible, and ready for APT repository or GitHub releases.
-

@@ -17,8 +17,8 @@ QPushButton {
     background-color: #262626;
     color: #ffffff;
     border: 1px solid #303030;
-    border-radius: 20px;
-    padding: 10px 24px;
+    border-radius: 25px;
+    padding: 8px 16px;
     font-weight: 500;
     min-height: 20px;
     
@@ -50,8 +50,8 @@ QPushButton[accessibleName="primary"] {
     background-color: #ff0000;
     color: #ffffff;
     border: none;
-    border-radius: 20px;
-    padding: 13px 36px;
+    border-radius: 25px;
+    padding: 10px 24px;
     font-weight: 600;
     font-size: 15px;
     
@@ -75,9 +75,9 @@ QLineEdit, QComboBox, QTextEdit {
     background-color: #1f1f1f;
     color: #ffffff;
     border: 1px solid #303030;
-    border-radius: 20px;
-    padding: 12px 18px;
-    font-size: 15px;
+    border-radius: 25px;
+    padding: 8px 14px;
+    font-size: 14px;
     selection-background-color: #ff3333;
     
     transition: border-color 0.25s ease, box-shadow 0.25s ease;
@@ -89,19 +89,36 @@ QLineEdit:focus, QComboBox:focus, QTextEdit:focus {
     outline: none;
 }
 
+/* ComboBox Dropdown Arrow */
+QComboBox::drop-down {
+    border: none;
+    border-radius: 25px;
+    width: 30px;
+}
+
+QComboBox::down-arrow {
+    image: url("data:image/svg+xml,%3csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M3 4.5L6 7.5L9 4.5' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+    width: 12px;
+    height: 12px;
+}
+
+QComboBox::down-arrow:hover {
+    image: url("data:image/svg+xml,%3csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M3 4.5L6 7.5L9 4.5' stroke='%23ff0000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
+}
+
 /* Special URL bar */
 QLineEdit#urlInput, QLineEdit.urlInput, QLineEdit#searchInput {
     padding-left: 52px;
-    border-radius: 24px;
-    font-size: 16px;
+    border-radius: 28px;
+    font-size: 14px;
 }
 
 QLabel#thumbnailLabel {
     background-color: #1f1f1f;
     border: 2px solid #303030;
-    border-radius: 24px;
-    min-width: 160px;
-    min-height: 90px;
+    border-radius: 28px;
+    min-width: 120px;
+    min-height: 68px;
 }
 
 /* Labels */
@@ -145,7 +162,7 @@ QListWidget, QTreeWidget {
 QListWidget::item {
     padding: 12px 10px;
     margin: 3px 0;
-    border-radius: 12px;
+    border-radius: 16px;
     transition: background-color 0.2s ease;
 }
 
@@ -156,14 +173,14 @@ QListWidget::item:hover {
 QListWidget::item:selected {
     background-color: #ff0000;
     color: #ffffff;
-    border-radius: 12px;
+    border-radius: 16px;
 }
 
 /* Progress Bar – Symmetric smooth fill */
 QProgressBar {
     border: none;
     background-color: #262626;
-    border-radius: 8px;
+    border-radius: 12px;
     height: 8px;
     text-align: center;
     color: #ffffff;
@@ -172,7 +189,7 @@ QProgressBar {
 
 QProgressBar::chunk {
     background-color: #ff0000;
-    border-radius: 8px;
+    border-radius: 12px;
     transition: width 0.4s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
@@ -180,7 +197,7 @@ QProgressBar::chunk {
 QFrame#videoCard, QGroupBox {
     background-color: #1f1f1f;
     border: 1px solid #303030;
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 16px;
     margin: 8px;
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease;
@@ -195,7 +212,7 @@ QFrame#videoCard:hover, QGroupBox:hover {
 /* Thumbnail */
 QLabel#thumbnail {
     background-color: #000000;
-    border-radius: 12px;
+    border-radius: 16px;
     min-width: 220px;
     min-height: 124px;
     border: 1px solid #333;
@@ -210,7 +227,7 @@ QScrollBar:vertical {
 
 QScrollBar::handle:vertical {
     background: #444444;
-    border-radius: 4px;
+    border-radius: 6px;
     min-height: 40px;
     transition: background-color 0.25s ease;
 }
@@ -229,7 +246,7 @@ QToolTip {
     color: #ffffff;
     border: none;
     padding: 8px 12px;
-    border-radius: 8px;
+    border-radius: 12px;
     font-size: 13px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
@@ -243,7 +260,7 @@ QToolTip {
 QRadioButton::indicator {
     width: 20px;
     height: 20px;
-    border-radius: 10px;
+    border-radius: 12px;
     transition: all 0.3s ease;
 }
 
@@ -273,7 +290,7 @@ QCheckBox {
 QCheckBox::indicator {
     width: 20px;
     height: 20px;
-    border-radius: 6px;
+    border-radius: 8px;
     border: 2px solid #80868b;
     background-color: transparent;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);

@@ -372,20 +372,20 @@ class MainWindow(QMainWindow):
         """Configure main window properties."""
         self.setWindowTitle("YouVideo Downloader")
         self.setWindowIcon(QIcon(ICON_PATH))
-        self.setMinimumSize(750, 550)
-        self.resize(750, 550)
+        self.setMinimumSize(650, 480)
+        self.resize(650, 480)
     
     def _setup_ui(self):
         """Build the user interface."""
         central = QWidget()
         self.setCentralWidget(central)
         main_layout = QVBoxLayout(central)
-        main_layout.setSpacing(15)
-        main_layout.setContentsMargins(20, 20, 20, 20)
+        main_layout.setSpacing(10)
+        main_layout.setContentsMargins(15, 15, 15, 15)
         
         # Header
         header = QLabel("📥 YouVideo Downloader")
-        header.setStyleSheet("font-size: 20px; font-weight: bold; padding: 10px;")
+        header.setStyleSheet("font-size: 18px; font-weight: bold; padding: 5px;")
         header.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(header)
         
@@ -397,8 +397,8 @@ class MainWindow(QMainWindow):
         self.url_input.setObjectName("urlInput")
         self.url_input.setProperty("class", "urlInput")
         self.url_input.setPlaceholderText("Enter YouTube, Facebook, or other video URL")
-        self.url_input.setMinimumHeight(45)
-        self.url_input.setStyleSheet("border-radius: 24px; padding-left: 52px;")
+        self.url_input.setMinimumHeight(35)
+        self.url_input.setStyleSheet("border-radius: 28px; padding-left: 52px;")
         self.url_input.textChanged.connect(self._on_url_changed)
         main_layout.addWidget(self.url_input)
         
@@ -408,13 +408,13 @@ class MainWindow(QMainWindow):
         
         self.thumbnail_label = QLabel()
         self.thumbnail_label.setObjectName("thumbnailLabel")
-        self.thumbnail_label.setFixedSize(160, 90)
+        self.thumbnail_label.setFixedSize(120, 68)
         self.thumbnail_label.setAlignment(Qt.AlignCenter)
         self.thumbnail_label.setText("No thumbnail loaded")
         thumbnail_layout.addWidget(self.thumbnail_label)
         
         self.load_thumbnail_btn = QPushButton("Load Thumbnail")
-        self.load_thumbnail_btn.setMinimumHeight(35)
+        self.load_thumbnail_btn.setMinimumHeight(30)
         self.load_thumbnail_btn.clicked.connect(self._load_thumbnail)
         thumbnail_layout.addWidget(self.load_thumbnail_btn)
         
@@ -450,12 +450,12 @@ class MainWindow(QMainWindow):
         format_layout.addWidget(format_label)
         
         self.format_dropdown = QComboBox()
-        self.format_dropdown.setMinimumHeight(35)
+        self.format_dropdown.setMinimumHeight(30)
         self.format_dropdown.currentIndexChanged.connect(self._update_download_state)
         format_layout.addWidget(self.format_dropdown, stretch=1)
         
         self.load_formats_btn = QPushButton("🔄 Load Formats")
-        self.load_formats_btn.setMinimumHeight(35)
+        self.load_formats_btn.setMinimumHeight(30)
         self.load_formats_btn.clicked.connect(self._load_formats)
         format_layout.addWidget(self.load_formats_btn)
         
@@ -469,12 +469,12 @@ class MainWindow(QMainWindow):
         folder_layout.addWidget(self.output_label, stretch=1)
         
         browse_btn = QPushButton("Browse")
-        browse_btn.setMinimumHeight(35)
+        browse_btn.setMinimumHeight(30)
         browse_btn.clicked.connect(self._browse_folder)
         folder_layout.addWidget(browse_btn)
         
         self.open_folder_btn = QPushButton("Open")
-        self.open_folder_btn.setMinimumHeight(35)
+        self.open_folder_btn.setMinimumHeight(30)
         self.open_folder_btn.clicked.connect(self._open_output_folder)
         folder_layout.addWidget(self.open_folder_btn)
         
@@ -482,7 +482,7 @@ class MainWindow(QMainWindow):
         
         # Progress Bar
         self.progress = QProgressBar()
-        self.progress.setMinimumHeight(25)
+        self.progress.setMinimumHeight(20)
         self.progress.setFormat("Ready")
         main_layout.addWidget(self.progress)
         
@@ -492,21 +492,21 @@ class MainWindow(QMainWindow):
         
         self.log_window = QTextEdit()
         self.log_window.setReadOnly(True)
-        self.log_window.setMaximumHeight(150)
+        self.log_window.setMaximumHeight(120)
         main_layout.addWidget(self.log_window)
         
         # Action Buttons
         action_layout = QHBoxLayout()
         
         back_btn = QPushButton("◀ Back")
-        back_btn.setMinimumHeight(40)
+        back_btn.setMinimumHeight(35)
         back_btn.clicked.connect(self._on_back)
         action_layout.addWidget(back_btn)
         
         action_layout.addStretch()
         
         self.download_btn = QPushButton("⬇ Download")
-        self.download_btn.setMinimumHeight(40)
+        self.download_btn.setMinimumHeight(35)
         self.download_btn.setEnabled(False)
         self.download_btn.clicked.connect(self._download)
         self.download_btn.setStyleSheet("""
@@ -517,7 +517,7 @@ class MainWindow(QMainWindow):
         action_layout.addWidget(self.download_btn)
         
         theme_btn = QPushButton("🎨 Theme")
-        theme_btn.setMinimumHeight(40)
+        theme_btn.setMinimumHeight(35)
         theme_btn.clicked.connect(self._switch_theme)
         action_layout.addWidget(theme_btn)
         
@@ -606,10 +606,6 @@ class MainWindow(QMainWindow):
     def _on_url_changed(self):
         """Handle URL input changes."""
         self._update_download_state()
-        # Auto-load thumbnail when URL is entered
-        url = self.url_input.text().strip()
-        if url:
-            self._load_thumbnail()
     
     def _on_type_changed(self):
         """Handle audio/video type changes."""

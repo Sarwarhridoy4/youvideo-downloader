@@ -23,7 +23,7 @@ import sys
 import requests
 import subprocess
 
-from downloader.yt_downloader import get_formats, download_and_merge
+from downloader.yt_downloader import get_formats, download_and_merge, get_video_info
 from downloader.ffmpeg_utils import ensure_ffmpeg
 from utils.pathfinder import resource_path
 
@@ -152,6 +152,25 @@ class FormatLoaderThread(QThread):
         try:
             formats = get_formats(self.url)
             self.formats_loaded.emit(formats)
+        except Exception as e:
+            self.error.emit(str(e))
+
+
+class VideoInfoLoaderThread(QThread):
+    """Thread for loading video information including thumbnail."""
+    
+    info_loaded = Signal(dict)
+    error = Signal(str)
+    
+    def __init__(self, url: str):
+        super().__init__()
+        self.url = url
+    
+    def run(self):
+        """Fetch video info from the URL."""
+        try:
+            info = get_video_info(self.url)
+            self.info_loaded.emit(info)
         except Exception as e:
             self.error.emit(str(e))
 
@@ -340,6 +359,7 @@ class MainWindow(QMainWindow):
         self.spinner_dialog: Optional[SpinnerDialog] = None
         self.download_thread: Optional[DownloadThread] = None
         self.format_loader: Optional[FormatLoaderThread] = None
+        self.video_info_loader: Optional[VideoInfoLoaderThread] = None
         
         # Setup
         self._setup_window()
@@ -374,10 +394,32 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(url_label)
         
         self.url_input = QLineEdit()
+        self.url_input.setObjectName("urlInput")
+        self.url_input.setProperty("class", "urlInput")
         self.url_input.setPlaceholderText("Enter YouTube, Facebook, or other video URL")
-        self.url_input.setMinimumHeight(35)
+        self.url_input.setMinimumHeight(45)
+        self.url_input.setStyleSheet("border-radius: 24px; padding-left: 52px;")
         self.url_input.textChanged.connect(self._on_url_changed)
         main_layout.addWidget(self.url_input)
+        
+        # Thumbnail Display
+        thumbnail_layout = QHBoxLayout()
+        thumbnail_layout.addWidget(QLabel("Thumbnail:"))
+        
+        self.thumbnail_label = QLabel()
+        self.thumbnail_label.setObjectName("thumbnailLabel")
+        self.thumbnail_label.setFixedSize(160, 90)
+        self.thumbnail_label.setAlignment(Qt.AlignCenter)
+        self.thumbnail_label.setText("No thumbnail loaded")
+        thumbnail_layout.addWidget(self.thumbnail_label)
+        
+        self.load_thumbnail_btn = QPushButton("Load Thumbnail")
+        self.load_thumbnail_btn.setMinimumHeight(35)
+        self.load_thumbnail_btn.clicked.connect(self._load_thumbnail)
+        thumbnail_layout.addWidget(self.load_thumbnail_btn)
+        
+        thumbnail_layout.addStretch()
+        main_layout.addLayout(thumbnail_layout)
         
         # Type Selection (Audio/Video)
         type_frame = QFrame()
@@ -564,6 +606,10 @@ class MainWindow(QMainWindow):
     def _on_url_changed(self):
         """Handle URL input changes."""
         self._update_download_state()
+        # Auto-load thumbnail when URL is entered
+        url = self.url_input.text().strip()
+        if url:
+            self._load_thumbnail()
     
     def _on_type_changed(self):
         """Handle audio/video type changes."""
@@ -641,6 +687,82 @@ class MainWindow(QMainWindow):
             self.spinner_dialog = None
         
         self._show_error("Format Loading Failed", error)
+    
+    def _load_thumbnail(self):
+        """Load video thumbnail for the URL."""
+        url = self.url_input.text().strip()
+        if not url:
+            self._show_error("Missing URL", "Please enter a video URL.")
+            return
+        
+        # Show spinner
+        self.spinner_dialog = SpinnerDialog("Loading thumbnail...", self)
+        self.spinner_dialog.show()
+        
+        # Start video info loader thread
+        self.video_info_loader = VideoInfoLoaderThread(url)
+        self.video_info_loader.info_loaded.connect(self._on_info_loaded)
+        self.video_info_loader.error.connect(self._on_info_error)
+        self.video_info_loader.start()
+    
+    def _on_info_loaded(self, info: dict):
+        """Handle loaded video info."""
+        thumbnail_url = info.get("thumbnail_url")
+        if thumbnail_url:
+            try:
+                # Download and display thumbnail
+                import urllib.request
+                from PIL import Image
+                import io
+                
+                # Download image
+                with urllib.request.urlopen(thumbnail_url) as response:
+                    image_data = response.read()
+                
+                # Convert to QPixmap
+                image = Image.open(io.BytesIO(image_data))
+                # Resize to fit the label
+                image.thumbnail((160, 90))
+                
+                # Convert PIL to QPixmap
+                from PySide6.QtGui import QPixmap
+                import tempfile
+                import os
+                
+                # Save to temp file and load as QPixmap
+                with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as temp_file:
+                    image.save(temp_file.name, 'PNG')
+                    pixmap = QPixmap(temp_file.name)
+                    os.unlink(temp_file.name)
+                
+                # Scale to fit
+                scaled_pixmap = pixmap.scaled(160, 90, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                self.thumbnail_label.setPixmap(scaled_pixmap)
+                self.thumbnail_label.setText("")  # Clear text
+                
+                self.log_window.append("✓ Thumbnail loaded")
+                
+            except Exception as e:
+                self.thumbnail_label.setText("Failed to load thumbnail")
+                self.log_window.append(f"✗ Error loading thumbnail: {str(e)}")
+        else:
+            self.thumbnail_label.setText("No thumbnail available")
+            self.log_window.append("No thumbnail available")
+        
+        if self.spinner_dialog:
+            self.spinner_dialog.accept()
+            self.spinner_dialog = None
+    
+    def _on_info_error(self, error: str):
+        """Handle video info loading error."""
+        self.thumbnail_label.setText("Error loading thumbnail")
+        self.log_window.append(f"✗ Error loading video info: {error}")
+        
+        if self.spinner_dialog:
+            self.spinner_dialog.accept()
+            self.spinner_dialog = None
+        
+        self._show_error("Thumbnail Loading Failed", error)
     
     def _download(self):
         """Start download."""
@@ -753,5 +875,9 @@ class MainWindow(QMainWindow):
         if self.format_loader and self.format_loader.isRunning():
             self.format_loader.terminate()
             self.format_loader.wait()
+        
+        if self.video_info_loader and self.video_info_loader.isRunning():
+            self.video_info_loader.terminate()
+            self.video_info_loader.wait()
         
         event.accept()

@@ -90,11 +90,18 @@ QLineEdit:focus, QComboBox:focus, QTextEdit:focus {
 }
 
 /* Special URL bar */
-QLineEdit#urlInput, QLineEdit#searchInput {
+QLineEdit#urlInput, QLineEdit.urlInput, QLineEdit#searchInput {
     padding-left: 52px;
     border-radius: 24px;
     font-size: 16px;
+}
+
+QLabel#thumbnailLabel {
     background-color: #1f1f1f;
+    border: 2px solid #303030;
+    border-radius: 24px;
+    min-width: 160px;
+    min-height: 90px;
 }
 
 /* Labels */

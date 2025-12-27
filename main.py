@@ -1,7 +1,8 @@
 """
-YouVideo Downloader v1.6.2
-Simplified & Robust Main Entry Point
+YouVideo Downloader v2.0.0
+Simplified & Robust Main Entry Point with Theme Synchronization
 - Proper taskbar icon on Windows, Linux (GNOME), macOS
+- Theme synchronization across all windows
 - No external tools (xdotool, PIL)
 - Clean, readable, maintainable
 """
@@ -78,6 +79,41 @@ def load_icon() -> QIcon:
     return QIcon()
 
 
+class ThemeManager:
+    """Manages theme synchronization across all windows"""
+    
+    def __init__(self):
+        self.current_theme = "dark"
+        self.windows = []
+    
+    def register_window(self, window):
+        """Register a window for theme updates"""
+        self.windows.append(window)
+    
+    def set_theme(self, theme: str):
+        """Apply theme to all registered windows"""
+        if theme not in ["dark", "light"]:
+            return
+        
+        self.current_theme = theme
+        
+        # Update theme in all windows
+        for window in self.windows:
+            if hasattr(window, 'set_theme'):
+                window.set_theme(theme)
+            elif hasattr(window, '_apply_theme'):
+                # For windows with direct theme application
+                theme_path = resource_path(f"assets/qss/{theme}.qss")
+                if os.path.exists(theme_path):
+                    window._apply_theme(theme_path)
+                    if hasattr(window, 'current_theme'):
+                        window.current_theme = theme
+    
+    def get_theme(self) -> str:
+        """Get current theme"""
+        return self.current_theme
+
+
 def main():
     print("🚀 Starting YouVideo Downloader v1.6.2...")
 
@@ -88,6 +124,9 @@ def main():
     icon = load_icon()
     app.setWindowIcon(icon)  # Global icon for all windows
 
+    # Create theme manager
+    theme_manager = ThemeManager()
+
     # Create windows
     welcome = WelcomeScreen()
     main_win = MainWindow()
@@ -96,6 +135,11 @@ def main():
     # Apply icon to all windows
     for win in [welcome, main_win, playlist_win]:
         win.setWindowIcon(icon)
+
+    # Register windows with theme manager
+    theme_manager.register_window(welcome)
+    theme_manager.register_window(main_win)
+    theme_manager.register_window(playlist_win)
 
     # Window setup
     welcome.setWindowTitle("Welcome — YouVideo Downloader")
@@ -131,12 +175,33 @@ def main():
     main_win.set_back_callback(show_welcome)
     playlist_win.set_back_callback(show_welcome)
 
+    # Connect theme changes from welcome screen to theme manager
+    def on_theme_changed(theme: str):
+        """Handle theme change from welcome screen"""
+        print(f"🎨 Theme changed to: {theme}")
+        theme_manager.set_theme(theme)
+    
+    welcome.theme_changed.connect(on_theme_changed)
+
+    # Also sync theme changes from main windows back to welcome
+    def sync_theme_to_welcome(theme: str):
+        """Sync theme from main/playlist windows back to welcome"""
+        if welcome.get_current_theme() != theme:
+            welcome.set_theme(theme)
+    
+    # If main_window or playlist_window have theme change signals, connect them
+    # (You may need to add similar signals to MainWindow and PlaylistWindow)
+
     # Show welcome screen
     welcome.show()
     welcome.raise_()
     welcome.activateWindow()
 
     print("✓ App launched successfully!")
+    print("\n💡 Features:")
+    print("   • Theme toggle button (🌙/☀️) in top-right of welcome screen")
+    print("   • Theme syncs across all windows automatically")
+    print("   • Fully rounded UI with compact layout")
     print("\n💡 Tip for Linux (GNOME) taskbar icon:")
     print("   If icon doesn't show immediately:")
     print("   → Press Alt+F2 → type 'r' → Enter (restarts GNOME shell)")

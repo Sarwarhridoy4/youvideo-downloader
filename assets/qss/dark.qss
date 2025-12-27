@@ -1,28 +1,34 @@
 /* ─────────────────────────────────────────────────────────────
-   YouVideo Downloader – Dark Theme (YouTube 2025 Symmetric Style)
-   Symmetric with Light Theme: Same structure, hover effects, transitions, 
-   rounded corners, shadows, and professional elegance
-   Core YouTube red accent preserved
+   YouVideo Downloader – Dark Theme (Rounded & Compact)
+   Fully rounded UI with overflow prevention
    ───────────────────────────────────────────────────────────── */
 
 QMainWindow, QWidget#centralWidget {
     background-color: #0f0f0f;
     color: #f1f1f1;
     font-family: "Roboto", "YouTube Sans", "Segoe UI", sans-serif;
-    font-size: 14px;
+    font-size: 13px;
 }
 
-/* Default Buttons – Symmetric hover lift & shadow */
+/* Compact Window Sizing */
+QMainWindow {
+    min-width: 650px;
+    max-width: 1200px;
+    min-height: 480px;
+    max-height: 900px;
+}
+
+/* Default Buttons – Fully Rounded */
 QPushButton {
     background-color: #262626;
     color: #ffffff;
     border: 1px solid #303030;
-    border-radius: 25px;
-    padding: 8px 16px;
+    border-radius: 18px;
+    padding: 8px 18px;
     font-weight: 500;
-    min-height: 20px;
-    
-    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease, border-color 0.2s ease;
+    min-height: 32px;
+    max-height: 40px;
+    transition: all 0.2s ease;
 }
 
 QPushButton:hover {
@@ -43,26 +49,27 @@ QPushButton:disabled {
     border-color: #333333;
 }
 
-/* Primary Action Button – Symmetric scale & glow */
+/* Primary Action Button – Full Circle Ends */
 QPushButton#downloadButton,
 QPushButton#subscribeButton,
 QPushButton[accessibleName="primary"] {
     background-color: #ff0000;
     color: #ffffff;
     border: none;
-    border-radius: 25px;
+    border-radius: 20px;
     padding: 10px 24px;
     font-weight: 600;
-    font-size: 15px;
-    
-    transition: background-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+    font-size: 14px;
+    min-height: 38px;
+    max-height: 44px;
+    transition: all 0.25s ease;
 }
 
 QPushButton#downloadButton:hover,
 QPushButton#subscribeButton:hover {
     background-color: #cc0000;
     box-shadow: 0 8px 24px rgba(255, 0, 0, 0.45);
-    transform: scale(1.03);
+    transform: scale(1.02);
 }
 
 QPushButton#downloadButton:disabled {
@@ -70,30 +77,44 @@ QPushButton#downloadButton:disabled {
     color: #990000;
 }
 
-/* Input Fields – Symmetric focus ring */
+/* Input Fields – Pill-Shaped */
 QLineEdit, QComboBox, QTextEdit {
     background-color: #1f1f1f;
     color: #ffffff;
     border: 1px solid #303030;
-    border-radius: 25px;
-    padding: 8px 14px;
-    font-size: 14px;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 13px;
     selection-background-color: #ff3333;
-    
-    transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    min-height: 32px;
+    max-height: 44px;
+    transition: all 0.25s ease;
 }
 
-QLineEdit:focus, QComboBox:focus, QTextEdit:focus {
+QLineEdit:focus, QComboBox:focus {
     border-color: #ff0000;
-    box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.2);
+    box-shadow: 0 0 0 3px rgba(255, 0, 0, 0.2);
     outline: none;
 }
 
-/* ComboBox Dropdown Arrow */
+QTextEdit {
+    border-radius: 16px;
+    padding: 12px;
+    min-height: 80px;
+    max-height: 150px;
+}
+
+/* ComboBox Dropdown – Rounded */
+QComboBox {
+    padding-right: 36px;
+}
+
 QComboBox::drop-down {
     border: none;
-    border-radius: 25px;
-    width: 30px;
+    border-radius: 20px;
+    width: 32px;
+    subcontrol-position: right center;
+    subcontrol-origin: padding;
 }
 
 QComboBox::down-arrow {
@@ -106,63 +127,83 @@ QComboBox::down-arrow:hover {
     image: url("data:image/svg+xml,%3csvg width='12' height='12' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M3 4.5L6 7.5L9 4.5' stroke='%23ff0000' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3e%3c/svg%3e");
 }
 
-/* Special URL bar */
-QLineEdit#urlInput, QLineEdit.urlInput, QLineEdit#searchInput {
-    padding-left: 52px;
-    border-radius: 28px;
-    font-size: 14px;
+QComboBox QAbstractItemView {
+    background-color: #1f1f1f;
+    border: 1px solid #303030;
+    border-radius: 12px;
+    selection-background-color: #ff0000;
+    selection-color: #ffffff;
+    padding: 4px;
+    outline: none;
 }
 
+/* URL Input – Extra Rounded */
+QLineEdit#urlInput, QLineEdit.urlInput, QLineEdit#searchInput {
+    padding-left: 52px;
+    border-radius: 24px;
+    font-size: 13px;
+    min-height: 40px;
+    max-height: 48px;
+}
+
+/* Thumbnail Label – Rounded */
 QLabel#thumbnailLabel {
     background-color: #1f1f1f;
     border: 2px solid #303030;
-    border-radius: 28px;
+    border-radius: 16px;
     min-width: 120px;
+    max-width: 160px;
     min-height: 68px;
+    max-height: 90px;
 }
 
-/* Labels */
+/* Labels – Compact */
 QLabel {
     color: #e0e0e0;
     background: transparent;
+    padding: 2px 4px;
 }
 
 QLabel#headerLabel, QLabel#titleLabel {
-    font-size: 26px;
+    font-size: 20px;
     font-weight: bold;
     color: #ffffff;
-    padding: 8px 0;
+    padding: 6px 0;
+    max-height: 36px;
 }
 
 QLabel#channelName {
     color: #aaaaaa;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 500;
 }
 
 QLabel#videoTitle {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 500;
     color: #ffffff;
 }
 
 QLabel#videoMeta {
-    font-size: 13px;
+    font-size: 12px;
     color: #909090;
 }
 
-/* List Items */
+/* List Items – Rounded */
 QListWidget, QTreeWidget {
     background-color: #0f0f0f;
-    border: none;
+    border: 1px solid #303030;
+    border-radius: 16px;
     outline: none;
     padding: 8px;
 }
 
 QListWidget::item {
-    padding: 12px 10px;
-    margin: 3px 0;
-    border-radius: 16px;
+    padding: 10px 12px;
+    margin: 2px 0;
+    border-radius: 12px;
+    min-height: 32px;
+    max-height: 60px;
     transition: background-color 0.2s ease;
 }
 
@@ -173,17 +214,21 @@ QListWidget::item:hover {
 QListWidget::item:selected {
     background-color: #ff0000;
     color: #ffffff;
-    border-radius: 16px;
+    border-radius: 12px;
 }
 
-/* Progress Bar – Symmetric smooth fill */
+/* Progress Bar – Fully Rounded */
 QProgressBar {
     border: none;
     background-color: #262626;
     border-radius: 12px;
-    height: 8px;
+    height: 24px;
+    min-height: 20px;
+    max-height: 28px;
     text-align: center;
     color: #ffffff;
+    font-weight: 600;
+    font-size: 12px;
     transition: background-color 0.3s ease;
 }
 
@@ -193,42 +238,60 @@ QProgressBar::chunk {
     transition: width 0.4s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-/* Cards – Symmetric hover lift */
+/* Cards – Rounded with Overflow Prevention */
 QFrame#videoCard, QGroupBox {
     background-color: #1f1f1f;
     border: 1px solid #303030;
-    border-radius: 20px;
-    padding: 16px;
-    margin: 8px;
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease;
+    border-radius: 16px;
+    padding: 14px;
+    margin: 6px;
+    max-width: 100%;
+    transition: all 0.25s ease;
 }
 
 QFrame#videoCard:hover, QGroupBox:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     border-color: #404040;
 }
 
-/* Thumbnail */
+QGroupBox {
+    font-weight: 600;
+    padding-top: 24px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    padding: 4px 12px;
+    background-color: #262626;
+    border-radius: 8px;
+    color: #ffffff;
+}
+
+/* Thumbnail – Compact Rounded */
 QLabel#thumbnail {
     background-color: #000000;
-    border-radius: 16px;
-    min-width: 220px;
-    min-height: 124px;
+    border-radius: 12px;
+    min-width: 160px;
+    max-width: 220px;
+    min-height: 90px;
+    max-height: 124px;
     border: 1px solid #333;
 }
 
-/* Scrollbars – Symmetric hover accent */
+/* Scrollbars – Rounded */
 QScrollBar:vertical {
     background: transparent;
-    width: 8px;
+    width: 10px;
     margin: 0;
+    border-radius: 5px;
 }
 
 QScrollBar::handle:vertical {
     background: #444444;
-    border-radius: 6px;
-    min-height: 40px;
+    border-radius: 5px;
+    min-height: 30px;
     transition: background-color 0.25s ease;
 }
 
@@ -240,14 +303,31 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
     height: 0px;
 }
 
-/* Tooltips – Symmetric shadow */
+QScrollBar:horizontal {
+    background: transparent;
+    height: 10px;
+    margin: 0;
+    border-radius: 5px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #444444;
+    border-radius: 5px;
+    min-width: 30px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #ff0000;
+}
+
+/* Tooltips – Rounded */
 QToolTip {
     background-color: #333333;
     color: #ffffff;
     border: none;
-    padding: 8px 12px;
-    border-radius: 12px;
-    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
@@ -256,11 +336,16 @@ QToolTip {
     selection-background-color: rgba(255, 0, 0, 0.4);
 }
 
-/* Radio Buttons – Symmetric */
+/* Radio Buttons – Rounded */
+QRadioButton {
+    spacing: 8px;
+    padding: 4px 0;
+}
+
 QRadioButton::indicator {
-    width: 20px;
-    height: 20px;
-    border-radius: 12px;
+    width: 18px;
+    height: 18px;
+    border-radius: 9px;
     transition: all 0.3s ease;
 }
 
@@ -278,19 +363,19 @@ QRadioButton::indicator:hover {
     border-color: #ff0000;
 }
 
-/* Checkboxes – Symmetric pop animation */
+/* Checkboxes – Rounded */
 QCheckBox {
     color: #e0e0e0;
-    spacing: 10px;
-    font-size: 14px;
+    spacing: 8px;
+    font-size: 13px;
     font-weight: 500;
-    padding: 6px 0;
+    padding: 4px 0;
 }
 
 QCheckBox::indicator {
-    width: 20px;
-    height: 20px;
-    border-radius: 8px;
+    width: 18px;
+    height: 18px;
+    border-radius: 6px;
     border: 2px solid #80868b;
     background-color: transparent;
     transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -312,16 +397,146 @@ QCheckBox::indicator:checked:hover {
     box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.25);
 }
 
-QCheckBox::indicator:checked {
-    animation: checkPop 0.35s cubic-bezier(0.2, 0.8, 0.4, 1);
+/* Menu Bar – Rounded */
+QMenuBar {
+    background-color: #1f1f1f;
+    color: #ffffff;
+    border-radius: 8px;
+    padding: 4px;
 }
 
-@keyframes checkPop {
-    0% { transform: scale(0.8); }
-    50% { transform: scale(1.15); }
-    100% { transform: scale(1); }
+QMenuBar::item {
+    background-color: transparent;
+    padding: 6px 12px;
+    border-radius: 6px;
 }
 
-QCheckBox:focus::indicator {
-    box-shadow: 0 0 0 4px rgba(255, 0, 0, 0.25);
+QMenuBar::item:selected {
+    background-color: #262626;
+}
+
+QMenu {
+    background-color: #1f1f1f;
+    border: 1px solid #303030;
+    border-radius: 12px;
+    padding: 6px;
+}
+
+QMenu::item {
+    padding: 8px 24px;
+    border-radius: 8px;
+}
+
+QMenu::item:selected {
+    background-color: #ff0000;
+    color: #ffffff;
+}
+
+/* Compact Spacing for Layouts */
+QVBoxLayout {
+    spacing: 8px;
+    margin: 10px;
+}
+
+QHBoxLayout {
+    spacing: 8px;
+}
+
+/* Prevent Overflow on Main Container */
+QWidget#centralWidget {
+    max-width: 100%;
+    overflow: hidden;
+}
+
+/* Status Bar – Rounded */
+QStatusBar {
+    background-color: #1f1f1f;
+    border-top: 1px solid #303030;
+    border-radius: 0 0 12px 12px;
+    padding: 4px 8px;
+    color: #aaaaaa;
+    font-size: 11px;
+}
+
+/* Tab Widget – Rounded */
+QTabWidget::pane {
+    border: 1px solid #303030;
+    border-radius: 12px;
+    background-color: #1f1f1f;
+    padding: 8px;
+}
+
+QTabBar::tab {
+    background-color: #262626;
+    color: #aaaaaa;
+    border: 1px solid #303030;
+    border-bottom: none;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    padding: 8px 16px;
+    margin-right: 2px;
+}
+
+QTabBar::tab:selected {
+    background-color: #ff0000;
+    color: #ffffff;
+}
+
+QTabBar::tab:hover {
+    background-color: #383838;
+}
+
+/* Slider – Rounded */
+QSlider::groove:horizontal {
+    border: none;
+    height: 6px;
+    background: #262626;
+    border-radius: 3px;
+}
+
+QSlider::handle:horizontal {
+    background: #ff0000;
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    margin: -5px 0;
+}
+
+QSlider::handle:horizontal:hover {
+    background: #cc0000;
+}
+
+/* Spin Box – Rounded */
+QSpinBox, QDoubleSpinBox {
+    background-color: #1f1f1f;
+    color: #ffffff;
+    border: 1px solid #303030;
+    border-radius: 12px;
+    padding: 6px 12px;
+    min-height: 28px;
+}
+
+QSpinBox::up-button, QSpinBox::down-button {
+    border: none;
+    border-radius: 6px;
+    width: 18px;
+}
+
+QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+    background-color: #383838;
+}
+
+/* Dialog – Rounded */
+QDialog {
+    background-color: #0f0f0f;
+    border-radius: 16px;
+}
+
+QMessageBox {
+    background-color: #0f0f0f;
+    border-radius: 16px;
+}
+
+QMessageBox QPushButton {
+    min-width: 80px;
 }

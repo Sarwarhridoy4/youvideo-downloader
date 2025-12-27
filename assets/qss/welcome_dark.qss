@@ -1,0 +1,225 @@
+/*
+    welcome.qss - YouTube-Inspired Qt Style Sheet for Welcome Screen (Dark)
+    
+    Color Palette:
+    - Background: #0f0f0f (YouTube Dark)
+    - Surface: #212121 (Card/Surface)
+    - Primary: #ff0000 (YouTube Red)
+    - Secondary: #3ea6ff (YouTube Blue)
+    - Text: #ffffff (Primary Text)
+    - Text Secondary: #aaaaaa (Secondary Text)
+*/
+
+QWidget {
+    background: #0f0f0f;
+    color: #ffffff;
+    font-family: 'Roboto', 'Segoe UI', sans-serif;
+    border-radius: 22px;
+}
+
+QLabel#title {
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding: 18px 0 8px 0;
+    qproperty-alignment: 'AlignCenter';
+}
+
+QLabel#subtitle {
+    color: #aaaaaa;
+    font-size: 16px;
+    margin-bottom: 22px;
+    qproperty-alignment: 'AlignCenter';
+}
+
+QPushButton {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff0000, stop:1 #cc0000);
+    color: #ffffff;
+    font-size: 18px;
+    border: none;
+    border-radius: 18px;
+    padding: 14px 40px;
+    margin-top: 22px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+QPushButton:hover {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #ff1a1a, stop:1 #e60000);
+    border: 2px solid #ff0000;
+}
+
+QPushButton:pressed {
+    background-color: #cc0000;
+    border: 2px solid #990000;
+}
+
+QPushButton:disabled {
+    background-color: #3d3d3d;
+    color: #717171;
+    border: none;
+}
+
+/* Secondary Button Style (if needed) */
+QPushButton#secondary {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #3ea6ff, stop:1 #2a8dd6);
+    border: none;
+}
+
+QPushButton#secondary:hover {
+    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:1, stop:0 #65b8ff, stop:1 #3ea6ff);
+    border: 2px solid #3ea6ff;
+}
+
+QPushButton#secondary:pressed {
+    background-color: #2a8dd6;
+    border: 2px solid #1976d2;
+}
+
+/* Theme Toggle Button - Same position, dark colors */
+QPushButton#themeToggle {
+    background-color: rgba(38, 38, 38, 0.8);
+    border: 1px solid #404040;
+    border-radius: 20px;
+    padding: 8px 12px;
+    min-width: 40px;
+    max-width: 40px;
+    min-height: 40px;
+    max-height: 40px;
+    font-size: 16px;
+    margin: 0;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+QPushButton#themeToggle:hover {
+    background-color: rgba(56, 56, 56, 0.9);
+    border-color: #ff0000;
+    box-shadow: 0 4px 12px rgba(255, 0, 0, 0.2);
+}
+
+/* Credits Label */
+#credit_label {
+    font-size: 14px;
+    color: #aaaaaa;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+#credit_label:hover {
+    color: #ffffff;
+}
+
+#credit_label a {
+    color: #3ea6ff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+#credit_label a:hover {
+    color: #65b8ff;
+    text-decoration: underline;
+}
+
+/* Optional: Icon styling if you use QLabel for icons */
+QLabel#icon {
+    background-color: transparent;
+    border-radius: 50%;
+    padding: 12px;
+}
+
+/* Optional: Card/Container styling */
+QFrame#card {
+    background-color: #212121;
+    border-radius: 16px;
+    border: 1px solid #3d3d3d;
+}
+
+QFrame#card:hover {
+    border: 1px solid #3ea6ff;
+}
+
+/* Optional: Divider/Separator */
+QFrame#divider {
+    background-color: #3d3d3d;
+    max-height: 1px;
+    border: none;
+}
+
+/* Optional: Input fields if needed */
+QLineEdit {
+    background-color: #212121;
+    color: #ffffff;
+    border: 2px solid #3d3d3d;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 14px;
+}
+
+QLineEdit:focus {
+    border: 2px solid #3ea6ff;
+    background-color: #1a1a1a;
+}
+
+QLineEdit::placeholder {
+    color: #717171;
+}
+
+/* Optional: Tooltip styling */
+QToolTip {
+    background-color: #212121;
+    color: #ffffff;
+    border: 1px solid #3d3d3d;
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+/* Optional: Selection styling */
+*::selection {
+    background-color: #3ea6ff;
+    color: #ffffff;
+}
+
+/* Optional: Scrollbar styling (YouTube-like) */
+QScrollBar:vertical {
+    background-color: #0f0f0f;
+    width: 12px;
+    border-radius: 8px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #717171;
+    border-radius: 8px;
+    min-height: 30px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #909090;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar:horizontal {
+    background-color: #0f0f0f;
+    height: 12px;
+    border-radius: 8px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #717171;
+    border-radius: 8px;
+    min-width: 30px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: #909090;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0px;
+}

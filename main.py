@@ -51,7 +51,7 @@ def create_app() -> QApplication:
     app.setApplicationName("YouVideo Downloader")
     app.setApplicationDisplayName("YouVideo Downloader")
     app.setOrganizationName("Sarwar Hossain")
-    app.setApplicationVersion("2.0.0")
+    app.setApplicationVersion("2.1.0")
 
     # Linux: Set desktop file name (helps icon lookup)
     if sys.platform.startswith("linux"):

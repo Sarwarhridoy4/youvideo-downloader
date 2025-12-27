@@ -14,7 +14,7 @@ QWidget {
     background: #0f0f0f;
     color: #ffffff;
     font-family: 'Roboto', 'Segoe UI', sans-serif;
-    border-radius: 18px;
+    border-radius: 22px;
 }
 
 QLabel#title {
@@ -38,7 +38,7 @@ QPushButton {
     color: #ffffff;
     font-size: 18px;
     border: none;
-    border-radius: 14px;
+    border-radius: 18px;
     padding: 14px 40px;
     margin-top: 22px;
     font-weight: 600;
@@ -111,7 +111,7 @@ QLabel#icon {
 /* Optional: Card/Container styling */
 QFrame#card {
     background-color: #212121;
-    border-radius: 12px;
+    border-radius: 16px;
     border: 1px solid #3d3d3d;
 }
 
@@ -131,7 +131,7 @@ QLineEdit {
     background-color: #212121;
     color: #ffffff;
     border: 2px solid #3d3d3d;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 10px 14px;
     font-size: 14px;
 }
@@ -150,7 +150,7 @@ QToolTip {
     background-color: #212121;
     color: #ffffff;
     border: 1px solid #3d3d3d;
-    border-radius: 6px;
+    border-radius: 10px;
     padding: 6px 10px;
     font-size: 12px;
 }
@@ -165,12 +165,12 @@ QToolTip {
 QScrollBar:vertical {
     background-color: #0f0f0f;
     width: 12px;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 QScrollBar::handle:vertical {
     background-color: #717171;
-    border-radius: 6px;
+    border-radius: 8px;
     min-height: 30px;
 }
 
@@ -185,12 +185,12 @@ QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
 QScrollBar:horizontal {
     background-color: #0f0f0f;
     height: 12px;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 QScrollBar::handle:horizontal {
     background-color: #717171;
-    border-radius: 6px;
+    border-radius: 8px;
     min-width: 30px;
 }
 

@@ -42,6 +42,7 @@ def get_formats(url: str) -> list[dict]:
         "listformats": True,
         "no_warnings": True,
         "socket_timeout": 30,
+        "noplaylist": True,  # Only get formats for single video, not entire playlist
         "youtube_include_dash_manifest": True,
         "youtube_include_hls_manifest": True,
     }
@@ -139,6 +140,60 @@ def get_formats(url: str) -> list[dict]:
         raise DownloadError(f"Failed to extract video info: {str(e)}")
     except Exception as e:
         raise DownloadError(f"Unexpected error fetching formats: {str(e)}")
+
+
+def get_video_info(url: str) -> dict:
+    """
+    Get basic video information including title, thumbnail, duration, etc.
+    If URL is a playlist, returns info for the first video.
+    
+    Returns:
+        Dict with video info: title, thumbnail_url, duration, uploader, etc.
+    """
+    ydl_opts = {
+        "quiet": True,
+        "skip_download": True,
+        "no_warnings": True,
+        "socket_timeout": 30,
+        "playlist_items": "1",  # Only get first item if playlist
+        "extract_flat": False,  # Don't flatten playlist info
+    }
+    
+    try:
+        with YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+            
+            if not info:
+                raise DownloadError("Could not extract video information")
+            
+            # If it's a playlist, get the first entry
+            if info.get("_type") == "playlist" and info.get("entries"):
+                video_info = info["entries"][0]
+            else:
+                video_info = info
+            
+            # Get the best thumbnail
+            thumbnail_url = None
+            thumbnails = video_info.get("thumbnails", [])
+            if thumbnails:
+                # Sort by preference: higher resolution first
+                thumbnails.sort(key=lambda x: (x.get("height", 0) * x.get("width", 0)), reverse=True)
+                thumbnail_url = thumbnails[0].get("url")
+            
+            return {
+                "title": video_info.get("title", "Unknown Title"),
+                "thumbnail_url": thumbnail_url,
+                "duration": video_info.get("duration", 0),
+                "uploader": video_info.get("uploader", "Unknown"),
+                "view_count": video_info.get("view_count", 0),
+                "upload_date": video_info.get("upload_date", ""),
+                "description": video_info.get("description", "")[:200] + "..." if video_info.get("description") else "",
+            }
+            
+    except ExtractorError as e:
+        raise DownloadError(f"Failed to extract video info: {str(e)}")
+    except Exception as e:
+        raise DownloadError(f"Unexpected error fetching video info: {str(e)}")
 
 
 def get_best_format(url: str) -> Optional[str]:
@@ -483,6 +538,7 @@ def download_and_merge(
         "progress_hooks": [enhanced_progress_hook],
         "quiet": True,
         "no_warnings": False,
+        "noplaylist": True,  # Only download single video, not entire playlist
         "merge_output_format": "mp4",
         "socket_timeout": 30,
         "retries": 5,

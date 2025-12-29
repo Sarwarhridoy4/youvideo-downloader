@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=YouVideo Downloader
-Comment=Download videos from YouTube and other platforms
-Exec=youvideo-downloader
-Icon=youvideo-downloader
-Type=Application
-Categories=Utility;Network;
-Terminal=false
-StartupWMClass=youvideo-downloader

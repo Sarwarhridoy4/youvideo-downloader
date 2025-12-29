@@ -1,9 +1,0 @@
-# This file lists the Python dependencies required for the youvideo-downloader project.
-
-# PySide6 : Provides Python bindings for the Qt6 application framework, used for building graphical user interfaces.
-# yt-dlp  : A command-line program to download videos from YouTube and other sites, used here for video downloading functionality.
-PySide6
-yt-dlp
-requests
-pyinstaller
-pillow

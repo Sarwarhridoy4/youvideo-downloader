@@ -1,0 +1,43 @@
+name: Deploy APT repository to GitHub Pages
+
+on:
+  push:
+    branches: ["release"]   # triggers on release branch
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout the release branch
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release
+
+      # 2. (Optional) Rebuild APT metadata if needed
+      - name: Generate APT metadata
+        run: |
+          dpkg-scanpackages . /dev/null | gzip -9c > Packages.gz
+          gpg --default-key "Sarwar Hossain" -abs -o Release.gpg Release
+          gpg --default-key "Sarwar Hossain" --clearsign -o InRelease Release
+
+      # 3. Upload files for Pages
+      - name: Upload repository files to Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./
+
+      # 4. Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

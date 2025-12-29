@@ -1,0 +1,8 @@
+youvideo-downloader (2.1.0) unstable; urgency=medium
+
+  * New upstream release.
+  * Added thumbnail preview support in the UI.
+  * General user interface enhancements.
+  * Development and improvements by @Sarwarhridoy4.
+
+ -- Sarwar Hossain <sarwarhridoy4@gmail.com>  Sun, 27 Dec 2025 07:53:00 +0000

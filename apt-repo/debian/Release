@@ -1,0 +1,7 @@
+Origin: YouVideo
+Label: YouVideo Downloader
+Suite: stable
+Codename: stable
+Architectures: amd64
+Components: main
+Description: YouVideo Downloader Debian repository

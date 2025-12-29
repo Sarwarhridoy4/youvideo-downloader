@@ -1,0 +1,27 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+Origin: YouVideo
+Label: YouVideo Downloader
+Suite: stable
+Codename: stable
+Architectures: amd64
+Components: main
+Description: YouVideo Downloader Debian repository
+-----BEGIN PGP SIGNATURE-----
+
+iQJLBAEBCgA1FiEElguvssfJCPpMImp7Vcs7IlJh3RYFAmlSMyIXHHNhcndhaHJp
+ZG95NEBnbWFpbC5jb20ACgkQVcs7IlJh3RYzow//UhFnQNp/Qca+s/u0vvjkfMwr
+fl2OKbF2LseyNNSsak/nI1ek2bf3RG5d9AIBnpbmRYgENRr0mDNPpAprkCEIrE5F
+rwwy1UP4a0eq920XU26TC123jcJLkqTB4j+zhTv6CKV+88CgISUGTEWMdbGnuVkJ
+3xhuYcYfGM1XfzmEAMEiQEWH27ltQPd3Jb8VndId3cNHpCzfPe8yLJ2yW2ahFGOE
+W3Zsm8+AHH+Bjruo0HCuY3J56s7Lotq1Qy4gHmwNYealchrJeQ3RyXNHUFZdB3+o
+8RNOzgG8OQRsnzQ0GJO6q2HXloSLhumkspvJdYwi541CdMQoIuS2SGKHHeip734A
+NQ0aYBFdl9LC0gMEzPb7iVHvEbjsTg6e/BHy5+oYOzoC2pYHtmSL/YUG/sdm0K4O
+x3GVP2LLmFkETqTzA4IT57K0UOLaBO3yZmcvSWuGPB2m0dorgltQH7Sde0olBPYr
+ApW7xEHj63t/lrz0AbuCo/zSHa37CP9bXfAFWqccwjQAxhm3RvEsApyuc5zlye2S
+PCqrZhvmd3oVwMrrc9ah2CBHkYrnNJDH3OWytXkHei666JKyxqwjVStQhwCxtkYU
+DmPYnJqZLJ49uaJIwt8a1s3x3B+AhgfFWg9CNstZmwc+MOxqKUYGw1tQu+4Fg+zx
+sn3N0Uvi3lCRWLP7V8w=
+=GtS9
+-----END PGP SIGNATURE-----

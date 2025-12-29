@@ -22,6 +22,6 @@ Output
 youvideo-downloader_1.6.0_amd64.deb
 youvideo-downloader_2.0.0_amd64
 youvideo-downloader_2.1.0_amd64/usr/bin
-YouVideoDownloader.AppDir
+YouVideoDownloader.AppDir/usr/bin
 squashfs-root
 *.log

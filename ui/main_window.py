@@ -75,9 +75,11 @@ class DownloadThread(QThread):
         """Execute the download."""
         try:
             from yt_dlp import YoutubeDL
+            import subprocess
+            import tempfile
             
             def progress_hook(d):
-                """Handle download progress updates."""
+                """Handle download and postprocessing progress updates."""
                 if d.get("status") == "downloading":
                     downloaded = d.get("downloaded_bytes", 0)
                     total = d.get("total_bytes") or d.get("total_bytes_estimate", 1)
@@ -95,16 +97,40 @@ class DownloadThread(QThread):
                         self.log.emit(f"Progress: {percent}%")
                 
                 elif d.get("status") == "finished":
-                    self.log.emit("Processing and merging...")
+                    self.log.emit("⏳ Merging video and audio...")
+                    self.progress.emit(100)
+                
+                elif d.get("status") == "processing":
+                    # FFmpeg postprocessing progress
+                    postprocess_msg = d.get("postprocessor")
+                    postprocess_info = d.get("info_dict", {})
+                    
+                    self.log.emit(f"🔧 Processing with {postprocess_msg}...")
             
             output_template = os.path.join(self.output_path, '%(title)s.%(ext)s')
             
             ydl_opts = {
                 'progress_hooks': [progress_hook],
                 'outtmpl': output_template,
-                'quiet': True,
-                'no_warnings': True,
-                'noplaylist': False,
+                'quiet': False,
+                'verbose': True,
+                'no_warnings': False,
+                'noplaylist': True,
+                'merge_output_format': 'mp4',
+                'postprocessors': [
+                    {
+                        'key': 'FFmpegVideoConvertor',
+                        'preferedformat': 'mp4',
+                    }
+                ],
+                'postprocessor_args': [
+                    "-c:v", "copy",
+                    "-c:a", "aac",
+                    "-b:a", "192k",
+                    "-movflags", "faststart",
+                    "-progress", "pipe:1"  # Send progress to stdout
+                ],
+                'logger': self._create_logger(),
             }
             
             if self.is_audio:
@@ -120,10 +146,18 @@ class DownloadThread(QThread):
                 })
                 self.log.emit("Starting audio (MP3) download...")
             else:
-                # Video download
-                ydl_opts['format'] = f"{self.format_code}+bestaudio/best"
-                ydl_opts['merge_output_format'] = 'mp4'
-                self.log.emit(f"Starting video download (format: {self.format_code})...")
+                # Video download with proper audio fallback
+                if self.format_code:
+                    # Ensure audio is included in the format string
+                    if "+" not in self.format_code:
+                        format_str = f"{self.format_code}+bestaudio/best"
+                    else:
+                        format_str = self.format_code
+                else:
+                    format_str = "bestvideo+bestaudio/best"
+                
+                ydl_opts['format'] = format_str
+                self.log.emit(f"Starting video download (format: {format_str})...")
             
             with YoutubeDL(ydl_opts) as ydl:
                 ydl.download([self.url])
@@ -135,6 +169,62 @@ class DownloadThread(QThread):
             error_msg = str(e)
             self.log.emit(f"✗ Error: {error_msg}")
             self.error.emit(error_msg)
+    
+    def _create_logger(self):
+        """Create a logger that captures FFmpeg output for progress tracking."""
+        import logging
+        
+        class LoggerToSignal(logging.Logger):
+            """Custom logger that emits yt-dlp and FFmpeg messages as signals."""
+            
+            def __init__(self, name):
+                super().__init__(name)
+                self.thread = None
+            
+            def set_thread(self, thread):
+                self.thread = thread
+            
+            def debug(self, msg, *args, **kwargs):
+                if self.thread and msg:
+                    msg_str = str(msg)
+                    # Capture FFmpeg progress info
+                    if "frame=" in msg_str or "out_time_ms" in msg_str or "progress" in msg_str.lower():
+                        # Extract frame number if available
+                        import re
+                        frame_match = re.search(r'frame=\s*(\d+)', msg_str)
+                        fps_match = re.search(r'fps=\s*([\d.]+)', msg_str)
+                        time_match = re.search(r'out_time=([:\d]+)', msg_str)
+                        
+                        if frame_match or time_match:
+                            frame = frame_match.group(1) if frame_match else "?"
+                            fps = fps_match.group(1) if fps_match else "?"
+                            time_str = time_match.group(1) if time_match else "?"
+                            self.thread.log.emit(f"🔄 FFmpeg: frame {frame} | fps {fps} | time {time_str}")
+                    elif "ffmpeg" in msg_str.lower() or "command" in msg_str.lower():
+                        self.thread.log.emit(f"🔧 {msg_str[:120]}")
+            
+            def info(self, msg, *args, **kwargs):
+                if self.thread and msg:
+                    msg_str = str(msg)
+                    if msg_str and not "Deleting original file" in msg_str and msg_str.strip():
+                        self.thread.log.emit(f"ℹ️  {msg_str[:120]}")
+            
+            def warning(self, msg, *args, **kwargs):
+                if self.thread and msg:
+                    msg_str = str(msg)
+                    if msg_str.strip():
+                        self.thread.log.emit(f"⚠️  {msg_str[:120]}")
+            
+            def error(self, msg, *args, **kwargs):
+                if self.thread and msg:
+                    msg_str = str(msg)
+                    if msg_str.strip():
+                        self.thread.log.emit(f"❌ {msg_str[:120]}")
+        
+        logger = LoggerToSignal('yt-dlp')
+        logger.set_thread(self)
+        logger.setLevel(logging.DEBUG)
+        return logger
 
 
 class FormatLoaderThread(QThread):
@@ -184,8 +274,8 @@ class SpinnerDialog(QDialog):
         self.setWindowTitle("Please Wait")
         self.setWindowIcon(QIcon(ICON_PATH))
         self.setModal(True)
-        self.setFixedSize(250, 180)
-        self.setWindowFlags(Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint)
+        self.setMinimumSize(250, 180)
+        self.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint)
         
         layout = QVBoxLayout(self)
         layout.setSpacing(15)
@@ -216,7 +306,7 @@ class DeveloperInfoDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("About YouVideo Downloader")
-        self.setFixedSize(500, 400)
+        self.setMinimumSize(500, 400)
         self.setModal(True)
         
         self._apply_stylesheet()
@@ -374,6 +464,7 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon(ICON_PATH))
         self.setMinimumSize(650, 480)
         self.resize(650, 480)
+        self.setWindowFlags(Qt.Window)
     
     def _setup_ui(self):
         """Build the user interface."""
@@ -715,24 +806,14 @@ class MainWindow(QMainWindow):
                 with urllib.request.urlopen(thumbnail_url) as response:
                     image_data = response.read()
                 
-                # Convert to QPixmap
-                image = Image.open(io.BytesIO(image_data))
-                # Resize to fit the label
-                image.thumbnail((160, 90))
-                
-                # Convert PIL to QPixmap
+                # Convert to QPixmap directly from bytes (no temp file)
                 from PySide6.QtGui import QPixmap
-                import tempfile
-                import os
                 
-                # Save to temp file and load as QPixmap
-                with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as temp_file:
-                    image.save(temp_file.name, 'PNG')
-                    pixmap = QPixmap(temp_file.name)
-                    os.unlink(temp_file.name)
+                pixmap = QPixmap()
+                pixmap.loadFromData(image_data)
                 
-                # Scale to fit
-                scaled_pixmap = pixmap.scaled(160, 90, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+                # Resize to fit
+                scaled_pixmap = pixmap.scaledToWidth(160, Qt.SmoothTransformation)
                 self.thumbnail_label.setPixmap(scaled_pixmap)
                 self.thumbnail_label.setText("")  # Clear text
                 

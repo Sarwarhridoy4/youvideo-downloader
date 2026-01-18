@@ -196,7 +196,7 @@ class DeveloperInfoDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("About YouVideo Downloader")
-        self.setFixedSize(500, 400)
+        self.setMinimumSize(500, 400)
         self.setModal(True)
         
         self._apply_stylesheet()
@@ -337,6 +337,7 @@ class PlaylistWindow(QMainWindow):
         self.setWindowTitle("YouVideo Downloader – Playlist")
         self.setWindowIcon(QIcon(icon_path))
         self.setMinimumSize(900, 650)
+        self.setWindowFlags(Qt.Window)
 
         self.output_path: str | None = None  # ➟ user *must* choose!
         self.current_theme = "dark"  # default theme

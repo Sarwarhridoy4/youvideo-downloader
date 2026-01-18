@@ -29,7 +29,7 @@ def fix_windows_taskbar():
     if sys.platform.startswith("win"):
         try:
             import ctypes
-            app_id = "SarwarHossain.YouVideoDownloader.1.6.2"
+            app_id = "SarwarHossain.YouVideoDownloader.2.1.0"
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(app_id)
         except Exception:
             pass  # Non-critical
@@ -48,9 +48,9 @@ def create_app() -> QApplication:
     app = QApplication(sys.argv)
 
     # App metadata
-    app.setApplicationName("YouVideo Downloader")
-    app.setApplicationDisplayName("YouVideo Downloader")
-    app.setOrganizationName("Sarwar Hossain")
+    app.setApplicationName("𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓")
+    app.setApplicationDisplayName("𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓")
+    app.setOrganizationName("𝓢𝓪𝓻𝔀𝓪𝓻 𝓗𝓸𝓼𝓼𝓪𝓲𝓷")
     app.setApplicationVersion("2.1.0")
 
     # Linux: Set desktop file name (helps icon lookup)
@@ -115,7 +115,7 @@ class ThemeManager:
 
 
 def main():
-    print("🚀 Starting YouVideo Downloader v1.6.2...")
+    print("🚀 Starting YouVideo Downloader v2.1.0...")
 
     # Create app first
     app = create_app()
@@ -142,9 +142,9 @@ def main():
     theme_manager.register_window(playlist_win)
 
     # Window setup
-    welcome.setWindowTitle("Welcome — YouVideo Downloader")
-    main_win.setWindowTitle("YouVideo Downloader")
-    playlist_win.setWindowTitle("YouVideo Downloader - Playlist")
+    welcome.setWindowTitle("Welcome — 𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓")
+    main_win.setWindowTitle("𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓")
+    playlist_win.setWindowTitle("𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓 – Playlist")
 
     welcome.resize(720, 520)
     main_win.resize(1000, 680)

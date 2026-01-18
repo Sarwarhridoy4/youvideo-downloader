@@ -195,7 +195,7 @@ class DeveloperInfoDialog(QDialog):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle("About YouVideo Downloader")
+        self.setWindowTitle("About 𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓")
         self.setMinimumSize(500, 400)
         self.setModal(True)
         
@@ -248,7 +248,7 @@ class DeveloperInfoDialog(QDialog):
             layout.addWidget(icon_label)
         
         # Title & Version
-        title = QLabel("YouVideo Downloader")
+        title = QLabel("𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓")
         title.setObjectName("title")
         title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
@@ -334,7 +334,7 @@ class PlaylistWindow(QMainWindow):
         super().__init__()
         self._back_callback = None
 
-        self.setWindowTitle("YouVideo Downloader – Playlist")
+        self.setWindowTitle("𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓 – Playlist")
         self.setWindowIcon(QIcon(icon_path))
         self.setMinimumSize(900, 650)
         self.setWindowFlags(Qt.Window)

@@ -26,7 +26,7 @@ class WelcomeScreen(QWidget):
         self._on_playlist = on_playlist
         self.current_theme = "dark"  # Default theme
         
-        self.setWindowTitle("Welcome - YouVideo Downloader")
+        self.setWindowTitle("Welcome - 𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓")
         self.setWindowIcon(QIcon(icon_path))
         self.setFixedSize(720, 520)
 
@@ -65,7 +65,7 @@ class WelcomeScreen(QWidget):
             main_layout.addWidget(icon_label)
 
         # Title
-        title = QLabel("YouVideo Downloader")
+        title = QLabel("𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓")
         title.setObjectName("title")
         title.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(title)

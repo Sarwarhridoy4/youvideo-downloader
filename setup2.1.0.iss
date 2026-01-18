@@ -2,16 +2,16 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 ; Non-commercial use only
 
-#define MyAppName "YouVideo Downloader"
+#define MyAppName "𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓"
 #define MyAppVersion "2.1.0"
-#define MyAppPublisher "Sarwar Hossain"
+#define MyAppPublisher "𝓢𝓪𝓻𝔀𝓪𝓻 𝓗𝓸𝓼𝓼𝓪𝓲𝓷"
 #define MyAppURL "https://github.com/Sarwarhridoy4/youvideo-downloader/releases"
 #define MyAppExeName "YouVideo Downloader.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
-AppId={{F0D37FCD-98CD-4F30-AFFE-7F273820E994}
+AppId={{6E8FAD26-B757-4488-8639-F42A5C959F1D}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
@@ -20,6 +20,7 @@ AppPublisherURL={#MyAppURL}
 AppSupportURL={#MyAppURL}
 AppUpdatesURL={#MyAppURL}
 DefaultDirName={autopf}\{#MyAppName}
+DisableDirPage=yes
 UninstallDisplayIcon={app}\{#MyAppExeName}
 ; "ArchitecturesAllowed=x64compatible" specifies that Setup cannot run
 ; on anything but x64 and Windows 11 on Arm.

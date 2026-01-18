@@ -358,7 +358,7 @@ class DeveloperInfoDialog(QDialog):
             layout.addWidget(icon_label)
         
         # Title & Version
-        title = QLabel("YouVideo Downloader")
+        title = QLabel("𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓")
         title.setObjectName("title")
         title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
@@ -460,7 +460,7 @@ class MainWindow(QMainWindow):
     
     def _setup_window(self):
         """Configure main window properties."""
-        self.setWindowTitle("YouVideo Downloader")
+        self.setWindowTitle("𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓")
         self.setWindowIcon(QIcon(ICON_PATH))
         self.setMinimumSize(650, 480)
         self.resize(650, 480)
@@ -475,7 +475,7 @@ class MainWindow(QMainWindow):
         main_layout.setContentsMargins(15, 15, 15, 15)
         
         # Header
-        header = QLabel("📥 YouVideo Downloader")
+        header = QLabel("📥 𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓")
         header.setStyleSheet("font-size: 18px; font-weight: bold; padding: 5px;")
         header.setAlignment(Qt.AlignCenter)
         main_layout.addWidget(header)

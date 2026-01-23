@@ -1,8 +1,9 @@
 """
-YouVideo Downloader v2.0.0
+YouVideo Downloader v2.1.0
 Simplified & Robust Main Entry Point with Theme Synchronization
 - Proper taskbar icon on Windows, Linux (GNOME), macOS
 - Theme synchronization across all windows
+- Cross-platform Downloads folder default
 - No external tools (xdotool, PIL)
 - Clean, readable, maintainable
 """
@@ -127,10 +128,31 @@ def main():
     # Create theme manager
     theme_manager = ThemeManager()
 
+    print("📦 Initializing windows...")
+    
     # Create windows
-    welcome = WelcomeScreen()
-    main_win = MainWindow()
-    playlist_win = PlaylistWindow()
+    try:
+        welcome = WelcomeScreen()
+        print("   ✓ Welcome screen created")
+    except Exception as e:
+        print(f"   ✗ Failed to create welcome screen: {e}")
+        sys.exit(1)
+    
+    try:
+        main_win = MainWindow()
+        print("   ✓ Main window created")
+    except Exception as e:
+        print(f"   ✗ Failed to create main window: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+    
+    try:
+        playlist_win = PlaylistWindow()
+        print("   ✓ Playlist window created")
+    except Exception as e:
+        print(f"   ✗ Failed to create playlist window: {e}")
+        sys.exit(1)
 
     # Apply icon to all windows
     for win in [welcome, main_win, playlist_win]:
@@ -140,6 +162,7 @@ def main():
     theme_manager.register_window(welcome)
     theme_manager.register_window(main_win)
     theme_manager.register_window(playlist_win)
+    print("   ✓ Theme manager configured")
 
     # Window setup
     welcome.setWindowTitle("Welcome — 𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓")
@@ -181,27 +204,25 @@ def main():
         print(f"🎨 Theme changed to: {theme}")
         theme_manager.set_theme(theme)
     
-    welcome.theme_changed.connect(on_theme_changed)
-
-    # Also sync theme changes from main windows back to welcome
-    def sync_theme_to_welcome(theme: str):
-        """Sync theme from main/playlist windows back to welcome"""
-        if welcome.get_current_theme() != theme:
-            welcome.set_theme(theme)
-    
-    # If main_window or playlist_window have theme change signals, connect them
-    # (You may need to add similar signals to MainWindow and PlaylistWindow)
+    if hasattr(welcome, 'theme_changed'):
+        welcome.theme_changed.connect(on_theme_changed)
+        print("   ✓ Theme synchronization enabled")
 
     # Show welcome screen
     welcome.show()
     welcome.raise_()
     welcome.activateWindow()
 
-    print("✓ App launched successfully!")
+    print("\n✅ App launched successfully!")
     print("\n💡 Features:")
-    print("   • Theme toggle button (🌙/☀️) in top-right of welcome screen")
+    print("   • FFmpeg postprocessing progress tracking")
+    print("   • Cross-platform Downloads folder default:")
+    print("     - Windows: C:/Users/username/Downloads")
+    print("     - Linux:   /home/username/Downloads")
+    print("     - Mac:     /Users/username/Downloads")
+    print("   • Theme toggle button (🌙/☀️) in welcome screen")
     print("   • Theme syncs across all windows automatically")
-    print("   • Fully rounded UI with compact layout")
+    print("   • Fullscreen/maximize enabled on all platforms")
     print("\n💡 Tip for Linux (GNOME) taskbar icon:")
     print("   If icon doesn't show immediately:")
     print("   → Press Alt+F2 → type 'r' → Enter (restarts GNOME shell)")

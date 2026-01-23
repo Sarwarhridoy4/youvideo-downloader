@@ -18,6 +18,8 @@ import requests
 import subprocess
 import re
 import urllib.request
+import logging
+from yt_dlp import YoutubeDL
 
 from downloader.yt_downloader import get_formats, get_video_info, get_default_download_path
 from downloader.ffmpeg_utils import ensure_ffmpeg
@@ -44,57 +46,60 @@ LIGHT_QSS_PATH = resource_path("assets/qss/light.qss")
 
 # ─────────────────────── Worker Threads ─────────────────────
 class DownloadThread(QThread):
-    progress = Signal(int)
+    progress = Signal(int)           # 0–100 for main progress bar
+    log = Signal(str)                # Text log messages
     finished = Signal()
     error = Signal(str)
-    log = Signal(str)
-    
-    def __init__(self, url: str, format_code: Optional[str], output_path: str, is_audio: bool):
+
+    def __init__(self, url: str, format_code: str | None, output_path: str, is_audio: bool = False):
         super().__init__()
         self.url = url
         self.format_code = format_code
         self.output_path = output_path
         self.is_audio = is_audio
-        self._ffmpeg_progress_pattern = re.compile(
-            r'frame=\s*(\d+)|fps=\s*([\d.]+)|time=(\d+:\d+:\d+\.\d+)|speed=\s*([\d.]+)x'
+
+        # Improved regex – more robust matching for FFmpeg progress lines
+        self._ffmpeg_pattern = re.compile(
+            r'frame=\s*(\d+)\s+'
+            r'fps=\s*([\d.]+)\s+'
+            r'.*'
+            r'time=\s*(\d+:\d+:\d+\.\d+)\s+'
+            r'.*'
+            r'speed=\s*([\d.]+)x',
+            re.IGNORECASE
         )
-    
+
     def run(self):
         try:
-            from yt_dlp import YoutubeDL
-            import logging
-            
             def progress_hook(d):
                 status = d.get("status", "")
                 if status == "downloading":
                     downloaded = d.get("downloaded_bytes", 0)
                     total = d.get("total_bytes") or d.get("total_bytes_estimate", 1)
-                    percent = int((downloaded / total) * 100)
+                    percent = min(int((downloaded / total) * 100), 99)  # max 99 until merge
                     self.progress.emit(percent)
-                    
+
                     speed = d.get("speed", 0)
-                    eta = d.get("eta", 0)
-                    if speed:
-                        speed_mb = speed / (1024 * 1024)
-                        if eta:
-                            eta_min, eta_sec = eta // 60, eta % 60
-                            self.log.emit(f"📥 Progress: {percent}% | Speed: {speed_mb:.2f} MB/s | ETA: {eta_min:02d}:{eta_sec:02d}")
-                        else:
-                            self.log.emit(f"📥 Progress: {percent}% | Speed: {speed_mb:.2f} MB/s")
-                    else:
-                        self.log.emit(f"📥 Progress: {percent}%")
+                    eta = d.get("eta", None)
+
+                    speed_str = f"{speed / (1024 * 1024):.2f} MB/s" if speed else "?? MB/s"
+                    eta_str = f"{eta // 60:02d}:{eta % 60:02d}" if eta is not None else "??:??"
+
+                    self.log.emit(f"📥 Progress: {percent}% | Speed: {speed_str} | ETA: {eta_str}")
+
                 elif status == "finished":
                     self.log.emit("✓ Downloaded, starting postprocessing...")
-                    self.progress.emit(100)
-            
+                    self.progress.emit(99)  # almost done – waiting for merge
+
+            # ──────────────────────────────── yt-dlp options ────────────────────────────────
             output_template = os.path.join(self.output_path, '%(title)s.%(ext)s')
-            
+
             ydl_opts = {
                 'progress_hooks': [progress_hook],
                 'outtmpl': output_template,
                 'quiet': False,
                 'no_warnings': False,
-                'verbose': True,
+                'verbose': True,                   # important: needed for FFmpeg output
                 'noplaylist': True,
                 'merge_output_format': 'mp4',
                 'postprocessors': [{
@@ -102,12 +107,14 @@ class DownloadThread(QThread):
                     'preferedformat': 'mp4',
                 }],
                 'postprocessor_args': [
-                    '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k',
-                    '-movflags', 'faststart', '-progress', 'pipe:1'
+                    '-c:v', 'copy',
+                    '-c:a', 'aac',
+                    '-b:a', '192k',
+                    '-movflags', '+faststart'
                 ],
-                'logger': self._create_logger(),
+                'logger': self._create_ffmpeg_aware_logger(),
             }
-            
+
             if self.is_audio:
                 ydl_opts.update({
                     'format': 'bestaudio/best',
@@ -126,63 +133,63 @@ class DownloadThread(QThread):
                     format_str = "bestvideo+bestaudio/best"
                 ydl_opts['format'] = format_str
                 self.log.emit(f"🎬 Starting video download (format: {format_str})...")
-            
+
             with YoutubeDL(ydl_opts) as ydl:
                 ydl.download([self.url])
-                self.log.emit("✅ Download complete!")
-            
+
+            self.log.emit("✅ Download & post-processing complete!")
+            self.progress.emit(100)
             self.finished.emit()
+
         except Exception as e:
-            self.log.emit(f"❌ Error: {str(e)}")
-            self.error.emit(str(e))
-    
-    def _create_logger(self):
-        import logging
-        class LoggerToSignal(logging.Logger):
+            error_msg = str(e)
+            self.log.emit(f"❌ Error: {error_msg}")
+            self.error.emit(error_msg)
+
+    def _create_ffmpeg_aware_logger(self):
+        class FfmpegAwareLogger(logging.Logger):
             def __init__(self, name, thread):
                 super().__init__(name)
                 self.thread = thread
-                self.last_frame = 0
-            
-            def debug(self, msg, *args, **kwargs):
-                if self.thread and msg:
-                    msg_str = str(msg)
-                    if any(k in msg_str.lower() for k in ['frame=', 'fps=', 'time=', 'speed=']):
-                        matches = self.thread._ffmpeg_progress_pattern.findall(msg_str)
-                        parts = []
-                        frame = None
-                        for match in matches:
-                            if match[0]:
-                                frame = match[0]
-                                parts.append(f"frame: {match[0]}")
-                            if match[1]:
-                                parts.append(f"fps: {match[1]}")
-                            if match[2]:
-                                parts.append(f"time: {match[2]}")
-                            if match[3]:
-                                parts.append(f"speed: {match[3]}x")
-                        if parts:
-                            current_frame = int(frame) if frame else 0
-                            if current_frame != self.last_frame or current_frame % 30 == 0:
-                                self.thread.log.emit(f"🔄 FFmpeg: {' | '.join(parts)}")
-                                self.last_frame = current_frame
-            
-            def info(self, msg, *args, **kwargs):
-                if self.thread and msg and "deleting original file" not in str(msg).lower():
-                    self.thread.log.emit(f"ℹ️  {str(msg)[:150]}")
-            
-            def warning(self, msg, *args, **kwargs):
-                if self.thread and msg:
-                    self.thread.log.emit(f"⚠️  {str(msg)[:150]}")
-            
-            def error(self, msg, *args, **kwargs):
-                if self.thread and msg:
-                    self.thread.log.emit(f"❌ {str(msg)[:150]}")
-        
-        logger = LoggerToSignal('yt-dlp', self)
-        logger.setLevel(logging.DEBUG)
-        return logger
+                self.setLevel(logging.DEBUG)
 
+            def debug(self, msg, *args, **kwargs):
+                if not msg:
+                    return
+
+                msg_str = str(msg).strip()
+
+                # ─── Handle FFmpeg real-time progress ───
+                if any(k in msg_str.lower() for k in ['frame=', 'fps=', 'time=', 'speed=']):
+                    match = self.thread._ffmpeg_pattern.search(msg_str)
+                    if match:
+                        frame, fps, time_str, speed = match.groups()
+                        progress_line = f"🔄 FFmpeg: frame={frame} | fps={fps} | time={time_str} | speed={speed}x"
+                        self.thread.log.emit(progress_line)
+                        return  # don't log again below
+
+                # ─── Normal debug messages (skip boring ones) ───
+                if "Deleting original file" in msg_str:
+                    return
+                if len(msg_str) > 5:
+                    self.thread.log.emit(f"DEBUG: {msg_str[:180]}")
+
+            def info(self, msg, *args, **kwargs):
+                msg_str = str(msg).strip()
+                if msg_str and "Deleting original file" not in msg_str:
+                    self.thread.log.emit(f"ℹ️ {msg_str[:180]}")
+
+            def warning(self, msg, *args, **kwargs):
+                msg_str = str(msg).strip()
+                if msg_str:
+                    self.thread.log.emit(f"⚠️ {msg_str[:180]}")
+
+            def error(self, msg, *args, **kwargs):
+                msg_str = str(msg).strip()
+                if msg_str:
+                    self.thread.log.emit(f"❌ {msg_str[:180]}")
+
+        return FfmpegAwareLogger('yt-dlp-ffmpeg', self)
 
 class FormatLoaderThread(QThread):
     formats_loaded = Signal(list)

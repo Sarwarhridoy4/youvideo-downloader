@@ -587,32 +587,53 @@ def download_and_merge(
     tmpl = os.path.join(output_path, "%(title)s.%(ext)s")
     
     ydl_opts = {
-        "format": format_str,
-        "outtmpl": tmpl,
-        "progress_hooks": [enhanced_progress_hook],
-        "quiet": True,
-        "no_warnings": False,
-        "noplaylist": True,  # Only download single video, not entire playlist
-        "merge_output_format": "mp4",
-        "socket_timeout": 30,
-        "retries": 5,
-        "fragment_retries": 5,
-        "file_access_retries": 3,
-        "youtube_include_dash_manifest": True,
-        "youtube_include_hls_manifest": True,
-        "postprocessors": [
-            {
-                "key": "FFmpegVideoConvertor",
-                "preferedformat": "mp4",
-            }
-        ],
-        "postprocessor_args": [
+    "format": format_str,
+    "outtmpl": tmpl,
+
+    "progress_hooks": [enhanced_progress_hook],
+
+    # ──────────────────────── Output control ────────────────────────
+    "quiet": False,                     # ← important: allow more output
+    "no_warnings": False,
+    "verbose": True,                    # ← crucial: makes yt-dlp log ffmpeg command + some info
+
+    "noplaylist": True,
+    "merge_output_format": "mp4",
+
+    "socket_timeout": 30,
+    "retries": 5,
+    "fragment_retries": 5,
+    "file_access_retries": 3,
+
+    "youtube_include_dash_manifest": True,
+    "youtube_include_hls_manifest": True,
+
+    # ───────────────────── Post-processing ─────────────────────
+    "postprocessors": [
+        {
+            "key": "FFmpegVideoConvertor",
+            "preferedformat": "mp4",   # note: typo in original → "preferredformat"
+        }
+    ],
+
+    # Better: use dict so args only go to specific postprocessors
+    "postprocessor_args": {
+        # Applies to Merger + FFmpegVideoConvertor + similar
+        "Merger+FFmpegVideoConvertor+default": [
             "-c:v", "copy",
             "-c:a", "aac",
             "-b:a", "192k",
-            "-movflags", "faststart"
-        ],
-    }
+            "-movflags", "+faststart",   # note: +faststart is correct syntax
+            "-loglevel", "info",         # ← more visible output than default
+            # Optional (sometimes helps show more): "-stats", "-nostats_period", "1"
+        ]
+    },
+
+    # Optional: force ffmpeg to output progress more frequently (may or may not reach your logger)
+    "postprocessor_args": {
+        "default": ["-progress", "pipe:2", "-nostats_period", "0.5"]
+    },
+}
     
     try:
         with YoutubeDL(ydl_opts) as ydl:

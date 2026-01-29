@@ -66,6 +66,91 @@ check_command() {
     command -v "$1" &>/dev/null
 }
 
+generate_metainfo() {
+    local target_dir="$1"
+    print_step "Generating AppStream metainfo..."
+    mkdir -p "$target_dir"
+    cat > "$target_dir/$APP_ID.metainfo.xml" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>${APP_ID}</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>YouVideo Downloader</name>
+  <summary>${DESCRIPTION}</summary>
+  <description>
+    <p>
+      YouVideo Downloader is a modern desktop application that allows you to download videos from various online platforms, including YouTube and Facebook. Built with PySide6, it offers a sleek user interface and robust features for a seamless downloading experience.
+    </p>
+    <p>Key Features:</p>
+    <ul>
+      <li>Download videos from YouTube, Facebook, and more.</li>
+      <li>Automatic detection and optional installation of ffmpeg.</li>
+      <li>Choose from multiple available video/audio formats.</li>
+      <li>Playlist downloading with range selection.</li>
+      <li>MP3 download option.</li>
+      <li>Customizable output folder.</li>
+      <li>Real-time progress bar.</li>
+      <li>Dark and Light themes.</li>
+    </ul>
+  </description>
+  <launchable type="desktop-id">${APP_ID}.desktop</launchable>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/Sarwarhridoy4/youvideo-downloader/main/assets/screenshot/welcome.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/Sarwarhridoy4/youvideo-downloader/main/assets/screenshot/playlist.png</image>
+    </screenshot>
+    <screenshot>
+      <image>https://raw.githubusercontent.com/Sarwarhridoy4/youvideo-downloader/main/assets/screenshot/single.png</image>
+    </screenshot>
+  </screenshots>
+  <url type="homepage">${HOMEPAGE}</url>
+  <url type="bugtracker">${HOMEPAGE}/issues</url>
+  <url type="help">${HOMEPAGE}/wiki</url>
+  <url type="donation">${HOMEPAGE}</url>
+  <developer id="com.sarwarhossain">
+    <name>${MAINTAINER}</name>
+  </developer>
+  <update_contact>${EMAIL}</update_contact>
+  <project_group>Multimedia</project_group>
+  <keywords>
+    <keyword>youtube</keyword>
+    <keyword>video</keyword>
+    <keyword>downloader</keyword>
+    <keyword>pyside6</keyword>
+    <keyword>yt-dlp</keyword>
+    <keyword>ffmpeg</keyword>
+  </keywords>
+  <content_rating type="oars-1.1">
+    <content_attribute id="violence-cartoon">none</content_attribute>
+    <content_attribute id="violence-fantasy">none</content_attribute>
+    <content_attribute id="violence-realistic">none</content_attribute>
+    <content_attribute id="violence-bloodshed">none</content_attribute>
+    <content_attribute id="violence-sexual">none</content_attribute>
+    <content_attribute id="drugs-alcohol">none</content_attribute>
+    <content_attribute id="sex-nudity">none</content_attribute>
+    <content_attribute id="sex-homosexuality">none</content_attribute>
+    <content_attribute id="sex-themes">none</content_attribute>
+  </content_rating>
+  <releases>
+    <release version="${VERSION}" date="$(date +%Y-%m-%d)">
+      <description>
+        <p>New release ${VERSION} with integrated icon generation and professional packaging for all platforms.</p>
+        <ul>
+          <li>Integrated icon generation system.</li>
+          <li>Improved packaging for Debian and AppImage.</li>
+          <li>General bug fixes and performance improvements.</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+</component>
+EOF
+    print_success "AppStream metainfo generated: $target_dir/$APP_ID.metainfo.xml"
+}
+
 cleanup() {
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
@@ -148,6 +233,7 @@ readonly SYSTEM_PACKAGES=(
     fuse libfuse2 patchelf desktop-file-utils
     python3 python3-pip python3-venv python3-dev
     wget curl git imagemagick
+    appstream
 )
 
 print_step "Updating package lists..."
@@ -319,7 +405,7 @@ print_header "Building Debian Package (.deb)"
 
 DEB_DIR="$BUILD_DIR/${PACKAGE_NAME}_deb"
 rm -rf "$DEB_DIR"
-mkdir -p "$DEB_DIR"/{DEBIAN,usr/{bin,share/{applications,pixmaps,doc/$PACKAGE_NAME,man/man1}}}
+mkdir -p "$DEB_DIR"/{DEBIAN,usr/{bin,share/{applications,pixmaps,doc/$PACKAGE_NAME,man/man1,metainfo}}}
 
 for size in 16 22 24 32 48 64 128 256 512; do
     mkdir -p "$DEB_DIR/usr/share/icons/hicolor/${size}x${size}/apps"
@@ -444,6 +530,8 @@ update-desktop-database -q /usr/share/applications 2>/dev/null || true
 EOF
 chmod 755 "$DEB_DIR/DEBIAN/postrm"
 
+generate_metainfo "$DEB_DIR/usr/share/metainfo/" # Call generate_metainfo for .deb
+
 print_step "Building .deb package..."
 DEB_OUTPUT="$BUILD_DIR/${PACKAGE_NAME}_${VERSION}_amd64.deb"
 fakeroot dpkg-deb --build "$DEB_DIR" "$DEB_OUTPUT"
@@ -457,7 +545,7 @@ print_header "Building AppImage"
 
 APPDIR="$BUILD_DIR/${APP_NAME}.AppDir"
 rm -rf "$APPDIR"
-mkdir -p "$APPDIR/usr"/{bin,share/applications}
+mkdir -p "$APPDIR/usr"/{bin,share/{applications,metainfo}}
 
 # Create all hicolor directories
 for size in 16x16 22x22 24x24 32x32 48x48 64x64 128x128 256x256 512x512; do
@@ -477,7 +565,7 @@ EOF
 chmod +x "$APPDIR/AppRun"
 
 print_step "Creating desktop file..."
-cat > "$APPDIR/${APP_NAME}.desktop" << EOF
+cat > "$APPDIR/${APP_ID}.desktop" << EOF
 [Desktop Entry]
 Type=Application
 Name=YouVideo Downloader
@@ -487,7 +575,7 @@ Icon=$APP_ID
 Terminal=false
 Categories=$CATEGORIES
 EOF
-cp "$APPDIR/${APP_NAME}.desktop" "$APPDIR/usr/share/applications/"
+cp "$APPDIR/${APP_ID}.desktop" "$APPDIR/usr/share/applications/"
 
 print_step "Installing icons..."
 # Main icon at root and in hicolor
@@ -509,12 +597,18 @@ for size in 16 22 24 32 48 64 128 256 512; do
     fi
 done
 
+generate_metainfo "$APPDIR/usr/share/metainfo/" # Call generate_metainfo for AppImage
+
+print_step "Renaming AppStream metainfo for appimagetool compatibility..."
+mv "$APPDIR/usr/share/metainfo/$APP_ID.metainfo.xml" "$APPDIR/usr/share/metainfo/$APP_ID.appdata.xml"
+print_success "AppStream metainfo renamed to YouVideoDownloader.appdata.xml"
+
 print_step "Building AppImage..."
 APPIMAGE_OUTPUT="$BUILD_DIR/${APP_NAME}-${VERSION}-x86_64.AppImage"
 
 "$LINUXDEPLOY_FILE" \
     --appdir="$APPDIR" \
-    --desktop-file="$APPDIR/${APP_NAME}.desktop" \
+    --desktop-file="$APPDIR/${APP_ID}.desktop" \
     --icon-file="$MAIN_ICON" \
     --output appimage
 

@@ -18,6 +18,30 @@
 
 ---
 
+## Project Overview
+
+The "YouVideo Downloader" is a desktop application built with Python and PySide6, designed to facilitate the downloading of videos from various platforms like YouTube and Facebook. It emphasizes a user-friendly experience with a modern, neumorphism-inspired UI and robust video processing capabilities.
+
+**Key Components and Architecture:**
+
+*   **`main.py`**: The application's entry point, responsible for initializing the PySide6 application and displaying the welcome screen or main window.
+*   **`ui/`**: Contains all user interface components.
+    *   `main_window.py`: Implements the core functionality and layout of the main application window.
+    *   `playlist_window.py`: Handles the UI specific to playlist downloading.
+    *   `welcome_screen.py`: Displays an initial welcome screen to the user.
+    *   `themes.py`: Manages the application's theming (dark/light), often using QSS files for styling.
+*   **`downloader/`**: Encapsulates the video downloading and processing logic.
+    *   `yt_downloader.py`: Integrates with `yt-dlp` to handle video fetching, format selection, and download management.
+    *   `ffmpeg_utils.py`: Provides utilities for `ffmpeg` integration, including detection, installation, and video/audio merging operations.
+*   **`utils/`**: Contains general utility functions.
+    *   `pathfinder.py`: Likely deals with locating system paths or external executables (like `ffmpeg`).
+*   **`assets/`**: Stores static assets such as icons, QSS (Qt Style Sheets) for theming, and screenshots for documentation.
+*   **Build System**: The project includes a comprehensive set of shell scripts (`build.sh`, `install_dependencies.sh`, `build_deb.sh`, `build_appimage.sh`) to automate the packaging of the application into deployable formats like DEB packages and AppImages for Linux, and uses PyInstaller for creating executables for other operating systems (inferred from `setup2.1.0.iss` and `youvideo-downloader.spec`).
+
+The application architecture promotes separation of concerns, with distinct modules for UI, core downloading logic, and utilities, making it maintainable and extensible. The use of QSS files allows for flexible and easily customizable themes.
+
+---
+
 ## Installation
 
 ### Requirements

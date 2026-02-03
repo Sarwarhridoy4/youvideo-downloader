@@ -36,7 +36,7 @@ The "YouVideo Downloader" is a desktop application built with Python and PySide6
 *   **`utils/`**: Contains general utility functions.
     *   `pathfinder.py`: Likely deals with locating system paths or external executables (like `ffmpeg`).
 *   **`assets/`**: Stores static assets such as icons, QSS (Qt Style Sheets) for theming, and screenshots for documentation.
-*   **Build System**: The project includes a comprehensive set of shell scripts (`build.sh`, `install_dependencies.sh`, `build_deb.sh`, `build_appimage.sh`) to automate the packaging of the application into deployable formats like DEB packages and AppImages for Linux, and uses PyInstaller for creating executables for other operating systems (inferred from `setup2.1.0.iss` and `youvideo-downloader.spec`).
+*   **Build System**: The project includes a comprehensive set of shell scripts (`build.sh`, `install_dependencies.sh`, `build_deb.sh`, `build_appimage.sh`) to automate the packaging of the application into deployable formats like DEB packages and AppImages for Linux, and uses PyInstaller for creating executables for other operating systems (inferred from `setup3.0.0.iss` and `youvideo-downloader.spec`).
 
 The application architecture promotes separation of concerns, with distinct modules for UI, core downloading logic, and utilities, making it maintainable and extensible. The use of QSS files allows for flexible and easily customizable themes.
 

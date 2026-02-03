@@ -3,7 +3,7 @@
 ; Non-commercial use only
 
 #define MyAppName "𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓"
-#define MyAppVersion "2.1.0"
+#define MyAppVersion "3.0.0"
 #define MyAppPublisher "𝓢𝓪𝓻𝔀𝓪𝓻 𝓗𝓸𝓼𝓼𝓪𝓲𝓷"
 #define MyAppURL "https://github.com/Sarwarhridoy4/youvideo-downloader/releases"
 #define MyAppExeName "YouVideo Downloader.exe"

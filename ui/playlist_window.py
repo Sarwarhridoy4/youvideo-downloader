@@ -20,38 +20,38 @@ import subprocess
 from typing import List, Sequence
 
 import requests
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import Qt, QThread, Signal, QTimer
 from PySide6.QtGui import QIcon, QAction, QCursor
 from PySide6.QtWidgets import (
+    QApplication,
     QDialog,
-    QVBoxLayout,
+    QFileDialog,
     QHBoxLayout,
     QLabel,
     QLineEdit,
     QListWidget,
     QListWidgetItem,
-    QMessageBox,
     QMainWindow,
-    QPushButton,
-    QFileDialog,
-    QProgressBar,
-    QTextEdit,
-    QWidget,
-    QMenuBar,
     QMenu,
-    QApplication,
+    QMenuBar,
+    QMessageBox,
+    QPushButton,
+    QProgressBar,
+    QSizePolicy,
+    QSpacerItem,
+    QTextEdit,
+    QVBoxLayout,
+    QWidget,
 )
-from PySide6.QtWidgets import QSpacerItem, QSizePolicy, QFrame,QMessageBox
 
 
 from utils.pathfinder import resource_path
+from utils.theme_manager import ThemeManager
+from utils.maintenance import start_dependency_update
 from downloader.yt_downloader import get_playlist_videos, download_and_merge
 
 # ──────────────────────────── paths & constants ─────────────────────────────
 icon_path = resource_path("assets/icons/appicon.png")
-qss_path = resource_path("assets/qss/dark.qss")
-
-import requests
 
 # Dynamically fetch the latest version at runtime
 def get_latest_version() -> str:
@@ -64,7 +64,7 @@ def get_latest_version() -> str:
         return data.get("tag_name", "Unknown").lstrip("v")  # e.g., "2.0.0" if tag is "v2.0.0"
     except Exception as e:
         print(f"Failed to fetch latest version: {e}")
-        return "1.0.0"  # Fallback to current hardcoded version
+        return "3.0.0"  # Fallback to current hardcoded version
 
 # Use this as your app version
 APP_VERSION = get_latest_version()
@@ -199,40 +199,73 @@ class DeveloperInfoDialog(QDialog):
         self.setMinimumSize(500, 400)
         self.setModal(True)
         
-        self._apply_stylesheet()
+        ThemeManager.register(self)
         self._build_ui()
         self._center_on_parent()
     
     def _apply_stylesheet(self):
         """Apply modern styling."""
-        self.setStyleSheet("""
-            QDialog {
-                background: qlineargradient(
-                    x1:0, y1:0, x2:0, y2:1,
-                    stop:0 #2c3e50,
-                    stop:1 #34495e
-                );
-            }
-            QLabel#title { color: #ecf0f1; font-size: 26px; font-weight: bold; }
-            QLabel#version { color: #95a5a6; font-size: 13px; font-style: italic; }
-            QLabel#desc { color: #bdc3c7; font-size: 13px; }
-            QLabel#section { color: #3498db; font-size: 11px; font-weight: bold; }
-            QLabel#info { color: #ecf0f1; font-size: 14px; }
-            QFrame#card {
-                background-color: rgba(44, 62, 80, 0.6);
-                border: 1px solid rgba(52, 152, 219, 0.3);
-                border-radius: 10px;
-                padding: 15px;
-            }
-            QPushButton {
-                background-color: rgba(52, 152, 219, 0.8);
-                color: white; border: none; border-radius: 5px;
-                padding: 10px 20px; font-weight: bold;
-            }
-            QPushButton:hover { background-color: rgba(52, 152, 219, 1); }
-            QPushButton#close { background-color: rgba(231, 76, 60, 0.8); }
-            QPushButton#close:hover { background-color: rgba(231, 76, 60, 1); }
-        """)
+        self._apply_theme_from_manager("dark")
+
+    def _apply_theme_from_manager(self, theme: str):
+        if theme == "light":
+            self.setStyleSheet("""
+                QDialog {
+                    background: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 #f7f7f7,
+                        stop:1 #eaeaea
+                    );
+                }
+                QLabel#title { color: #1f2a33; font-size: 26px; font-weight: bold; }
+                QLabel#version { color: #6b7280; font-size: 13px; font-style: italic; }
+                QLabel#desc { color: #4b5563; font-size: 13px; }
+                QLabel#section { color: #1d4ed8; font-size: 11px; font-weight: bold; }
+                QLabel#info { color: #1f2a33; font-size: 14px; }
+                QFrame#card {
+                    background-color: rgba(241, 245, 249, 0.9);
+                    border: 1px solid rgba(52, 152, 219, 0.25);
+                    border-radius: 10px;
+                    padding: 15px;
+                }
+                QPushButton {
+                    background-color: rgba(52, 152, 219, 0.85);
+                    color: white; border: none; border-radius: 5px;
+                    padding: 10px 20px; font-weight: bold;
+                }
+                QPushButton:hover { background-color: rgba(52, 152, 219, 1); }
+                QPushButton#close { background-color: rgba(231, 76, 60, 0.85); }
+                QPushButton#close:hover { background-color: rgba(231, 76, 60, 1); }
+            """)
+        else:
+            self.setStyleSheet("""
+                QDialog {
+                    background: qlineargradient(
+                        x1:0, y1:0, x2:0, y2:1,
+                        stop:0 #2c3e50,
+                        stop:1 #34495e
+                    );
+                }
+                QLabel#title { color: #ecf0f1; font-size: 26px; font-weight: bold; }
+                QLabel#version { color: #95a5a6; font-size: 13px; font-style: italic; }
+                QLabel#desc { color: #bdc3c7; font-size: 13px; }
+                QLabel#section { color: #3498db; font-size: 11px; font-weight: bold; }
+                QLabel#info { color: #ecf0f1; font-size: 14px; }
+                QFrame#card {
+                    background-color: rgba(44, 62, 80, 0.6);
+                    border: 1px solid rgba(52, 152, 219, 0.3);
+                    border-radius: 10px;
+                    padding: 15px;
+                }
+                QPushButton {
+                    background-color: rgba(52, 152, 219, 0.8);
+                    color: white; border: none; border-radius: 5px;
+                    padding: 10px 20px; font-weight: bold;
+                }
+                QPushButton:hover { background-color: rgba(52, 152, 219, 1); }
+                QPushButton#close { background-color: rgba(231, 76, 60, 0.8); }
+                QPushButton#close:hover { background-color: rgba(231, 76, 60, 1); }
+            """)
     
     def _build_ui(self):
         """Build the dialog UI."""
@@ -340,10 +373,11 @@ class PlaylistWindow(QMainWindow):
         self.setWindowFlags(Qt.Window)
 
         self.output_path: str | None = None  # ➟ user *must* choose!
-        self.current_theme = "dark"  # default theme
+        self.current_theme = ThemeManager.get_current_theme()
+        self.dep_update_thread = None
 
         self._setup_ui()
-        self._apply_stylesheet()
+        ThemeManager.register(self)
         self._setup_menu()
 
     # ―― UI assembly ―――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -379,7 +413,7 @@ class PlaylistWindow(QMainWindow):
         open_folder_btn.clicked.connect(self._open_output_folder)  # type: ignore[arg-type]
 
         theme_btn = QPushButton("🎨 Theme")
-        theme_btn.clicked.connect(self.switch_theme)
+        theme_btn.clicked.connect(self._switch_theme)
 
         # button layout
         for w in (back_btn, theme_btn, self.download_btn, open_folder_btn):
@@ -403,14 +437,6 @@ class PlaylistWindow(QMainWindow):
         ):
             (layout.addLayout(w) if isinstance(w, QHBoxLayout) else layout.addWidget(w))
 
-    # ―――――――――――――――― appearance helpers ――――――――――――――――――――――――――
-    def _apply_stylesheet(self) -> None:
-        try:
-            with open(qss_path, "r", encoding="utf-8") as f:
-                self.setStyleSheet(f.read())
-        except Exception as exc:
-            print(f"[PlaylistWindow] Could not load stylesheet: {exc}")
-
     # ──────────────────────────── menu bar ─────────────────────────────────
     def _setup_menu(self):
         menubar = QMenuBar(self)
@@ -430,6 +456,12 @@ class PlaylistWindow(QMainWindow):
         info_menu.addAction(dev_action)
         info_menu.addAction(update_action)
         menubar.addMenu(info_menu)
+
+        tools_menu = QMenu("&Tools", self)
+        deps_action = QAction("Update Dependencies", self)
+        deps_action.triggered.connect(self._update_dependencies)
+        tools_menu.addAction(deps_action)
+        menubar.addMenu(tools_menu)
 
         # Increase menu font size
         menubar.setStyleSheet(
@@ -471,6 +503,17 @@ class PlaylistWindow(QMainWindow):
         except Exception as e:
             self._show_error("Update Check Failed", 
                            f"Could not check for updates:\n{str(e)}")
+
+    def _update_dependencies(self):
+        if hasattr(self, "dep_update_thread") and self.dep_update_thread and self.dep_update_thread.isRunning():
+            self._show_info("In Progress", "Dependency update is already running.")
+            return
+
+        self.dep_update_thread = start_dependency_update(
+            parent=self,
+            log_func=self.log_window.append,
+            on_finished=None
+        )
 
     # ───────────────────────────── folders/ui ──────────────────────────────
     def _browse_folder(self) -> None:  # noqa: D401
@@ -593,20 +636,29 @@ class PlaylistWindow(QMainWindow):
             self._back_callback()
 
     # Theme switching --------------------------------------------------------
-    def apply_theme(self, theme_path):
+    def _switch_theme(self):
+        if getattr(self, "_theme_switching", False):
+            return
+        self._theme_switching = True
+        sender = self.sender()
+        if hasattr(sender, "setEnabled"):
+            sender.setEnabled(False)
+        ThemeManager.toggle()
+        self.current_theme = ThemeManager.get_current_theme()
+        self.log_window.append(f"🎨 Switched to {self.current_theme} theme")
+        QTimer.singleShot(200, lambda: self._finish_theme_switch(sender))
+
+    def _finish_theme_switch(self, sender):
+        self._theme_switching = False
+        if hasattr(sender, "setEnabled"):
+            sender.setEnabled(True)
+
+    def _apply_theme_from_manager(self, theme: str):
+        theme_path = resource_path("assets/qss/light.qss") if theme == "light" else resource_path("assets/qss/dark.qss")
         try:
-            with open(theme_path, "r") as f:
+            with open(theme_path, "r", encoding="utf-8") as f:
                 style = f.read()
                 self.setStyleSheet(style)
+            self.current_theme = theme
         except Exception as e:
             self._show_error("Error loading theme", str(e))
-
-    def switch_theme(self):
-        if self.current_theme == "dark":
-            self.apply_theme(resource_path("assets/qss/light.qss"))
-            self.current_theme = "light"
-        else:
-            self.apply_theme(resource_path("assets/qss/dark.qss"))
-            self.current_theme = "dark"
-
-

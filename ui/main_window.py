@@ -10,7 +10,7 @@ from PySide6.QtWidgets import (
     QTextEdit, QRadioButton, QButtonGroup, QSpacerItem, QSizePolicy, QFrame
 )
 from PySide6.QtGui import QAction, QMovie, QIcon, QPixmap
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import Qt, QThread, Signal, QTimer
 from typing import Optional, Callable
 import os
 import sys
@@ -24,15 +24,17 @@ from yt_dlp import YoutubeDL
 from downloader.yt_downloader import get_formats, get_video_info, get_default_download_path
 from downloader.ffmpeg_utils import ensure_ffmpeg
 from utils.pathfinder import resource_path
+from utils.theme_manager import ThemeManager
+from utils.maintenance import start_dependency_update
 
 # Version
 def get_latest_version() -> str:
     try:
         resp = requests.get("https://api.github.com/repos/Sarwarhridoy4/youvideo-downloader/releases/latest", timeout=10)
         resp.raise_for_status()
-        return resp.json().get("tag_name", "2.1.0").lstrip("v")
+        return resp.json().get("tag_name", "3.0.0").lstrip("v")
     except:
-        return "2.1.0"
+        return "3.0.0"
 
 APP_VERSION = get_latest_version()
 GITHUB_RELEASES_URL = "https://api.github.com/repos/Sarwarhridoy4/youvideo-downloader/releases/latest"
@@ -40,8 +42,6 @@ GITHUB_RELEASES_URL = "https://api.github.com/repos/Sarwarhridoy4/youvideo-downl
 # Paths
 ICON_PATH = resource_path("assets/icons/appicon.png")
 GIF_PATH = resource_path("assets/icons/spinner.gif")
-DARK_QSS_PATH = resource_path("assets/qss/dark.qss")
-LIGHT_QSS_PATH = resource_path("assets/qss/light.qss")
 
 
 # ─────────────────────── Worker Threads ─────────────────────
@@ -101,6 +101,12 @@ class DownloadThread(QThread):
                 'no_warnings': False,
                 'verbose': True,                   # important: needed for FFmpeg output
                 'noplaylist': True,
+                # Avoid android_sdkless client until yt-dlp is updated; fixes 403 errors.
+                'extractor_args': {
+                    'youtube': {
+                        'player_client': ['default', '-android_sdkless']
+                    }
+                },
                 'merge_output_format': 'mp4',
                 'postprocessors': [{
                     'key': 'FFmpegVideoConvertor',
@@ -256,18 +262,7 @@ class DeveloperInfoDialog(QDialog):
         self.setMinimumSize(500, 400)
         self.setModal(True)
         
-        self.setStyleSheet("""
-            QDialog { background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2c3e50, stop:1 #34495e); }
-            QLabel#title { color: #ecf0f1; font-size: 26px; font-weight: bold; }
-            QLabel#version { color: #95a5a6; font-size: 13px; font-style: italic; }
-            QLabel#desc { color: #bdc3c7; font-size: 13px; }
-            QLabel#info { color: #ecf0f1; font-size: 14px; }
-            QPushButton { background-color: rgba(52, 152, 219, 0.8); color: white; border: none; 
-                         border-radius: 5px; padding: 10px 20px; font-weight: bold; }
-            QPushButton:hover { background-color: rgba(52, 152, 219, 1); }
-            QPushButton#close { background-color: rgba(231, 76, 60, 0.8); }
-            QPushButton#close:hover { background-color: rgba(231, 76, 60, 1); }
-        """)
+        ThemeManager.register(self)
         
         layout = QVBoxLayout(self)
         layout.setContentsMargins(30, 30, 30, 30)
@@ -301,6 +296,34 @@ class DeveloperInfoDialog(QDialog):
         close_btn.clicked.connect(self.accept)
         layout.addWidget(close_btn)
 
+    def _apply_theme_from_manager(self, theme: str):
+        if theme == "light":
+            self.setStyleSheet("""
+                QDialog { background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #f7f7f7, stop:1 #eaeaea); }
+                QLabel#title { color: #1f2a33; font-size: 26px; font-weight: bold; }
+                QLabel#version { color: #6b7280; font-size: 13px; font-style: italic; }
+                QLabel#desc { color: #4b5563; font-size: 13px; }
+                QLabel#info { color: #1f2a33; font-size: 14px; }
+                QPushButton { background-color: rgba(52, 152, 219, 0.85); color: white; border: none;
+                             border-radius: 5px; padding: 10px 20px; font-weight: bold; }
+                QPushButton:hover { background-color: rgba(52, 152, 219, 1); }
+                QPushButton#close { background-color: rgba(231, 76, 60, 0.85); }
+                QPushButton#close:hover { background-color: rgba(231, 76, 60, 1); }
+            """)
+        else:
+            self.setStyleSheet("""
+                QDialog { background: qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #2c3e50, stop:1 #34495e); }
+                QLabel#title { color: #ecf0f1; font-size: 26px; font-weight: bold; }
+                QLabel#version { color: #95a5a6; font-size: 13px; font-style: italic; }
+                QLabel#desc { color: #bdc3c7; font-size: 13px; }
+                QLabel#info { color: #ecf0f1; font-size: 14px; }
+                QPushButton { background-color: rgba(52, 152, 219, 0.8); color: white; border: none;
+                             border-radius: 5px; padding: 10px 20px; font-weight: bold; }
+                QPushButton:hover { background-color: rgba(52, 152, 219, 1); }
+                QPushButton#close { background-color: rgba(231, 76, 60, 0.8); }
+                QPushButton#close:hover { background-color: rgba(231, 76, 60, 1); }
+            """)
+
 
 # ─────────────────────── Main Window ─────────────────────
 class MainWindow(QMainWindow):
@@ -314,10 +337,11 @@ class MainWindow(QMainWindow):
         self.download_thread: Optional[DownloadThread] = None
         self.format_loader: Optional[FormatLoaderThread] = None
         self.video_info_loader: Optional[VideoInfoLoaderThread] = None
+        self.dep_update_thread: Optional[QThread] = None
         
         self._setup_window()
         self._setup_ui()
-        self._apply_theme(DARK_QSS_PATH)
+        ThemeManager.register(self)
         self._setup_menu()
         self._check_ffmpeg()
     
@@ -468,6 +492,11 @@ class MainWindow(QMainWindow):
         update_action = QAction("🔄 Check for Updates", self)
         update_action.triggered.connect(self._check_update)
         info_menu.addAction(update_action)
+
+        tools_menu = menubar.addMenu("&Tools")
+        deps_action = QAction("🔧 Update Dependencies", self)
+        deps_action.triggered.connect(self._update_dependencies)
+        tools_menu.addAction(deps_action)
     
     def _check_ffmpeg(self):
         if not ensure_ffmpeg(self.log_window.append, parent=self):
@@ -475,31 +504,41 @@ class MainWindow(QMainWindow):
             self.download_btn.setEnabled(False)
             self.load_formats_btn.setEnabled(False)
     
-    def _apply_theme(self, theme_path: str):
+    def set_theme(self, theme: str):
+        self._apply_theme_from_manager(theme)
+    
+    def get_current_theme(self) -> str:
+        return ThemeManager.get_current_theme()
+    
+    def _switch_theme(self):
+        if getattr(self, "_theme_switching", False):
+            return
+        self._theme_switching = True
+        sender = self.sender()
+        if hasattr(sender, "setEnabled"):
+            sender.setEnabled(False)
+        ThemeManager.toggle()
+        self.current_theme = ThemeManager.get_current_theme()
+        self.log_window.append(f"🎨 Switched to {self.current_theme} theme")
+        QTimer.singleShot(200, lambda: self._finish_theme_switch(sender))
+
+    def _finish_theme_switch(self, sender):
+        self._theme_switching = False
+        if hasattr(sender, "setEnabled"):
+            sender.setEnabled(True)
+
+    def _apply_theme_from_manager(self, theme: str):
+        if theme == "light":
+            theme_path = resource_path("assets/qss/light.qss")
+        else:
+            theme_path = resource_path("assets/qss/dark.qss")
+
         try:
             with open(theme_path, "r", encoding="utf-8") as f:
                 self.setStyleSheet(f.read())
+            self.current_theme = theme
         except Exception as e:
             print(f"Error loading theme: {e}")
-    
-    def set_theme(self, theme: str):
-        if theme == "dark":
-            self._apply_theme(DARK_QSS_PATH)
-            self.current_theme = "dark"
-        elif theme == "light":
-            self._apply_theme(LIGHT_QSS_PATH)
-            self.current_theme = "light"
-    
-    def get_current_theme(self) -> str:
-        return self.current_theme
-    
-    def _switch_theme(self):
-        if self.current_theme == "dark":
-            self.set_theme("light")
-            self.log_window.append("🎨 Switched to light theme")
-        else:
-            self.set_theme("dark")
-            self.log_window.append("🎨 Switched to dark theme")
     
     def _browse_folder(self):
         folder = QFileDialog.getExistingDirectory(self, "Select Output Folder")
@@ -693,6 +732,17 @@ class MainWindow(QMainWindow):
                 self._show_info("Up to Date", f"You have the latest version ({current}).")
         except Exception as e:
             self._show_error("Update Check Failed", f"Could not check for updates:\n{str(e)}")
+
+    def _update_dependencies(self):
+        if self.dep_update_thread and self.dep_update_thread.isRunning():
+            self._show_info("In Progress", "Dependency update is already running.")
+            return
+        self.dep_update_thread = start_dependency_update(
+            parent=self,
+            log_func=self.log_window.append,
+            on_finished=None
+        )
+
     
     def _show_error(self, title: str, message: str):
         QMessageBox.critical(self, title, message)

@@ -156,7 +156,7 @@ This will create the application bundle in `dist/YouVideoDownloader/`.'
 
 ```bash
 mkdir -p youvideo-downloader_X.Y.Z_amd64/{DEBIAN,usr/{bin,share/{applications,pixmaps,doc/youvideo-downloader,man/man1,metainfo}}}
-# Replace X.Y.Z with your actual version, e.g., 2.1.0
+# Replace X.Y.Z with your actual version, e.g., 3.0.0
 ```
 
 2. Copy the PyInstaller application directory and create a launcher:
@@ -374,7 +374,7 @@ Create the AppStream metainfo file (`youvideo-downloader_X.Y.Z_amd64/usr/share/m
 ```bash
 dpkg-deb --build youvideo-downloader_X.Y.Z_amd64
 # The above command will produce: youvideo-downloader_X.Y.Z_amd64.deb
-# If you want to rename it to include a Debian revision (e.g., 2.1.0-1), use:
+# If you want to rename it to include a Debian revision (e.g., 3.0.0-1), use:
 # mv youvideo-downloader_X.Y.Z_amd64.deb youvideo-downloader_X.Y.Z-1_amd64.deb
 # Replace X.Y.Z with your actual version
 ```

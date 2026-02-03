@@ -16,7 +16,7 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="2.1.0" date="2025-12-29">
+    <release version="3.0.0" date="2026-02-03">
       <description><p>Initial professional Debian release.</p></description>
     </release>
   </releases>

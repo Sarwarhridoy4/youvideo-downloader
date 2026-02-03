@@ -1,9 +1,10 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton
 from PySide6.QtGui import QPixmap, QIcon
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QTimer
 import os
 
 from utils.pathfinder import resource_path
+from utils.theme_manager import ThemeManager
 
 icon_path = resource_path("assets/icons/appicon.png")
 dark_qss_path = resource_path("assets/qss/welcome_dark.qss")
@@ -24,14 +25,14 @@ class WelcomeScreen(QWidget):
         super().__init__()
         self._on_single_video = on_single_video
         self._on_playlist = on_playlist
-        self.current_theme = "dark"  # Default theme
+        self.current_theme = ThemeManager.get_current_theme()
         
         self.setWindowTitle("Welcome - 𝒀𝒐𝒖𝑽𝒊𝒅𝒆𝒐 𝑫𝒐𝒘𝒏𝒍𝒐𝒂𝒅𝒆𝒓")
         self.setWindowIcon(QIcon(icon_path))
         self.setFixedSize(720, 520)
 
         self._setup_ui()
-        self._apply_theme(dark_qss_path)
+        ThemeManager.register(self)
 
     def _setup_ui(self):
         """Build the welcome screen UI with theme toggle."""
@@ -129,27 +130,36 @@ class WelcomeScreen(QWidget):
 
     def _toggle_theme(self):
         """Toggle between dark and light themes."""
-        if self.current_theme == "dark":
-            # Switch to light
+        if getattr(self, "_theme_switching", False):
+            return
+        self._theme_switching = True
+        self.theme_toggle_btn.setEnabled(False)
+        ThemeManager.toggle()
+        self.current_theme = ThemeManager.get_current_theme()
+        self.theme_changed.emit(self.current_theme)
+        QTimer.singleShot(200, self._finish_theme_switch)
+
+    def set_theme(self, theme: str):
+        if theme == "light":
             self.current_theme = "light"
             self.theme_toggle_btn.setText("☀️")
             self.theme_toggle_btn.setToolTip("Switch to dark theme")
-            
-            # Apply light theme if available
             if os.path.exists(light_qss_path):
                 self._apply_theme(light_qss_path)
             else:
-                # Fallback: modify current stylesheet
                 self._apply_light_theme_inline()
         else:
-            # Switch to dark
             self.current_theme = "dark"
             self.theme_toggle_btn.setText("🌙")
             self.theme_toggle_btn.setToolTip("Switch to light theme")
             self._apply_theme(dark_qss_path)
-        
-        # Notify parent about theme change
-        self.theme_changed.emit(self.current_theme)
+
+    def _apply_theme_from_manager(self, theme: str):
+        self.set_theme(theme)
+
+    def _finish_theme_switch(self):
+        self._theme_switching = False
+        self.theme_toggle_btn.setEnabled(True)
 
     def _apply_light_theme_inline(self):
         """Fallback light theme using inline stylesheet - matches welcome_light.qss exactly."""

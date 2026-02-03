@@ -25,6 +25,17 @@ class DownloadError(Exception):
     pass
 
 
+# ───────────────────────── yt-dlp config ──────────────────────────
+# Workaround for YouTube 403 errors tied to android_sdkless formats.
+# Exclude the android_sdkless client until users update yt-dlp. See
+# https://github.com/yt-dlp/yt-dlp/issues/15712
+YOUTUBE_EXTRACTOR_ARGS = {
+    "youtube": {
+        "player_client": ["default", "-android_sdkless"]
+    }
+}
+
+
 # ───────────────────────── System Paths ──────────────────────────
 def get_default_download_path() -> str:
     """
@@ -85,6 +96,7 @@ def get_formats(url: str) -> list[dict]:
         "noplaylist": True,  # Only get formats for single video, not entire playlist
         "youtube_include_dash_manifest": True,
         "youtube_include_hls_manifest": True,
+        "extractor_args": YOUTUBE_EXTRACTOR_ARGS,
     }
     
     try:
@@ -197,6 +209,7 @@ def get_video_info(url: str) -> dict:
         "socket_timeout": 30,
         "playlist_items": "1",  # Only get first item if playlist
         "extract_flat": False,  # Don't flatten playlist info
+        "extractor_args": YOUTUBE_EXTRACTOR_ARGS,
     }
     
     try:

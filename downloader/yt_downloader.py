@@ -18,6 +18,7 @@ import os
 import time
 from pathlib import Path
 from typing import Optional, Callable
+from utils.yt_dlp_compat import get_youtube_extractor_args
 
 
 class DownloadError(Exception):
@@ -29,11 +30,7 @@ class DownloadError(Exception):
 # Workaround for YouTube 403 errors tied to android_sdkless formats.
 # Exclude the android_sdkless client until users update yt-dlp. See
 # https://github.com/yt-dlp/yt-dlp/issues/15712
-YOUTUBE_EXTRACTOR_ARGS = {
-    "youtube": {
-        "player_client": ["default", "-android_sdkless"]
-    }
-}
+YOUTUBE_EXTRACTOR_ARGS = get_youtube_extractor_args()
 
 
 # ───────────────────────── System Paths ──────────────────────────
@@ -96,8 +93,9 @@ def get_formats(url: str) -> list[dict]:
         "noplaylist": True,  # Only get formats for single video, not entire playlist
         "youtube_include_dash_manifest": True,
         "youtube_include_hls_manifest": True,
-        "extractor_args": YOUTUBE_EXTRACTOR_ARGS,
     }
+    if YOUTUBE_EXTRACTOR_ARGS:
+        ydl_opts["extractor_args"] = YOUTUBE_EXTRACTOR_ARGS
     
     try:
         with YoutubeDL(ydl_opts) as ydl:
@@ -209,8 +207,9 @@ def get_video_info(url: str) -> dict:
         "socket_timeout": 30,
         "playlist_items": "1",  # Only get first item if playlist
         "extract_flat": False,  # Don't flatten playlist info
-        "extractor_args": YOUTUBE_EXTRACTOR_ARGS,
     }
+    if YOUTUBE_EXTRACTOR_ARGS:
+        ydl_opts["extractor_args"] = YOUTUBE_EXTRACTOR_ARGS
     
     try:
         with YoutubeDL(ydl_opts) as ydl:
@@ -642,10 +641,7 @@ def download_and_merge(
         ]
     },
 
-    # Optional: force ffmpeg to output progress more frequently (may or may not reach your logger)
-    "postprocessor_args": {
-        "default": ["-progress", "pipe:2", "-nostats_period", "0.5"]
-    },
+    # NOTE: Keep a single postprocessor_args dict to avoid overriding options.
 }
     
     try:

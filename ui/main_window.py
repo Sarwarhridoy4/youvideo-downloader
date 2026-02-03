@@ -26,6 +26,7 @@ from downloader.ffmpeg_utils import ensure_ffmpeg
 from utils.pathfinder import resource_path
 from utils.theme_manager import ThemeManager
 from utils.maintenance import start_dependency_update
+from utils.yt_dlp_compat import get_youtube_extractor_args
 
 # Version
 def get_latest_version() -> str:
@@ -101,12 +102,6 @@ class DownloadThread(QThread):
                 'no_warnings': False,
                 'verbose': True,                   # important: needed for FFmpeg output
                 'noplaylist': True,
-                # Avoid android_sdkless client until yt-dlp is updated; fixes 403 errors.
-                'extractor_args': {
-                    'youtube': {
-                        'player_client': ['default', '-android_sdkless']
-                    }
-                },
                 'merge_output_format': 'mp4',
                 'postprocessors': [{
                     'key': 'FFmpegVideoConvertor',
@@ -120,6 +115,10 @@ class DownloadThread(QThread):
                 ],
                 'logger': self._create_ffmpeg_aware_logger(),
             }
+            extractor_args = get_youtube_extractor_args()
+            if extractor_args:
+                # Avoid android_sdkless client until yt-dlp is updated; fixes 403 errors.
+                ydl_opts['extractor_args'] = extractor_args
 
             if self.is_audio:
                 ydl_opts.update({

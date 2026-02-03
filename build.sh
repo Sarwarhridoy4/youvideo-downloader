@@ -268,7 +268,10 @@ print_step "Upgrading pip..."
 python3 -m pip install --upgrade pip --quiet || print_warning "pip upgrade failed (non-critical)"
 
 print_step "Installing PyInstaller and Pillow..."
-python3 -m pip install --upgrade pyinstaller pillow --quiet || {
+python3 -m pip install --upgrade \
+    "pyinstaller==6.18.0" \
+    "pillow==12.0.0" \
+    --quiet || {
     print_error "Failed to install PyInstaller/Pillow"
     exit 1
 }
@@ -280,7 +283,11 @@ if [[ -f "requirements.txt" ]]; then
     print_success "Project dependencies installed"
 else
     print_warning "requirements.txt not found – installing essentials"
-    python3 -m pip install PySide6 yt-dlp requests --quiet
+    python3 -m pip install \
+        "PySide6==6.10.1" \
+        "yt-dlp==2026.1.31" \
+        "requests==2.32.5" \
+        --quiet
 fi
 
 # ═══════════════════════════════════════════════════════════════════════════

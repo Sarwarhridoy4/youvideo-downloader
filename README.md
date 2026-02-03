@@ -18,6 +18,24 @@
 
 ---
 
+## What's New in v3.0.0 (English)
+
+- System-level dependency updater for FFmpeg and yt-dlp (Windows, Linux, macOS).
+- Theme switching is smoother and synced across all windows.
+- Developer Info dialog now follows the current theme.
+- App starts with the original dark theme when system theme is unknown.
+
+---
+
+## নতুন কী (v3.0.0) — বাংলা
+
+- FFmpeg ও yt-dlp এর জন্য সিস্টেম-লেভেল ডিপেনডেন্সি আপডেটার (Windows, Linux, macOS)।
+- থিম পরিবর্তন আরও স্মুথ এবং সব উইন্ডোতে সিঙ্ক হয়।
+- Developer Info ডায়ালগ এখন বর্তমান থিম অনুসরণ করে।
+- সিস্টেম থিম অনির্ধারিত হলে অ্যাপ ডিফল্টভাবে মূল ডার্ক থিমে শুরু হয়।
+
+---
+
 ## Project Overview
 
 The "YouVideo Downloader" is a desktop application built with Python and PySide6, designed to facilitate the downloading of videos from various platforms like YouTube and Facebook. It emphasizes a user-friendly experience with a modern, neumorphism-inspired UI and robust video processing capabilities.

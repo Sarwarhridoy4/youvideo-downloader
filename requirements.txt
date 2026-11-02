@@ -5,5 +5,5 @@
 yt-dlp==2026.10.21
 PySide6==6.12.0
 requests==2.34.2
-pillow==12.3.0
+pillow==13.0.0
 pyinstaller==6.22.3
